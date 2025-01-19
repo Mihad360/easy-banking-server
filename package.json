@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start:prod": "node ./dist/server.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "lint": "npx eslint \"src/**/*.{ts,js,json}\" --ignore-pattern node_modules",
     "lint:fix": "npx eslint src --fix",
@@ -31,6 +33,7 @@
     "eslint-config-prettier": "^10.0.1",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   }
