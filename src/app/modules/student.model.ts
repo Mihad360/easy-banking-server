@@ -69,6 +69,11 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     type: Boolean,
     default: false,
   },
+},{
+  toJSON: {
+    
+    virtuals: true
+  }
 });
 
 studentSchema.pre("save", async function (next) {
@@ -100,9 +105,14 @@ studentSchema.pre("find", async function (next) {
 // });
 
 studentSchema.pre("aggregate", async function (next) {
-  this.find({ isDeleted: { $ne: true } });
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
   // console.log(this);
+});
+
+studentSchema.virtual("fullName").get(function (next) {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
+  next();
 });
 
 // studentSchema.methods.isUserExist = async function (id: string) {
