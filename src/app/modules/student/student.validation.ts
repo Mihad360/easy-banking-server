@@ -22,25 +22,28 @@ const guardianValidationSchema = z.object({
   contactNo: z.string().nonempty({ message: "Contact number is required" }),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string().min(1),
-  password: z.string().min(6).max(12),
-  name: userNameValidationSchema,
-  gender: z.enum(["male", "female"], {
-    message: "Gender is required",
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().min(6).max(12),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: z.enum(["male", "female"], {
+        message: "Gender is required",
+      }),
+      dateOfBirth: z.date().optional(),
+      email: z.string().email(),
+      contactNumber: z.string().min(11),
+      bloodGroup: z
+        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+        .optional(),
+      profileImg: z.string().optional(),
+      presentAddress: z.string().min(1),
+      permanentAddress: z.string().min(1),
+      guardian: guardianValidationSchema,
+    }),
   }),
-  dateOfBirth: z.string().optional(),
-  email: z.string().email(),
-  contactNumber: z.string().min(11),
-  bloodGroup: z
-    .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-    .optional(),
-  profileImg: z.string().optional(),
-  presentAddress: z.string().min(1),
-  permanentAddress: z.string().min(1),
-  guardian: guardianValidationSchema,
-  isActive: z.enum(["active", "blocked"]).default("active"),
-  isDeleted: z.boolean(),
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};
