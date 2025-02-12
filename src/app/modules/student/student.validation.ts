@@ -30,7 +30,7 @@ const createStudentValidationSchema = z.object({
       gender: z.enum(["male", "female"], {
         message: "Gender is required",
       }),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       email: z.string().email(),
       contactNumber: z.string().min(11),
       bloodGroup: z
@@ -39,6 +39,7 @@ const createStudentValidationSchema = z.object({
       profileImg: z.string().optional(),
       presentAddress: z.string().min(1),
       permanentAddress: z.string().min(1),
+      admissionSemester: z.string(),
       guardian: guardianValidationSchema,
     }),
   }),

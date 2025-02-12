@@ -40,7 +40,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Schema.Types.ObjectId,
       required: [true, "user is required"],
       unique: true,
-      ref: "User"
+      ref: "User",
     },
     name: {
       type: userNameSchema,
@@ -51,7 +51,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       enum: ["male", "female", "other"],
       required: true,
     },
-    dateOfBirth: {type: Date},
+    dateOfBirth: { type: Date },
     email: { type: String, required: true },
     contactNumber: { type: String, required: true },
     bloodGroup: {
@@ -65,6 +65,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: guardianSchema,
       required: true,
     },
+    admissionSemester: { type: Schema.Types.ObjectId, ref: "AcademicSemester" },
     isDeleted: {
       type: Boolean,
       default: false,

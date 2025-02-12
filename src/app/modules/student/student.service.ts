@@ -1,5 +1,4 @@
 import { Student } from "./student.model";
-import { TStudent } from "./student.interface";
 
 
 
