@@ -45,6 +45,62 @@ const createStudentValidationSchema = z.object({
   }),
 });
 
+const updateUserNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .max(20, { message: "First name cannot exceed 20 characters" })
+    .optional(),
+  middleName: z.string().optional(),
+  lastName: z
+    .string()
+    .max(20, { message: "First name cannot exceed 20 characters" })
+    .optional(),
+});
+
+const updateGuardianValidationSchema = z.object({
+  fatherName: z
+    .string()
+    .optional(),
+  motherName: z
+    .string()
+    .optional(),
+  fatherOccupation: z
+    .string()
+    .optional(),
+  motherOccupation: z
+    .string()
+    .optional(),
+  contactNo: z
+    .string()
+    .optional(),
+});
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    // password: z.string().min(6).max(12).optional(),
+    student: z.object({
+      name: updateUserNameValidationSchema.optional(),
+      gender: z
+        .enum(["male", "female"], {
+          message: "Gender is required",
+        })
+        .optional(),
+      dateOfBirth: z.string().optional(),
+      email: z.string().email().optional(),
+      contactNumber: z.string().min(11).optional(),
+      bloodGroup: z
+        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+        .optional(),
+      profileImg: z.string().optional(),
+      presentAddress: z.string().min(1).optional(),
+      permanentAddress: z.string().min(1).optional(),
+      admissionSemester: z.string().optional(),
+      guardian: updateGuardianValidationSchema.optional(),
+    }),
+  }),
+});
+
 export const studentValidations = {
   createStudentValidationSchema,
+  updateStudentValidationSchema,
 };

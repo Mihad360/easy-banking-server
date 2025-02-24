@@ -8,14 +8,16 @@ const createAcademicDepartment = async (payload: TAcademicDepartment) => {
 };
 
 const getAcademicDepartment = async () => {
-  const result = await academicDepartmentModel.find();
+  const result = await academicDepartmentModel
+    .find()
+    .populate("academicFaculty");
   return result;
 };
 
 const getEachAcademicDepartment = async (id: string) => {
   const result = await academicDepartmentModel.findOne({
-    _id: new mongoose.Types.ObjectId(id),
-  });
+    _id: id
+  }).populate("academicFaculty");
   return result;
 };
 

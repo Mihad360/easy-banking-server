@@ -30,7 +30,8 @@ export type TStudent = {
   guardian: TGuardian;
   profileImg?: string;
   admissionSemester: Types.ObjectId;
-  isDeleted: boolean
+  isDeleted: boolean;
+  academicDepartment: Types.ObjectId;
 };
 
 // export type StudentMethods = {

@@ -30,7 +30,19 @@ const deleteEachStudentId = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Student Deleted succesfully",
+    data: result,
+  });
+});
+
+const updateEachStudent = catchAsync(async (req, res) => {
+  const studentId = req.params.id;
+  const {student} = req.body
+  const result = await StudentServices.updateEachStudent(studentId, student);
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Student Updated succesfully",
     data: result,
   });
 });
@@ -39,4 +51,5 @@ export const StudentControllers = {
   getStudent,
   getEachStudentId,
   deleteEachStudentId,
+  updateEachStudent,
 };

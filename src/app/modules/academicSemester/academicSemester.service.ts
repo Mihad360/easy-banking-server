@@ -1,11 +1,13 @@
+import HttpStatus from 'http-status';
 import mongoose from "mongoose";
 import { academicSemesterNameCodeMapper } from "./academicSemester.const";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
+import AppError from "../../erros/AppError";
 
 const createAcademicSemester = async (payload: TAcademicSemester) => {
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
-    throw new Error("invalid semester name or code");
+    throw new AppError(HttpStatus.NOT_FOUND,"invalid semester name or code");
   }
 
   const result = await AcademicSemester.create(payload);
@@ -33,7 +35,7 @@ const updateEachAcademicSemester = async (
     payload.code &&
     academicSemesterNameCodeMapper[payload.name] !== payload.code
   ) {
-    throw new Error("invalid semester code");
+    throw new AppError(HttpStatus.NOT_FOUND,"invalid semester code");
   }
   const result = await AcademicSemester.findOneAndUpdate({ _id: id }, payload, {
     new: true,
