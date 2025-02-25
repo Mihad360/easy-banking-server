@@ -6,10 +6,12 @@ import config from "../config";
 import { handleZodError } from "../erros/handleZodError";
 import { handleValidationError } from "../erros/handleValidationError";
 import { handleCastError } from "../erros/handleCastError";
+import { handleDuplicateError } from "../erros/handleDuplicateError";
+import AppError from "../erros/AppError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || "Something Went Wrong";
+  let statusCode = 500;
+  let message = "Something Went Wrong";
   let errorSources: TErrorSource = [
     {
       path: "",
@@ -32,12 +34,34 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSource;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSource;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+    errorSources = [
+      {
+        path: "",
+        message: err?.message,
+      },
+    ];
   }
   return res.status(statusCode).json({
     success: false,
     statusCode,
     message,
-    // err,
+    err,
     errorSources,
     stack: config.node_env === "development" ? err?.stack : null,
   });

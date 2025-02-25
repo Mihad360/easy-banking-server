@@ -54,7 +54,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: true,
     },
     dateOfBirth: { type: Date },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     contactNumber: { type: String, required: true },
     bloodGroup: {
       type: String,
@@ -114,16 +114,6 @@ studentSchema.virtual("fullName").get(function (next) {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
   next();
 });
-
-// studentSchema.pre("findOneAndUpdate", async function (next) {
-//   const query = this.getQuery();
-//   console.log(query);
-//   const isUserExist = await Student.findOne({ id: query.id, isDeleted: true });
-//   if (isUserExist) {
-//     throw new AppError(HttpStatus.NOT_FOUND, "The user is already deleted");
-//   }
-//   next()
-// });
 
 studentSchema.statics.isUserExist = async function (id: string) {
   const existingUser = await Student.findOne({ id });

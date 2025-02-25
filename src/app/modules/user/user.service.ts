@@ -39,12 +39,13 @@ const createUserDB = async (password: string, payload: TStudent) => {
     if (!newStudent) {
       throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create Student");
     }
-    await session.commitTransaction()
-    await session.endSession()
+    await session.commitTransaction();
+    await session.endSession();
     return newStudent;
   } catch (error) {
-    await session.abortTransaction()
-    await session.endSession()
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Student");
   }
 };
 

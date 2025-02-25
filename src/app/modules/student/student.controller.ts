@@ -4,11 +4,12 @@ import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
 
 const getStudent = catchAsync(async (req, res) => {
-  const result = await StudentServices.getAllStudent();
+  console.log(req.query);
+  const result = await StudentServices.getAllStudent(req.query);
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Student find successfully",
     data: result,
   });
 });

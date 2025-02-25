@@ -5,8 +5,19 @@ import AppError from "../../erros/AppError";
 import { User } from "../user/user.model";
 import { TStudent } from "./student.interface";
 
-const getAllStudent = async () => {
-  const result = await Student.find()
+const getAllStudent = async (query: Record<string, unknown>) => {
+  let searchTerm = "";
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const result = await Student.find({
+    $or: ["email", "name.firstName", "name.lastName", "presentAddress"].map(
+      (field) => ({
+        [field]: { $regex: searchTerm, $options: "i" },
+      }),
+    ),
+  })
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
