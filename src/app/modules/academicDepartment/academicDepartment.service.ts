@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { TAcademicDepartment } from "./academicDepartment.interface";
 import { academicDepartmentModel } from "./academicDepartment.model";
 
@@ -15,9 +14,11 @@ const getAcademicDepartment = async () => {
 };
 
 const getEachAcademicDepartment = async (id: string) => {
-  const result = await academicDepartmentModel.findOne({
-    _id: id
-  }).populate("academicFaculty");
+  const result = await academicDepartmentModel
+    .findOne({
+      _id: id,
+    })
+    .populate("academicFaculty");
   return result;
 };
 
