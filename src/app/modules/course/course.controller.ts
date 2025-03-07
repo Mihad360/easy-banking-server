@@ -4,8 +4,7 @@ import sendResponse from "../../utils/sendResponse";
 import { CourseServices } from "./course.service";
 
 const createCourse = catchAsync(async (req, res) => {
-  const {course} = req.body
-  const result = await CourseServices.createCourse(course);
+  const result = await CourseServices.createCourse(req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -50,9 +49,36 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+const updateCourse = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await CourseServices.updateCourse(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Course deleted succesfully",
+    data: result,
+  });
+});
+
+const assignFaculties = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const { faculties } = req.body;
+  const result = await CourseServices.assignFaculties(courseId, faculties);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Course deleted succesfully",
+    data: result,
+  });
+});
+
 export const CourseControllers = {
   createCourse,
   getCourse,
   getEachCourse,
   deleteCourse,
+  updateCourse,
+  assignFaculties,
 };
