@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { facultyUserNameSchema } from "./faculty.const";
 import { FacultyModels, TFaculty } from "./faculty.interface";
 
-const facultySchema = new Schema<TFaculty, FacultyModels>(
+const facultySchema = new Schema<TFaculty>(
   {
     id: { type: String, required: true, unique: true },
     user: {
@@ -11,7 +11,7 @@ const facultySchema = new Schema<TFaculty, FacultyModels>(
       ref: "User",
       required: true,
     },
-    role: { type: String, required: true },
+    // role: { type: String, required: true },
     designation: { type: String, required: true },
     name: facultyUserNameSchema,
     gender: { type: String, enum: ["male", "female"], required: true },
@@ -42,4 +42,4 @@ const facultySchema = new Schema<TFaculty, FacultyModels>(
   { timestamps: true, toJSON: { virtuals: true } },
 );
 
-export const FacultyModel = model<TFaculty, FacultyModels>("Faculty", facultySchema);
+export const FacultyModel = model<TFaculty>("Faculty", facultySchema);

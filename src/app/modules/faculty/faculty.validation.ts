@@ -12,9 +12,9 @@ const facultyNameValidationSchema = z.object({
 
 const createFacultyValidationSchema = z.object({
   body: z.object({
-    passoword: z.string(),
+    passoword: z.string().optional(),
     faculty: z.object({
-      role: z.string().min(1, "Role is required"),
+      // role: z.string().min(1, "Role is required"),
       designation: z.string().min(1, "Designation is required"),
       name: facultyNameValidationSchema,
       gender: z.enum(["male", "female"], {
@@ -22,12 +22,8 @@ const createFacultyValidationSchema = z.object({
       }),
       dateOfBirth: z.string().optional(),
       email: z.string().email(),
-      contactNo: z
-        .string()
-        .min(11, "Contact number must be at least 11 digits"),
-      emergencyContactNo: z
-        .string()
-        .min(11, "Emergency contact number must be at least 11 digits"),
+      contactNo: z.string(),
+      emergencyContactNo: z.string(),
       bloodGroup: z
         .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
         .optional(),
@@ -41,4 +37,4 @@ const createFacultyValidationSchema = z.object({
 
 export const facultyValidation = {
   createFacultyValidationSchema,
-}
+};

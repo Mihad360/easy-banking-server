@@ -30,10 +30,36 @@ export const generateStudentId = async (payload: TAcademicSemester) => {
     lastStudentSemesterCode === currentSemesterCode &&
     lastStudentSemesterYear === currentSemesterYear
   ) {
-    currentId = lasStudentId?.substring(6)
+    currentId = lasStudentId?.substring(6);
   }
 
   let incrementId = (Number(currentId) + 1).toString().padStart(4, "0");
   incrementId = `${payload.year}${payload.code}${incrementId}`;
+  return incrementId;
+};
+
+const findLastFaculty = async () => {
+  const result = await User.findOne(
+    {
+      role: "faculty",
+    },
+    {
+      id: 1,
+      _id: 0,
+    },
+  )
+    .sort({ createdAt: -1 })
+    .lean();
+  return result?.id ? result?.id : undefined;
+};
+
+export const generateFacultyId = async () => {
+  let currentId = (0).toString();
+  const LastFacultyId = await findLastFaculty();
+  if (LastFacultyId) {
+    currentId = LastFacultyId.substring(2);
+  }
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, "0");
+  incrementId = `F-${incrementId}`;
   return incrementId;
 };

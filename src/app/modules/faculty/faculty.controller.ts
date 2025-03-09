@@ -3,16 +3,17 @@ import { facultyServices } from "./faculty.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
-const createFaculty = catchAsync(async (req, res) => {
-  const result = await facultyServices.createFaculty(req.body);
+// const createFaculty = catchAsync(async (req, res) => {
+//   const {password, faculty: faculty} = req.body;
+//   const result = await facultyServices.createFaculty(password, faculty);
 
-  sendResponse(res, {
-    statusCode: HttpStatus.OK,
-    success: true,
-    message: "Student created succesfully",
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: HttpStatus.OK,
+//     success: true,
+//     message: "Student created succesfully",
+//     data: result,
+//   });
+// });
 
 const getFaculty = catchAsync(async (req, res) => {
   const result = await facultyServices.getFaculty(req.query);
@@ -62,7 +63,7 @@ const deleteFaculty = catchAsync(async (req, res) => {
   });
 
 export const facultyControllers = {
-  createFaculty,
+  // createFaculty,
   getFaculty,
   getEachFaculty,
   updateEachFaculty,

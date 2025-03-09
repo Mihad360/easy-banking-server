@@ -7,7 +7,7 @@ import { TStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
-import { generateStudentId } from "./user.utils";
+import { generateFacultyId, generateStudentId } from "./user.utils";
 import mongoose from "mongoose";
 import { FacultyModel } from "../faculty/faculty.model";
 import { TAdmin } from "../admin/admin.interface";
@@ -59,7 +59,7 @@ const createUserDB = async (password: string, payload: TStudent) => {
     await session.commitTransaction();
     await session.endSession();
     return newStudent;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -85,7 +85,14 @@ const createFacultyDB = async (password: string, payload: TFaculty) => {
 
   try {
     session.startTransaction();
-    // userData.id = await generateStudentId();
+    const facultyId = await generateFacultyId();
+    if (!facultyId) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        "Failed to generate faculty ID",
+      );
+    }
+    userData.id = facultyId;
     // first transaction - 1
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
@@ -102,11 +109,11 @@ const createFacultyDB = async (password: string, payload: TFaculty) => {
     await session.commitTransaction();
     await session.endSession();
     return newFaculty;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Student");
+    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Faculty");
   }
 };
 

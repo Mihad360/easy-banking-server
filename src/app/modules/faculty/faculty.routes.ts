@@ -5,11 +5,11 @@ import validateRequest from "../../middlewares/validateRequest";
 
 const router = express.Router();
 
-router.post(
-  "/create-faculty",
-  validateRequest(facultyValidation.createFacultyValidationSchema),
-  facultyControllers.createFaculty,
-);
+// router.post(
+//   "/create-faculty",
+//   validateRequest(facultyValidation.createFacultyValidationSchema),
+//   facultyControllers.createFaculty,
+// );
 router.get("/", facultyControllers.getFaculty);
 router.get("/:id", facultyControllers.getEachFaculty);
 router.delete("/:id", facultyControllers.deleteFaculty);
