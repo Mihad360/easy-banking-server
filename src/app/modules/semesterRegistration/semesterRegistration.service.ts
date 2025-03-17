@@ -12,7 +12,10 @@ const createSemesterRegistration = async (payload: TSemesterRegistration) => {
   // check if there is any upcoming | ongoing semester is exist
   const isThereUpcomingOrOngoingSemester =
     await SemesterRegistrationModel.findOne({
-      $or: [{ status: SemesterRegistrationReadOnlyStatus.UPCOMING }, { status: SemesterRegistrationReadOnlyStatus.ONGOING }],
+      $or: [
+        { status: SemesterRegistrationReadOnlyStatus.UPCOMING },
+        { status: SemesterRegistrationReadOnlyStatus.ONGOING },
+      ],
     });
   if (isThereUpcomingOrOngoingSemester) {
     throw new AppError(
@@ -75,7 +78,9 @@ const updateSemesterRegistration = async (
 
   // if the requested semester registration ended , we will not update anything
   const currentSemesterRequestedStatus = isTheSemesterRegExist?.status;
-  if (currentSemesterRequestedStatus === SemesterRegistrationReadOnlyStatus.ENDED) {
+  if (
+    currentSemesterRequestedStatus === SemesterRegistrationReadOnlyStatus.ENDED
+  ) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
       `This semester is already ${currentSemesterRequestedStatus}`,
@@ -84,7 +89,8 @@ const updateSemesterRegistration = async (
   // checking the status updating methods
   const requestedStatus = payload?.status;
   if (
-    currentSemesterRequestedStatus === SemesterRegistrationReadOnlyStatus.UPCOMING &&
+    currentSemesterRequestedStatus ===
+      SemesterRegistrationReadOnlyStatus.UPCOMING &&
     requestedStatus === SemesterRegistrationReadOnlyStatus.ENDED
   ) {
     throw new AppError(
@@ -93,7 +99,8 @@ const updateSemesterRegistration = async (
     );
   }
   if (
-    currentSemesterRequestedStatus === SemesterRegistrationReadOnlyStatus.ONGOING &&
+    currentSemesterRequestedStatus ===
+      SemesterRegistrationReadOnlyStatus.ONGOING &&
     requestedStatus === SemesterRegistrationReadOnlyStatus.UPCOMING
   ) {
     throw new AppError(
