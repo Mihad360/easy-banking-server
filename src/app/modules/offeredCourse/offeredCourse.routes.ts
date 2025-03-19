@@ -11,12 +11,12 @@ router.post(
   offeredCourseControllers.createOfferedCourse,
 );
 router.get("/", offeredCourseControllers.getOfferedCourse);
-// router.get("/:id", offeredCourseControllers);
-// // router.delete("/:id", semesterRegistrationControllers.deleteEachStudentId);
-// router.patch(
-//   "/:id",
-//   validateRequest(offeredCourseValidations.updateOfferedCourseValidationSchema),
-//   offeredCourseControllers,
-// );
+router.get("/:id", offeredCourseControllers.getEachOfferedCourse);
+router.delete("/:id", offeredCourseControllers.deleteOfferedCourse);
+router.patch(
+  "/:id",
+  validateRequest(offeredCourseValidations.updateOfferedCourseValidationSchema),
+  offeredCourseControllers.updateOfferedCourse,
+);
 
 export const offeredCourseRoutes = router;

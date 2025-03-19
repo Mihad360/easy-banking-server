@@ -12,10 +12,15 @@ router.post(
 );
 router.get("/", semesterRegistrationControllers.getSemesterRegistration);
 router.get("/:id", semesterRegistrationControllers.getEachSemesterRegistration);
-// router.delete("/:id", semesterRegistrationControllers.deleteEachStudentId);
+router.delete(
+  "/:id",
+  semesterRegistrationControllers.deleteSemesterRegistration,
+);
 router.patch(
   "/:id",
-  validateRequest(semesterValidations.updateSemesterRegistrationValidationSchema),
+  validateRequest(
+    semesterValidations.updateSemesterRegistrationValidationSchema,
+  ),
   semesterRegistrationControllers.updateSemesterRegistration,
 );
 

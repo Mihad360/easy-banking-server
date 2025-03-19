@@ -5,6 +5,8 @@ import SemesterRegistrationModel from "./semesterRegistration.model";
 import { AcademicSemester } from "../academicSemester/academicSemester.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { SemesterRegistrationReadOnlyStatus } from "./semesterRegistraion.const";
+import mongoose from "mongoose";
+import { OfferedCourseModel } from "../offeredCourse/offeredCourse.model";
 
 const createSemesterRegistration = async (payload: TSemesterRegistration) => {
   const academicSemester = payload?.academicSemester;
@@ -116,9 +118,67 @@ const updateSemesterRegistration = async (
   return result;
 };
 
+const deleteSemesterRegistration = async (id: string) => {
+  const isSemesterRegistrationExists = await SemesterRegistrationModel.findById(id);
+
+  if (!isSemesterRegistrationExists) {
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      "This registered semester is not found !",
+    );
+  }
+
+  const semesterRegistrationStatus = isSemesterRegistrationExists.status;
+
+  if (semesterRegistrationStatus !== "UPCOMING") {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      `You can not update as the registered semester is ${semesterRegistrationStatus}`,
+    );
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const deleteOfferedCourse = await OfferedCourseModel.deleteMany(
+      {
+        semesterRegistration: id,
+      },
+      { session },
+    );
+    if (!deleteOfferedCourse) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        "Failed to delete semester registration !",
+      );
+    }
+
+    const deleteSemesterRegistration =
+      await SemesterRegistrationModel.findByIdAndDelete(id, {
+        session,
+        new: true,
+      });
+    if (!deleteSemesterRegistration) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        "Failed to delete semester registration !",
+      );
+    }
+    await session.commitTransaction();
+    await session.endSession();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
+};
+
 export const semesterRegistrationServices = {
   createSemesterRegistration,
   getSemesterRegistrations,
   getEachSemesterRegistration,
   updateSemesterRegistration,
+  deleteSemesterRegistration,
 };
