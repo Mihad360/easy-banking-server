@@ -119,7 +119,8 @@ const updateSemesterRegistration = async (
 };
 
 const deleteSemesterRegistration = async (id: string) => {
-  const isSemesterRegistrationExists = await SemesterRegistrationModel.findById(id);
+  const isSemesterRegistrationExists =
+    await SemesterRegistrationModel.findById(id);
 
   if (!isSemesterRegistrationExists) {
     throw new AppError(

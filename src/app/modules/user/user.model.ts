@@ -1,10 +1,12 @@
+import HttpStatus from "http-status";
 /* eslint-disable @typescript-eslint/no-this-alias */
 import bcrypt from "bcrypt";
 import { model, Schema } from "mongoose";
-import { TUser } from "./user.interface";
+import { TUser, UserModel } from "./user.interface";
 import config from "../../config";
+import AppError from "../../erros/AppError";
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, UserModel>(
   {
     id: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -37,4 +39,15 @@ userSchema.post("save", function (doc, next) {
   next();
 });
 
-export const User = model<TUser>("User", userSchema);
+userSchema.statics.isUserExistByCustomId = async function (id: string) {
+  return await User.findOne({ id });
+};
+
+userSchema.statics.UserPassword = async function (plainTextPassword, hashTextPassword) {
+  return await bcrypt.compare(
+    plainTextPassword,
+    hashTextPassword,
+  );
+};
+
+export const User = model<TUser, UserModel>("User", userSchema);

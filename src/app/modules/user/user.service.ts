@@ -7,7 +7,11 @@ import { TStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
-import { generateFacultyId, generateStudentId } from "./user.utils";
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from "./user.utils";
 import mongoose from "mongoose";
 import { FacultyModel } from "../faculty/faculty.model";
 import { TAdmin } from "../admin/admin.interface";
@@ -122,19 +126,15 @@ const createAdminDB = async (password: string, payload: TAdmin) => {
 
   userData.password = password || (config.default_pass as string);
   userData.role = "admin";
-
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
-    // if (!admissionSemesterId) {
-    //   throw new AppError(HttpStatus.NOT_FOUND, "not available");
-    // }
-    // userData.id = await generateStudentId();
+    userData.id = await generateAdminId();
     // first transaction - 1
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create user");
+      throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create Admin user");
     }
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
@@ -142,7 +142,7 @@ const createAdminDB = async (password: string, payload: TAdmin) => {
     // first transaction - 2
     const newAdmin = await Admin.create([payload], { session });
     if (!newAdmin.length) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create Faculty");
+      throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create Admin");
     }
     await session.commitTransaction();
     await session.endSession();
@@ -151,7 +151,7 @@ const createAdminDB = async (password: string, payload: TAdmin) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Student");
+    throw new AppError(HttpStatus.BAD_REQUEST, "Failed to create The Admin");
   }
 };
 

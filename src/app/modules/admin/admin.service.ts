@@ -7,11 +7,6 @@ import { User } from "../user/user.model";
 import mongoose from "mongoose";
 import { TAdmin } from "./admin.interface";
 
-const createAdmin = async (payload: TAdmin) => {
-  const result = await Admin.create(payload);
-  return result;
-};
-
 const getAdmin = async (query: Record<string, unknown>) => {
   const AdminQuery = new QueryBuilder(Admin.find(), query)
     .search(AdminSearchableFields)
@@ -92,7 +87,6 @@ const deleteEachAdmin = async (id: string) => {
 };
 
 export const AdminServices = {
-  createAdmin,
   getAdmin,
   getEachAdmin,
   updateAdmin,

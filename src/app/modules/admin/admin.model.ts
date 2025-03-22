@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { AdminModel, TAdmin, TUserName } from "./admin.interface";
+import { TAdmin, TUserName } from "./admin.interface";
 import { BloodGroup, Gender } from "./admin.const";
 
 const userNameSchema = new Schema<TUserName>({
@@ -21,16 +21,16 @@ const userNameSchema = new Schema<TUserName>({
   },
 });
 
-const adminSchema = new Schema<TAdmin, AdminModel>(
+const adminSchema = new Schema<TAdmin>(
   {
     id: {
       type: String,
-      required: [true, "ID is required"],
+      required: true,
       unique: true,
     },
     user: {
       type: Schema.Types.ObjectId,
-      required: [true, "User id is required"],
+      required: true,
       unique: true,
       ref: "User",
     },
@@ -75,12 +75,6 @@ const adminSchema = new Schema<TAdmin, AdminModel>(
     permanentAddress: {
       type: String,
       required: [true, "Permanent address is required"],
-    },
-    managementDepartment: {
-      type: Schema.Types.ObjectId,
-      required: [true, "managementDepartment id is required"],
-      unique: true,
-      ref: "ManagementDepartment",
     },
     profileImg: { type: String, default: "" },
     isDeleted: {
@@ -128,4 +122,4 @@ adminSchema.statics.isUserExists = async function (id: string) {
   return existingUser;
 };
 
-export const Admin = model<TAdmin, AdminModel>("Admin", adminSchema);
+export const Admin = model<TAdmin>("Admin", adminSchema);

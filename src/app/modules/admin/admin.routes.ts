@@ -5,11 +5,7 @@ import { adminControllers } from "./admin.controller";
 
 const router = express.Router();
 
-router.post(
-  "/create-admin",
-  validateRequest(AdminValidations.createAdminValidationSchema),
-  adminControllers.createAdmin,
-);
+
 router.get("/", adminControllers.getAdmin);
 router.get("/:id", adminControllers.getEachAdmin);
 router.delete("/:id", adminControllers.deleteAdmin);

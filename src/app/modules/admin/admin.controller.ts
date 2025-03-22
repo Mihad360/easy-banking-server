@@ -3,17 +3,6 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { AdminServices } from "./admin.service";
 
-const createAdmin = catchAsync(async (req, res) => {
-  const result = await AdminServices.createAdmin(req.body);
-
-  sendResponse(res, {
-    statusCode: HttpStatus.OK,
-    success: true,
-    message: "Admin created succesfully",
-    data: result,
-  });
-});
-
 const getAdmin = catchAsync(async (req, res) => {
   const result = await AdminServices.getAdmin(req.query);
 
@@ -62,7 +51,6 @@ const deleteAdmin = catchAsync(async (req, res) => {
 });
 
 export const adminControllers = {
-  createAdmin,
   getAdmin,
   getEachAdmin,
   updateEachAdmin,
