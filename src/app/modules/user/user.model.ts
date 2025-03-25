@@ -1,10 +1,8 @@
-import HttpStatus from "http-status";
 /* eslint-disable @typescript-eslint/no-this-alias */
 import bcrypt from "bcrypt";
 import { model, Schema } from "mongoose";
 import { TUser, UserModel } from "./user.interface";
 import config from "../../config";
-import AppError from "../../erros/AppError";
 
 const userSchema = new Schema<TUser, UserModel>(
   {
