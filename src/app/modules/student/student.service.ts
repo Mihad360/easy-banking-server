@@ -9,7 +9,7 @@ import { studentSearch } from "./student.const";
 
 const getAllStudent = async (query: Record<string, unknown>) => {
   const studentQuery = new QueryBuilder(
-    Student.find()
+    Student.find().populate('user')
       .populate("admissionSemester")
       .populate({
         path: "academicDepartment",
