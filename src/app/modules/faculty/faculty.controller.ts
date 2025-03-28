@@ -17,6 +17,7 @@ import sendResponse from "../../utils/sendResponse";
 
 const getFaculty = catchAsync(async (req, res) => {
   const result = await facultyServices.getFaculty(req.query);
+  console.log(req.cookies);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,

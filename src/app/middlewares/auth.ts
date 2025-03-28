@@ -22,7 +22,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const { role, userId, iat } = decoded;
     const user = await User.isUserExistByCustomId(userId);
     if (!user) {
-      throw new AppError(HttpStatus.NOT_FOUND, "This User in not exist");
+      throw new AppError(HttpStatus.NOT_FOUND, "This User is not exist");
     }
     // checking if the user is already deleted
     if (user?.isDeleted) {
