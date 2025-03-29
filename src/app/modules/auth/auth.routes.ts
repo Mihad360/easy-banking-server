@@ -23,6 +23,11 @@ router.post(
   validateRequest(AuthValidations.refreshTokenValidationSchema),
   AuthControllers.refreshToken,
 );
+router.post(
+  "/forget-password",
+  validateRequest(AuthValidations.forgetPasswordValidationSchema),
+  AuthControllers.forgetPassword,
+);
 // router.get("/", adminControllers);
 // router.get("/:id", adminControllers);
 // router.delete("/:id", adminControllers);
