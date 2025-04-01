@@ -17,6 +17,7 @@ import { FacultyModel } from "../faculty/faculty.model";
 import { TAdmin } from "../admin/admin.interface";
 import { TFaculty } from "../faculty/faculty.interface";
 import { Admin } from "../admin/admin.model";
+import { verifyToken } from "../auth/auth.utils";
 
 const createUserDB = async (password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
@@ -158,8 +159,33 @@ const createAdminDB = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMe = async (token: string) => {
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
+  const { userId, role } = decoded;
+
+  let result = null;
+  if (role === "student") {
+    result = await Student.findOne({ id: userId })
+      .populate("admissionSemester")
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      });
+  }
+  if (role === "admin") {
+    result = await Admin.findOne({ id: userId });
+  }
+  if (role === "faculty") {
+    result = await FacultyModel.findOne({ id: userId });
+  }
+  return result;
+};
+
 export const UserServices = {
   createUserDB,
   createFacultyDB,
   createAdminDB,
+  getMe,
 };

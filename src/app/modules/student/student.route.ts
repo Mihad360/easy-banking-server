@@ -7,8 +7,12 @@ import auth from "../../middlewares/auth";
 const router = express.Router();
 
 // router.post("/create-student", StudentControllers.createStudent);
-router.get("/",auth('admin', 'faculty'), StudentControllers.getStudent);
-router.get("/:id", StudentControllers.getEachStudentId);
+router.get("/", auth("admin", "faculty"), StudentControllers.getStudent);
+router.get(
+  "/:id",
+  auth("admin", "faculty"),
+  StudentControllers.getEachStudentId,
+);
 router.delete("/:id", StudentControllers.deleteEachStudentId);
 router.patch(
   "/:id",

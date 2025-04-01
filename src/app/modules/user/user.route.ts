@@ -23,9 +23,11 @@ router.post(
 );
 router.post(
   "/create-admin",
+  // auth(USER_ROLE.admin),
   validateRequest(AdminValidations.createAdminValidationSchema),
   UserControllers.createAdmin,
 );
+router.get("/me", auth("student", "faculty", "admin"), UserControllers.getMe);
 router.get("/users");
 router.delete("/:userId");
 router.get("/:userId");

@@ -1,16 +1,11 @@
-import HttpStatus from "http-status";
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from "mongoose";
 import {
   TGuardian,
-  StudentMethods,
   TUserName,
   TStudent,
   StudentModel,
 } from "./student.interface";
-import bcrypt from "bcrypt";
-import config from "../../config";
-import AppError from "../../erros/AppError";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {

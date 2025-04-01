@@ -5,7 +5,7 @@ import { User } from "../user/user.model";
 import { TLoginUser } from "./auth.interface";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
-import { createToken } from "./auth.utils";
+import { createToken, verifyToken } from "./auth.utils";
 import { sendEmail } from "../../utils/sendEmail";
 
 const loginUser = async (payload: TLoginUser) => {
@@ -91,10 +91,7 @@ const changePassword = async (
 
 const refreshToken = async (token: string) => {
   // check if the token is valid
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
   const { userId, iat } = decoded;
   const user = await User.isUserExistByCustomId(userId);
   if (!user) {
@@ -160,12 +157,11 @@ const forgetPassword = async (id: string) => {
   const resetUiLink = `${config.reset_pass_ui_link}?id=${user?.id}&token=${resetToken}`;
   const userEmail = user?.email;
   sendEmail(userEmail, resetUiLink);
-  console.log(resetUiLink);
 };
 
 const resetPassword = async (
   payload: { id: string; newPassword: string },
-  token,
+  token: string,
 ) => {
   const user = await User.isUserExistByCustomId(payload?.id);
   if (!user) {
@@ -179,6 +175,33 @@ const resetPassword = async (
   if (user?.status === "blocked") {
     throw new AppError(HttpStatus.FORBIDDEN, "This User is blocked");
   }
+
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  if (payload.id !== decoded.userId) {
+    throw new AppError(HttpStatus.FORBIDDEN, "You are forbidden");
+  }
+
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  const result = await User.findOneAndUpdate(
+    {
+      id: decoded.userId,
+      role: decoded.role,
+    },
+    {
+      password: newHashedPassword,
+      needsPasswordChange: false,
+      passwordChangeAt: new Date(),
+    },
+  );
+  return result;
 };
 
 export const AuthServices = {
