@@ -18,6 +18,7 @@ import { TAdmin } from "../admin/admin.interface";
 import { TFaculty } from "../faculty/faculty.interface";
 import { Admin } from "../admin/admin.model";
 import { JwtPayload } from "jsonwebtoken";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 const createUserDB = async (password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
@@ -49,6 +50,10 @@ const createUserDB = async (password: string, payload: TStudent) => {
       throw new AppError(HttpStatus.NOT_FOUND, "not available");
     }
     userData.id = await generateStudentId(admissionSemesterId);
+
+    // send image to cloudinary
+    sendImageToCloudinary()
+
     // first transaction - 1
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
