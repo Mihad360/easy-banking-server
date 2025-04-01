@@ -1,11 +1,8 @@
-import  jwt  from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import HttpStatus from "http-status";
 import { UserServices } from "./user.service";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
-import AppError from "../../erros/AppError";
-import config from '../../config';
-import { verifyToken } from '../auth/auth.utils';
 
 const createUser = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
@@ -47,11 +44,7 @@ const createAdmin = catchAsync(async (req, res) => {
 });
 
 const getMe = catchAsync(async (req, res) => {
-  const token = req.headers.authorization;
-  if (!token) {
-    throw new AppError(HttpStatus.NOT_FOUND, "Token not found");
-  }
-  const result = await UserServices.getMe(token);
+  const result = await UserServices.getMe(req.user);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -61,9 +54,22 @@ const getMe = catchAsync(async (req, res) => {
   });
 });
 
+const changeStatus = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await UserServices.changeStatus(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Status Updated successfully",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   createUser,
   createFaculty,
   createAdmin,
   getMe,
+  changeStatus,
 };
