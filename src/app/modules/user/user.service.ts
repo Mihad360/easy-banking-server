@@ -20,7 +20,7 @@ import { Admin } from "../admin/admin.model";
 import { JwtPayload } from "jsonwebtoken";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
-const createUserDB = async (password: string, payload: TStudent) => {
+const createUserDB = async (file: any, password: string, payload: TStudent) => {
   const userData: Partial<TUser> = {};
 
   userData.password = password || (config.default_pass as string);
@@ -52,7 +52,9 @@ const createUserDB = async (password: string, payload: TStudent) => {
     userData.id = await generateStudentId(admissionSemesterId);
 
     // send image to cloudinary
-    sendImageToCloudinary()
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const { path } = file;
+    const {secure_url} = await sendImageToCloudinary(imageName, path);
 
     // first transaction - 1
     const newUser = await User.create([userData], { session });
@@ -61,6 +63,7 @@ const createUserDB = async (password: string, payload: TStudent) => {
     }
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImg = secure_url
 
     // first transaction - 2
     const newStudent = await Student.create([payload], { session });

@@ -24,7 +24,7 @@ const guardianValidationSchema = z.object({
 
 const createStudentValidationSchema = z.object({
   body: z.object({
-    password: z.string().min(6).max(12),
+    password: z.string().min(6).max(12).optional(),
     student: z.object({
       name: userNameValidationSchema,
       gender: z.enum(["male", "female"], {
@@ -36,7 +36,7 @@ const createStudentValidationSchema = z.object({
       bloodGroup: z
         .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
         .optional(),
-      profileImg: z.string().optional(),
+      // profileImg: z.string().optional(),
       presentAddress: z.string().min(1),
       permanentAddress: z.string().min(1),
       admissionSemester: z.string(),
