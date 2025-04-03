@@ -25,12 +25,22 @@ router.post(
 router.post(
   "/create-faculty",
   auth(USER_ROLE.admin),
+  upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(facultyValidation.createFacultyValidationSchema),
   UserControllers.createFaculty,
 );
 router.post(
   "/create-admin",
   // auth(USER_ROLE.admin),
+  upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(AdminValidations.createAdminValidationSchema),
   UserControllers.createAdmin,
 );
@@ -41,8 +51,5 @@ router.patch(
   UserControllers.changeStatus,
 );
 router.get("/me", auth("student", "faculty", "admin"), UserControllers.getMe);
-router.get("/users");
-router.delete("/:userId");
-router.get("/:userId");
 
 export const UserRoutes = router;

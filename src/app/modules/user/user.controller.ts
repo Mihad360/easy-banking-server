@@ -23,12 +23,16 @@ const createUser = catchAsync(async (req, res) => {
 const createFaculty = catchAsync(async (req, res) => {
   const { password, faculty: faculty } = req.body;
 
-  const result = await UserServices.createFacultyDB(password, faculty);
+  const result = await UserServices.createFacultyDB(
+    req.file,
+    password,
+    faculty,
+  );
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Faculty created succesfully",
     data: result,
   });
 });
@@ -36,12 +40,12 @@ const createFaculty = catchAsync(async (req, res) => {
 const createAdmin = catchAsync(async (req, res) => {
   const { password } = req.body;
 
-  const result = await UserServices.createAdminDB(password, req.body);
+  const result = await UserServices.createAdminDB(req.file, password, req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Admi created succesfully",
+    message: "Admin created succesfully",
     data: result,
   });
 });
