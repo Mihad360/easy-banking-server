@@ -14,8 +14,8 @@ router.post(
   ),
   endrolledCourseControllers.createEnrolledCourse,
 );
-// router.get("/", endrolledCourseControllers.);
-// router.get("/:id", endrolledCourseControllers.);
+router.get("/", endrolledCourseControllers.getEnrolledCourses);
+router.get("/:id", endrolledCourseControllers.getEachEnrolledCourses);
 // router.delete("/:id", endrolledCourseControllers.);
 
 export const enrolledCourseRoutes = router;
