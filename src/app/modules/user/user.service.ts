@@ -27,11 +27,11 @@ const createUserDB = async (file: any, password: string, payload: TStudent) => {
   userData.role = "student";
   userData.email = payload.email;
 
-  const admissionSemesterId = await AcademicSemester.findById(
-    payload.admissionSemester,
+  const academicSemesterId = await AcademicSemester.findById(
+    payload.academicSemester,
   );
-  if (!admissionSemesterId) {
-    throw new AppError(400, "Admission semester not found");
+  if (!academicSemesterId) {
+    throw new AppError(400, "Academic semester not found");
   }
 
   // find department
@@ -46,10 +46,10 @@ const createUserDB = async (file: any, password: string, payload: TStudent) => {
 
   try {
     session.startTransaction();
-    if (!admissionSemesterId) {
+    if (!academicSemesterId) {
       throw new AppError(HttpStatus.NOT_FOUND, "not available");
     }
-    userData.id = await generateStudentId(admissionSemesterId);
+    userData.id = await generateStudentId(academicSemesterId);
 
     // send image to cloudinary
     const imageName = `${userData.id}${payload?.name?.firstName}`;

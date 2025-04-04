@@ -62,7 +62,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: guardianSchema,
       required: true,
     },
-    admissionSemester: { type: Schema.Types.ObjectId, ref: "AcademicSemester" },
+    academicSemester: { type: Schema.Types.ObjectId, ref: "AcademicSemester" },
     isDeleted: {
       type: Boolean,
       default: false,

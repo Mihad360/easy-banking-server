@@ -51,7 +51,7 @@ const EnrolledCourseSchema = new Schema<TEnrolledCourse>(
     course: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     student: { type: Schema.Types.ObjectId, ref: "Student", required: true },
     faculty: { type: Schema.Types.ObjectId, ref: "Faculty", required: true },
-    isEnrolled: { type: Boolean, default: true },
+    isEnrolled: { type: Boolean, default: false },
     grade: { type: String, enum: Grade, default: "NA" },
     courseMarks: { type: courseMarksSchema, default: {} },
     gradePoints: { type: Number, min: 0, max: 4, default: 0 },

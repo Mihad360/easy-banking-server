@@ -4,7 +4,11 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
 const createEnrolledCourse = catchAsync(async (req, res) => {
-  const result = await enrolledCourseServices.createEnrolledCourse(req.body);
+  const { userId } = req.user;
+  const result = await enrolledCourseServices.createEnrolledCourse(
+    userId,
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
