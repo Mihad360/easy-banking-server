@@ -14,8 +14,20 @@ router.post(
   ),
   endrolledCourseControllers.createEnrolledCourse,
 );
-router.get("/", endrolledCourseControllers.getEnrolledCourses);
-router.get("/:id", endrolledCourseControllers.getEachEnrolledCourses);
+router.get("/", auth("admin"), endrolledCourseControllers.getEnrolledCourses);
+router.get(
+  "/:id",
+  auth("admin"),
+  endrolledCourseControllers.getEachEnrolledCourses,
+);
+router.patch(
+  "/update-enrolled-course-marks",
+  auth("faculty"),
+  validateRequest(
+    endrolledCourseValidations.updateEnrolledCourseValidationSchema,
+  ),
+  endrolledCourseControllers.updateEnrolledCourse,
+);
 // router.delete("/:id", endrolledCourseControllers.);
 
 export const enrolledCourseRoutes = router;

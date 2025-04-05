@@ -1,1 +1,1 @@
-export const courseSearch = ["title", "prefix", "code"];
+export const courseSearch = ["title", "prefix"];

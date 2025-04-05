@@ -7,11 +7,20 @@ import { Student } from "../student/student.model";
 import mongoose from "mongoose";
 import SemesterRegistrationModel from "../semesterRegistration/semesterRegistration.model";
 import { CourseModel } from "../course/course.model";
+import { FacultyModel } from "../faculty/faculty.model";
+import { calculateGradeAndPoints } from "./enrolledCourse.utils";
 
 const createEnrolledCourse = async (
   userId: string,
   payload: TEnrolledCourse,
 ) => {
+  // get the offeredCourse and check is it existed --
+  // if it existed check the maxCapacity that is it more than 0 or not
+  // then get the student by decoded token userId that student is exist or not
+  // check that the student is already enrolled the course with same semester Registration and offeredCourse coming from payload
+  // then we need to check the maxCredits for a student and course. we can find the course from offeredCourse id and get the course. Then we can get the semesterRegistration with maxCredit for a semester.
+  // then match the student and semesterRegistration at the EnrolledCourse Model to get the data. we can lookup them in Course model to get the previous enrolled course data.
+  // then we can Sum the previous credits with new incoming course credits and make a condition with > total maxCredit from semesterRegistration
   const { offeredCourse } = payload;
   const isOfferedCourseExist = await OfferedCourseModel.findById(offeredCourse);
   if (!isOfferedCourseExist) {
@@ -87,7 +96,7 @@ const createEnrolledCourse = async (
   const totalCredits =
     enrolledCourses.length > 0 ? enrolledCourses[0].totalEnrolledCredits : 0;
   const courseCredits = course?.credits;
-  const totalMaxCredits = semesterRegistrationExist?.maxCredit;
+  const totalMaxCredits = semesterRegistrationExist.maxCredit;
   if (totalCredits && totalCredits + courseCredits > totalMaxCredits) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
@@ -141,8 +150,81 @@ const getEachEnrolledCourses = async (id: string) => {
   return result;
 };
 
+const updateEnrolledCourses = async (
+  userId: string,
+  payload: Partial<TEnrolledCourse>,
+) => {
+  const { semesterRegistration, offeredCourse, student, courseMarks } = payload;
+  const isSemesterRegistrationExist =
+    await SemesterRegistrationModel.findById(semesterRegistration);
+  if (!isSemesterRegistrationExist) {
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      "This Semester Registration did not found",
+    );
+  }
+
+  const isOfferedCourseExist = await OfferedCourseModel.findById(offeredCourse);
+  if (!isOfferedCourseExist) {
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      "This Offered course did not found",
+    );
+  }
+
+  const isStudentExist = await Student.findById(student);
+  if (!isStudentExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This Student did not found");
+  }
+
+  const faculty = await FacultyModel.findOne({ id: userId }).select("_id");
+  if (!faculty) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This Faculty did not found");
+  }
+  const isCourseBelongToFaculty = await EnrolledCourse.findOne({
+    semesterRegistration,
+    offeredCourse,
+    student,
+    faculty: faculty._id,
+  });
+  if (!isCourseBelongToFaculty) {
+    throw new AppError(HttpStatus.FORBIDDEN, "You are forbidden");
+  }
+
+  const modifiedData: Record<string, unknown> = {
+    ...courseMarks,
+  };
+
+  if (courseMarks?.finalTerm) {
+    const { classTest1, midTerm, classTest2, finalTerm } =
+      isCourseBelongToFaculty.courseMarks;
+    const totalMark =
+      Math.ceil(classTest1 * 0.1) +
+      Math.ceil(midTerm * 0.3) +
+      Math.ceil(classTest2 * 0.1) +
+      Math.ceil(finalTerm * 0.5);
+
+    const totalGradePoints = calculateGradeAndPoints(totalMark);
+    modifiedData.grade = totalGradePoints?.grade;
+    modifiedData.gradePoints = totalGradePoints?.gradePoints;
+    modifiedData.isCompleted = true;
+  }
+
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
+  }
+  const id = isCourseBelongToFaculty._id;
+  const result = await EnrolledCourse.findByIdAndUpdate(id, modifiedData, {
+    new: true,
+  });
+  return result;
+};
+
 export const enrolledCourseServices = {
   createEnrolledCourse,
   getEnrolledCourses,
   getEachEnrolledCourses,
+  updateEnrolledCourses,
 };

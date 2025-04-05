@@ -9,8 +9,9 @@ import { studentSearch } from "./student.const";
 
 const getAllStudent = async (query: Record<string, unknown>) => {
   const studentQuery = new QueryBuilder(
-    Student.find().populate('user')
-      .populate("admissionSemester")
+    Student.find()
+      .populate("user")
+      .populate("academicSemester")
       .populate({
         path: "academicDepartment",
         populate: {
@@ -25,8 +26,9 @@ const getAllStudent = async (query: Record<string, unknown>) => {
     .pagination()
     .limitFields();
 
+    const meta = await studentQuery.countTotal();
   const result = await studentQuery.modelQuery;
-  return result;
+  return { meta, result };
 
   // const queryObj = { ...query }; // copy the query
   // // searchTerm method --------
@@ -134,6 +136,7 @@ const deleteEachStudent = async (id: string) => {
     await session.commitTransaction();
     await session.endSession();
     return deletedStudent;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
