@@ -11,7 +11,6 @@ const facultySchema = new Schema<TFaculty>(
       ref: "User",
       required: true,
     },
-    // role: { type: String, required: true },
     designation: { type: String, required: true },
     name: facultyUserNameSchema,
     gender: { type: String, enum: ["male", "female"], required: true },
@@ -21,16 +20,15 @@ const facultySchema = new Schema<TFaculty>(
     emergencyContactNo: { type: String, required: true },
     presentAddress: { type: String, required: true },
     permanentAddress: { type: String, required: true },
-    profileImg: { type: String },
+    profileImg: { type: String, default: "" },
     bloodGroup: {
       type: String,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     },
-    // academicFaculty: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "AcademicFaculty",
-    //   required: true,
-    // },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicFaculty",
+    },
     academicDepartment: {
       type: Schema.Types.ObjectId,
       ref: "AcademicDepartment",

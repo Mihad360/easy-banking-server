@@ -8,7 +8,7 @@ const getStudent = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student find successfully",
+    message: "Student retrieved successfully",
     data: result,
   });
 });
@@ -19,7 +19,7 @@ const getEachStudentId = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Student found succesfully",
     data: result,
   });
 });

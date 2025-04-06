@@ -7,21 +7,25 @@ import { USER_ROLE } from "../user/user.const";
 
 const router = express.Router();
 
-// router.post(
-//   "/create-faculty",
-//   validateRequest(facultyValidation.createFacultyValidationSchema),
-//   facultyControllers.createFaculty,
-// );
 router.get(
   "/",
-  auth(USER_ROLE.admin, USER_ROLE.faculty),
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin, USER_ROLE.faculty),
   facultyControllers.getFaculty,
 );
-router.get("/:id", facultyControllers.getEachFaculty);
-router.delete("/:id", facultyControllers.deleteFaculty);
+router.get(
+  "/:id",
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin, USER_ROLE.faculty),
+  facultyControllers.getEachFaculty,
+);
+router.delete(
+  "/:id",
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  facultyControllers.deleteFaculty,
+);
 router.patch(
   "/:id",
-  //   validateRequest(createFacultyValidationSchema.updateStudentValidationSchema),
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  // validateRequest(facultyValidation.),
   facultyControllers.updateEachFaculty,
 );
 

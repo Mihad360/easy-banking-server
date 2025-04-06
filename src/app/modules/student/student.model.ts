@@ -55,7 +55,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: String,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     },
-    profileImg: { type: String },
+    profileImg: { type: String, default: '' },
     presentAddress: { type: String, required: true },
     permanentAddress: { type: String, required: true },
     guardian: {
@@ -71,6 +71,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Schema.Types.ObjectId,
       ref: "AcademicDepartment",
     },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicFaculty",
+    },
   },
   {
     toJSON: {
@@ -78,22 +82,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     },
   },
 );
-
-// studentSchema.pre("save", async function (next) {
-//   const user = this;
-//   // console.log(this, "we will save the data");
-//   // hashing password----------------------
-//   user.password = await bcrypt.hash(
-//     user.password,
-//     Number(config.bcrypt_salt_rounds),
-//   );
-//   next();
-// });
-
-// studentSchema.post("save", function (doc, next) {
-//   doc.password = "";
-//   next();
-// });
 
 studentSchema.pre("find", async function (next) {
   this.find({ isDeleted: { $ne: true } });

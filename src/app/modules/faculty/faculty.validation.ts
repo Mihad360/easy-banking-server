@@ -14,7 +14,6 @@ const createFacultyValidationSchema = z.object({
   body: z.object({
     passoword: z.string().optional(),
     faculty: z.object({
-      // role: z.string().min(1, "Role is required"),
       designation: z.string().min(1, "Designation is required"),
       name: facultyNameValidationSchema,
       gender: z.enum(["male", "female"], {
@@ -29,7 +28,6 @@ const createFacultyValidationSchema = z.object({
         .optional(),
       presentAddress: z.string().min(1, "Present address is required"),
       permanentAddress: z.string().min(1, "Permanent address is required"),
-      // profileImg: z.string().optional(),
       academicDepartment: z.string(),
     }),
   }),

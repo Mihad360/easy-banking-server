@@ -26,76 +26,15 @@ const getAllStudent = async (query: Record<string, unknown>) => {
     .pagination()
     .limitFields();
 
-    const meta = await studentQuery.countTotal();
+  const meta = await studentQuery.countTotal();
   const result = await studentQuery.modelQuery;
   return { meta, result };
-
-  // const queryObj = { ...query }; // copy the query
-  // // searchTerm method --------
-  // const studentSearch = [
-  //   "email",
-  //   "name.firstName",
-  //   "name.lastName",
-  //   "presentAddress",
-  // ];
-  // let searchTerm = "";
-  // if (query?.searchTerm) {
-  //   searchTerm = query?.searchTerm as string;
-  // }
-  // // chaining without await method ----
-  // const searchQuery = Student.find({
-  //   $or: studentSearch?.map((field) => ({
-  //     [field]: { $regex: searchTerm, $options: "i" },
-  //   })),
-  // });
-  // // exclude / delete the search, sort, limit to get the email query ------
-  // const excludeFields = ["searchTerm", "sort", "limit", "page", "fields"];
-  // excludeFields.forEach((el) => delete queryObj[el]);
-  // // chaining without await
-  // // filter by email query with searchQuery ---------
-  // const filterQuery = searchQuery
-  //   .find(queryObj)
-  //   .populate("admissionSemester")
-  //   .populate({
-  //     path: "academicDepartment",
-  //     populate: {
-  //       path: "academicFaculty",
-  //     },
-  //   });
-  // // sort method--------
-  // let sort = "-createdAt";
-  // if (query?.sort) {
-  //   sort = query?.sort as string;
-  // }
-  // const sortQuery = filterQuery.sort(sort);
-  // // get limit data method --------------
-  // // get pagination data method --------------
-  // let limit = 1;
-  // let page = 1;
-  // let skip = 0;
-  // if (query.limit) {
-  //   limit = Number(query.limit);
-  // }
-  // if (query.page) {
-  //   page = Number(query.page);
-  //   skip = (page - 1) * limit;
-  // }
-  // const paginateQuery = sortQuery.skip(skip);
-
-  // const limitQuery = paginateQuery.limit(limit);
-  // // query with limit fields -------------
-  // let fields = "-__v";
-  // if (query.fields) {
-  //   fields = (query.fields as string).split(",").join(" ");
-  // }
-  // const fieldQuery = await limitQuery.select(fields);
-  // return fieldQuery;
 };
 
 const getEachStudent = async (id: string) => {
   // const result = await Student.findOne({id });
   const result = await Student.findById(id)
-    .populate("admissionSemester")
+    .populate("academicSemester")
     .populate({
       path: "academicDepartment",
       populate: {

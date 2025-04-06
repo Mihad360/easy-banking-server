@@ -9,7 +9,6 @@ export type TUserName = {
 export type TFaculty = {
   id: string;
   user: Types.ObjectId;
-  // role: string;
   designation: string;
   name: TUserName;
   gender: "male" | "female";
@@ -22,9 +21,6 @@ export type TFaculty = {
   permanentAddress: string;
   profileImg?: string;
   academicDepartment: Types.ObjectId;
+  academicFaculty: Types.ObjectId;
   isDeleted: boolean;
 };
-
-// export interface FacultyModels extends Model<TFaculty> {
-//   isUserExists(id: string): Promise<TFaculty | null>;
-// }

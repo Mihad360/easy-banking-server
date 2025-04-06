@@ -7,11 +7,6 @@ import { FacultyModel } from "./faculty.model";
 import AppError from "../../erros/AppError";
 import { User } from "../user/user.model";
 
-// const createFaculty = async (payload: TFaculty) => {
-//   const result = await FacultyModel.create(payload);
-//   return result;
-// };
-
 const getFaculty = async (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
     FacultyModel.find().populate("academicDepartment"),
@@ -95,7 +90,6 @@ const deleteEachFaculty = async (id: string) => {
 };
 
 export const facultyServices = {
-  // createFaculty,
   getFaculty,
   getEachFaculty,
   updateFaculty,

@@ -30,21 +30,10 @@ export type TStudent = {
   guardian: TGuardian;
   profileImg?: string;
   academicSemester: Types.ObjectId;
+  academicFaculty?: Types.ObjectId;
   isDeleted: boolean;
   academicDepartment: Types.ObjectId;
 };
-
-// export type StudentMethods = {
-//   isUserExist(id: string): Promise<TStudent | null>;
-// };
-
-// export type StudentModel = Model<
-//   TStudent,
-//   Record<string, never>,
-//   StudentMethods
-// >;
-
-// static methods -----------------------
 
 export interface StudentModel extends Model<TStudent> {
   isUserExist(id: string): Promise<TStudent | null>;
