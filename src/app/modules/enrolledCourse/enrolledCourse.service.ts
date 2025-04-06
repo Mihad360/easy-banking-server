@@ -195,27 +195,27 @@ const updateEnrolledCourses = async (
     ...courseMarks,
   };
 
-  if (courseMarks?.finalTerm) {
-    const { classTest1, midTerm, classTest2, finalTerm } =
-      isCourseBelongToFaculty.courseMarks;
-    const totalMark =
-      Math.ceil(classTest1 * 0.1) +
-      Math.ceil(midTerm * 0.3) +
-      Math.ceil(classTest2 * 0.1) +
-      Math.ceil(finalTerm * 0.5);
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
+  }
 
+  if (courseMarks?.finalTerm) {
+    const { classTest1, midTerm, classTest2, finalTerm } = courseMarks;
+    const totalMark =
+      Math.ceil(classTest1) +
+      Math.ceil(midTerm) +
+      Math.ceil(classTest2) +
+      Math.ceil(finalTerm);
+      
     const totalGradePoints = calculateGradeAndPoints(totalMark);
     modifiedData.grade = totalGradePoints?.grade;
     modifiedData.gradePoints = totalGradePoints?.gradePoints;
     modifiedData.isCompleted = true;
   }
 
-  if (courseMarks && Object.keys(courseMarks).length) {
-    for (const [key, value] of Object.entries(courseMarks)) {
-      modifiedData[`courseMarks.${key}`] = value;
-    }
-  }
-  const id = isCourseBelongToFaculty._id;
+  const id = isCourseBelongToFaculty?._id;
   const result = await EnrolledCourse.findByIdAndUpdate(id, modifiedData, {
     new: true,
   });

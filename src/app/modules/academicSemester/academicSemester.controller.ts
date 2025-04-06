@@ -11,7 +11,7 @@ const createAcademicSemester = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Semester created succesfully",
     data: result,
   });
 });
@@ -22,7 +22,7 @@ const getAcademicSemester = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Semester find succesfully",
     data: result,
   });
 });
@@ -34,7 +34,7 @@ const getEachAcademicSemester = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Semester found succesfully",
     data: result,
   });
 });
@@ -49,7 +49,7 @@ const updateEachAcademicSemester = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Semester updated succesfully",
     data: result,
   });
 });

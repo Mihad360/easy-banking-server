@@ -2,14 +2,17 @@ import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { academicDepartmentValidation } from "./academicDepartment.validation";
 import { AcademicDepartmentControllers } from "./academicDepartment.controller";
+import auth from "../../middlewares/auth";
+import { USER_ROLE } from "../user/user.const";
 
 const router = express.Router();
 
 router.post(
   "/create-academic-department",
-  // validateRequest(
-  //   academicDepartmentValidation.academicDepartmentValidationSchema,
-  // ),
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  validateRequest(
+    academicDepartmentValidation.academicDepartmentValidationSchema,
+  ),
   AcademicDepartmentControllers.createAcademicDepartment,
 );
 router.get(
