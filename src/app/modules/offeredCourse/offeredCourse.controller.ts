@@ -15,12 +15,24 @@ const createOfferedCourse = catchAsync(async (req, res) => {
 });
 
 const getOfferedCourse = catchAsync(async (req, res) => {
-  const result = await offeredCourseServices.getOfferedCourse();
+  const result = await offeredCourseServices.getOfferedCourse(req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "SemesterRegistration find succesfully",
+    message: "Offered course find succesfully",
+    data: result,
+  });
+});
+
+const getMyOfferedCourses = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const result = await offeredCourseServices.getMyOfferedCourses(userId);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Offered course found succesfully",
     data: result,
   });
 });
@@ -32,7 +44,7 @@ const getEachOfferedCourse = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Course find succesfully",
+    message: "Offered course found succesfully",
     data: result,
   });
 });
@@ -44,7 +56,7 @@ const updateOfferedCourse = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Course deleted succesfully",
+    message: "Offered course updated succesfully",
     data: result,
   });
 });
@@ -66,5 +78,6 @@ export const offeredCourseControllers = {
   getOfferedCourse,
   getEachOfferedCourse,
   updateOfferedCourse,
-  deleteOfferedCourse
+  deleteOfferedCourse,
+  getMyOfferedCourses,
 };

@@ -7,6 +7,11 @@ import { USER_ROLE } from "../user/user.const";
 
 const router = express.Router();
 
+router.get(
+  "/get-course-assigned-faculties",
+  auth(USER_ROLE.superAdmin, USER_ROLE.admin),
+  CourseControllers.getAssignedFaculties,
+);
 router.post(
   "/create-course",
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
@@ -50,6 +55,16 @@ router.put(
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(CourseValidations.assignFacultyCourseValidationSchema),
   CourseControllers.assignFaculties,
+);
+router.get(
+  "/:courseId/get-faculties",
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.student,
+    USER_ROLE.faculty,
+  ),
+  CourseControllers.getEachAssignedFaculties,
 );
 router.delete(
   "/:courseId/remove-faculties",

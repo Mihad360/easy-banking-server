@@ -26,6 +26,20 @@ const getCourses = async (query: Record<string, unknown>) => {
   return { meta, result };
 };
 
+const getAssignedFaculties = async () => {
+  const result = await CourseFacultyModel.find().populate(
+    "faculties",
+  );
+  return result;
+};
+
+const getEachAssignedFaculties = async (id: string) => {
+  const result = await CourseFacultyModel.findOne({ course: id }).populate(
+    "faculties",
+  );
+  return result;
+};
+
 const getEachCourse = async (id: string) => {
   const result = await CourseModel.findById(id).populate(
     "preRequisiteCourses.course",
@@ -159,4 +173,6 @@ export const CourseServices = {
   deleteCourse,
   assignFaculties,
   removeFaculties,
+  getAssignedFaculties,
+  getEachAssignedFaculties,
 };

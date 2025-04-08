@@ -16,3 +16,5 @@ export const Days = [
   "Friday",
   "Saturday",
 ];
+
+export const offeredCourseSearch = ["days", "startTime", "endTime"];
