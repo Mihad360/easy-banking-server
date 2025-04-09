@@ -29,11 +29,12 @@ export const calculateGradeAndPoints = (totalMarks: number) => {
       grade: "A",
       gradePoints: 4.0,
     };
-  } else {
-    result = {
-      grade: "NA",
-      gradePoints: 0,
-    };
   }
+  // else {
+  //   result = {
+  //     grade: "NA",
+  //     gradePoints: 0,
+  //   };
+  // }
   return result;
 };

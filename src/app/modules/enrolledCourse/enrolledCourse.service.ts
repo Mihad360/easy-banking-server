@@ -194,25 +194,41 @@ const updateEnrolledCourses = async (
   const modifiedData: Record<string, unknown> = {
     ...courseMarks,
   };
-
-  if (courseMarks && Object.keys(courseMarks).length) {
-    for (const [key, value] of Object.entries(courseMarks)) {
-      modifiedData[`courseMarks.${key}`] = value;
-    }
-  }
-
   if (courseMarks?.finalTerm) {
-    const { classTest1, midTerm, classTest2, finalTerm } = courseMarks;
+    const currentEnrolledCourse = await EnrolledCourse.findById(
+      isCourseBelongToFaculty?._id,
+    );
+
+    const classTest1 = Number(
+      courseMarks.classTest1 ??
+        currentEnrolledCourse?.courseMarks.classTest1 ??
+        0,
+    );
+    const midTerm = Number(
+      courseMarks.midTerm ?? currentEnrolledCourse?.courseMarks.midTerm ?? 0,
+    );
+    const classTest2 = Number(
+      courseMarks.classTest2 ??
+        currentEnrolledCourse?.courseMarks.classTest2 ??
+        0,
+    );
+    const finalTerm = Number(courseMarks.finalTerm);
     const totalMark =
       Math.ceil(classTest1) +
       Math.ceil(midTerm) +
       Math.ceil(classTest2) +
       Math.ceil(finalTerm);
-      
+
     const totalGradePoints = calculateGradeAndPoints(totalMark);
     modifiedData.grade = totalGradePoints?.grade;
     modifiedData.gradePoints = totalGradePoints?.gradePoints;
     modifiedData.isCompleted = true;
+  }
+
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
   }
 
   const id = isCourseBelongToFaculty?._id;

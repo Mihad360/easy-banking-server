@@ -16,7 +16,7 @@ const updateEnrolledCourseValidationSchema = z.object({
       midTerm: z.number().max(30).optional(),
       classTest2: z.number().max(10).optional(),
       finalTerm: z.number().max(50).optional(),
-    }),
+    }).optional(),
   }),
 });
 
