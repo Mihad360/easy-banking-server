@@ -9,6 +9,7 @@ import SemesterRegistrationModel from "../semesterRegistration/semesterRegistrat
 import { CourseModel } from "../course/course.model";
 import { FacultyModel } from "../faculty/faculty.model";
 import { calculateGradeAndPoints } from "./enrolledCourse.utils";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createEnrolledCourse = async (
   userId: string,
@@ -145,6 +146,29 @@ const getEnrolledCourses = async () => {
   return result;
 };
 
+const getMyEnrolledCourses = async (
+  studentId: string,
+  query: Record<string, unknown>,
+) => {
+  const isStudentExist = await Student.findOne({ id: studentId });
+  if (!isStudentExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Failed to find the student");
+  }
+  const enrolledCourseQuery = new QueryBuilder(
+    EnrolledCourse.find({ student: isStudentExist._id }).populate(
+      "semesterRegistration academicDepartment academicFaculty course academicSemester offeredCourse faculty student",
+    ),
+    query,
+  )
+    .filter()
+    .sort()
+    .pagination()
+    .limitFields();
+  const result = await enrolledCourseQuery.modelQuery;
+  const meta = await enrolledCourseQuery.countTotal();
+  return { meta, result };
+};
+
 const getEachEnrolledCourses = async (id: string) => {
   const result = await EnrolledCourse.findById(id);
   return result;
@@ -243,4 +267,5 @@ export const enrolledCourseServices = {
   getEnrolledCourses,
   getEachEnrolledCourses,
   updateEnrolledCourses,
+  getMyEnrolledCourses,
 };

@@ -26,6 +26,11 @@ router.get(
   endrolledCourseControllers.getEnrolledCourses,
 );
 router.get(
+  "/my-enrolled-courses",
+  auth(USER_ROLE.student),
+  endrolledCourseControllers.getMyEnrolledCourses,
+);
+router.get(
   "/:id",
   auth(
     USER_ROLE.superAdmin,

@@ -15,14 +15,15 @@ const getAdmin = async (query: Record<string, unknown>) => {
     .pagination()
     .limitFields();
 
+  const meta = await AdminQuery.countTotal();
   const result = await AdminQuery.modelQuery;
-  return result;
+  return { meta, result };
 };
 
 const getEachAdmin = async (id: string) => {
   const result = await Admin.findOne({
     _id: id,
-  })
+  });
   return result;
 };
 
@@ -57,10 +58,7 @@ const deleteEachAdmin = async (id: string) => {
     );
 
     if (!deleteAdmin) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        "failed to delete the Admin",
-      );
+      throw new AppError(HttpStatus.BAD_REQUEST, "failed to delete the Admin");
     }
     const userId = deleteAdmin.user;
     const deleteAdminUser = await User.findOneAndUpdate(
@@ -78,7 +76,7 @@ const deleteEachAdmin = async (id: string) => {
     await session.endSession();
 
     return deleteAdmin;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();

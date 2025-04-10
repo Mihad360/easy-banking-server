@@ -12,12 +12,7 @@ const getAllStudent = async (query: Record<string, unknown>) => {
     Student.find()
       .populate("user")
       .populate("academicSemester")
-      .populate({
-        path: "academicDepartment",
-        populate: {
-          path: "academicFaculty",
-        },
-      }),
+      .populate("academicFaculty academicDepartment"),
     query,
   )
     .search(studentSearch)

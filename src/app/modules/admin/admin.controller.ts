@@ -9,8 +9,9 @@ const getAdmin = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
-    data: result,
+    message: "Admin retrieved succesfully",
+    meta: result.meta,
+    data: result.result,
   });
 });
 
@@ -21,7 +22,7 @@ const getEachAdmin = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Admin found succesfully",
     data: result,
   });
 });
@@ -33,7 +34,7 @@ const updateEachAdmin = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Admin updated succesfully",
     data: result,
   });
 });
@@ -45,7 +46,7 @@ const deleteAdmin = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Faculty is deleted succesfully",
+    message: "Admin is deleted succesfully",
     data: result,
   });
 });

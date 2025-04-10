@@ -17,13 +17,14 @@ const createAcademicDepartment = catchAsync(async (req, res) => {
 });
 
 const getAcademicDepartment = catchAsync(async (req, res) => {
-  const result = await AcademicDepartmentServices.getAcademicDepartment();
+  const result = await AcademicDepartmentServices.getAcademicDepartment(req.query);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "Student created succesfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

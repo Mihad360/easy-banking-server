@@ -4,6 +4,7 @@ import { academicSemesterNameCodeMapper } from "./academicSemester.const";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
 import AppError from "../../erros/AppError";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createAcademicSemester = async (payload: TAcademicSemester) => {
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
@@ -14,9 +15,14 @@ const createAcademicSemester = async (payload: TAcademicSemester) => {
   return result;
 };
 
-const getAcademicSemester = async () => {
-  const result = await AcademicSemester.find();
-  return result;
+const getAcademicSemester = async (query: Record<string, unknown>) => {
+  const academicSemesterQuery = new QueryBuilder(
+    AcademicSemester.find(),
+    query,
+  );
+  const meta = await academicSemesterQuery.countTotal();
+  const result = await academicSemesterQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachAcademicSemester = async (id: string) => {

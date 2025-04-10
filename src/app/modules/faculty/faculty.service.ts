@@ -9,7 +9,7 @@ import { User } from "../user/user.model";
 
 const getFaculty = async (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
-    FacultyModel.find().populate("academicDepartment"),
+    FacultyModel.find().populate("academicDepartment academicFaculty"),
     query,
   )
     .search(facultySearch)
@@ -18,8 +18,9 @@ const getFaculty = async (query: Record<string, unknown>) => {
     .pagination()
     .limitFields();
 
+  const meta = await facultyQuery.countTotal();
   const result = await facultyQuery.modelQuery;
-  return result;
+  return { meta, result };
 };
 
 const getEachFaculty = async (id: string) => {
@@ -81,7 +82,7 @@ const deleteEachFaculty = async (id: string) => {
     await session.endSession();
 
     return deleteFaculty;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     await session.abortTransaction();
     await session.endSession();
@@ -93,5 +94,5 @@ export const facultyServices = {
   getFaculty,
   getEachFaculty,
   updateFaculty,
-  deleteEachFaculty
+  deleteEachFaculty,
 };

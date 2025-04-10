@@ -271,10 +271,13 @@ const getMyOfferedCourses = async (
       $limit: limit,
     },
   ];
-  const result = await OfferedCourseModel.aggregate();
+  const result = await OfferedCourseModel.aggregate([
+    ...aggregationQuery,
+    ...paginationQuery,
+  ]);
 
   // pagination setup
-  const total = result.length;
+  const total = (await OfferedCourseModel.aggregate(aggregationQuery)).length
   const totalPage = Math.ceil(result.length / limit);
   const meta = {
     page,

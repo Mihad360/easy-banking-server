@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
 import { TAcademicFaculty } from "./academicFaculty.interface";
 import { AcademicFacultyModel } from "./academicFaculty.model";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createAcademicFaculty = async (payload: TAcademicFaculty) => {
   const result = await AcademicFacultyModel.create(payload);
   return result;
 };
 
-const getAcademicFaculty = async () => {
-  const result = await AcademicFacultyModel.find();
-  return result;
+const getAcademicFaculty = async (query: Record<string, unknown>) => {
+  const academicFacultyQuery = new QueryBuilder(
+    AcademicFacultyModel.find(),
+    query,
+  );
+  const meta = await academicFacultyQuery.countTotal();
+  const result = await academicFacultyQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachAcademicFaculty = async (id: string) => {

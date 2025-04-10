@@ -9,19 +9,20 @@ const createAcademicFaculty = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Faculty created succesfully",
     data: result,
   });
 });
 
 const getAcademicFaculty = catchAsync(async (req, res) => {
-  const result = await AcademicFacultyServices.getAcademicFaculty();
+  const result = await AcademicFacultyServices.getAcademicFaculty(req.query);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
-    data: result,
+    message: "Academic Faculty retrieved succesfully",
+    meta: result.meta,
+    data: result.result,
   });
 });
 
@@ -32,7 +33,7 @@ const getEachAcademicFaculty = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
-    message: "Student created succesfully",
+    message: "Academic Faculty found succesfully",
     data: result,
   });
 });
