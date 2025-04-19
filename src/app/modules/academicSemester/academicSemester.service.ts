@@ -1,6 +1,6 @@
 import HttpStatus from "http-status";
 import mongoose from "mongoose";
-import { academicSemesterNameCodeMapper } from "./academicSemester.const";
+import { academicSemesterNameCodeMapper, academicSemesterSearch } from "./academicSemester.const";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
 import AppError from "../../erros/AppError";
@@ -16,10 +16,12 @@ const createAcademicSemester = async (payload: TAcademicSemester) => {
 };
 
 const getAcademicSemester = async (query: Record<string, unknown>) => {
-  const academicSemesterQuery = new QueryBuilder(
-    AcademicSemester.find(),
-    query,
-  );
+  const academicSemesterQuery = new QueryBuilder(AcademicSemester.find(), query)
+    .search(academicSemesterSearch)
+    .filter()
+    .sort()
+    .pagination()
+    .limitFields();
   const meta = await academicSemesterQuery.countTotal();
   const result = await academicSemesterQuery.modelQuery;
   return { meta, result };

@@ -42,7 +42,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     if (
       user.passwordChangeAt &&
-      User.isJwtIssuedBeforePasswordChange(user.passwordChangeAt, iat as number)    
+      User.isJwtIssuedBeforePasswordChange(user.passwordChangeAt, iat as number)
     ) {
       throw new AppError(HttpStatus.UNAUTHORIZED, "You are not authorized");
     }

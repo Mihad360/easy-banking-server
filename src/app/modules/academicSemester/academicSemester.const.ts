@@ -32,3 +32,10 @@ export const academicSemesterNameCodeMapper: TNameCodeMapper = {
   Summer: "02",
   Fall: "03",
 };
+
+export const academicSemesterSearch = [
+  "name",
+  "year",
+  "startMonth",
+  "endMonth",
+];
