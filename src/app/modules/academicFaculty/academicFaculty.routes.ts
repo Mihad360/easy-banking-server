@@ -15,6 +15,12 @@ router.post(
 );
 router.get(
   "/get-academic-faculty",
+  auth(
+    USER_ROLE.superAdmin,
+    USER_ROLE.admin,
+    USER_ROLE.faculty,
+    USER_ROLE.student,
+  ),
   AcademicFacultyControllers.getAcademicFaculty,
 );
 router.get(

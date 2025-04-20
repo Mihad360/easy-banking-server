@@ -1,6 +1,9 @@
 import HttpStatus from "http-status";
 import mongoose from "mongoose";
-import { academicSemesterNameCodeMapper, academicSemesterSearch } from "./academicSemester.const";
+import {
+  academicSemesterNameCodeMapper,
+  academicSemesterSearch,
+} from "./academicSemester.const";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
 import AppError from "../../erros/AppError";
