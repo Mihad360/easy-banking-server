@@ -71,10 +71,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Schema.Types.ObjectId,
       ref: "AcademicDepartment",
     },
-    academicFaculty: {
-      type: Schema.Types.ObjectId,
-      ref: "AcademicFaculty",
-    },
+    // academicFaculty: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "AcademicFaculty",
+    // },
   },
   {
     toJSON: {
