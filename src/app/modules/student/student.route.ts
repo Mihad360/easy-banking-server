@@ -8,7 +8,7 @@ import { USER_ROLE } from "../user/user.const";
 const router = express.Router();
 
 router.get(
-  "/",
+  "/all-students",
   auth(USER_ROLE.superAdmin, USER_ROLE.admin),
   StudentControllers.getStudent,
 );

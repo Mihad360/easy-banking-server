@@ -58,21 +58,11 @@ const updateUserNameValidationSchema = z.object({
 });
 
 const updateGuardianValidationSchema = z.object({
-  fatherName: z
-    .string()
-    .optional(),
-  motherName: z
-    .string()
-    .optional(),
-  fatherOccupation: z
-    .string()
-    .optional(),
-  motherOccupation: z
-    .string()
-    .optional(),
-  contactNo: z
-    .string()
-    .optional(),
+  fatherName: z.string().optional(),
+  motherName: z.string().optional(),
+  fatherOccupation: z.string().optional(),
+  motherOccupation: z.string().optional(),
+  contactNo: z.string().optional(),
 });
 
 const updateStudentValidationSchema = z.object({

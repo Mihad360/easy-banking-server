@@ -55,7 +55,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: String,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     },
-    profileImg: { type: String, default: '' },
+    profileImg: { type: String, default: "" },
     presentAddress: { type: String, required: true },
     permanentAddress: { type: String, required: true },
     guardian: {

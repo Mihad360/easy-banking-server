@@ -38,7 +38,7 @@ const deleteEachStudentId = catchAsync(async (req, res) => {
 
 const updateEachStudent = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const {student} = req.body
+  const { student } = req.body;
   const result = await StudentServices.updateEachStudent(id, student);
   sendResponse(res, {
     statusCode: HttpStatus.OK,

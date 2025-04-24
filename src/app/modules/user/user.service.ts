@@ -215,7 +215,18 @@ const getMe = async (payload: JwtPayload) => {
 };
 
 const changeStatus = async (id: string, payload: { status: string }) => {
-  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  const isStudentExist = await Student.findById(id);
+  if (!isStudentExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This Student is not found");
+  }
+  const user = isStudentExist?.user;
+  const isUserExist = await User.findById(user);
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This User is not found");
+  }
+  const result = await User.findByIdAndUpdate(isUserExist?._id, payload, {
+    new: true,
+  });
   return result;
 };
 

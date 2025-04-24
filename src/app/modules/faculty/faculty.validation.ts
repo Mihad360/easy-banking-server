@@ -29,6 +29,7 @@ const createFacultyValidationSchema = z.object({
       presentAddress: z.string().min(1, "Present address is required"),
       permanentAddress: z.string().min(1, "Permanent address is required"),
       academicDepartment: z.string(),
+      academicFaculty: z.string(),
     }),
   }),
 });

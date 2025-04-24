@@ -15,8 +15,8 @@ const superUser = {
 const seedSuperAdmin = async () => {
   const isSuperAdminExist = await User.findOne({ role: USER_ROLE.superAdmin });
   if (!isSuperAdminExist) {
-    await User.create(superUser)
+    await User.create(superUser);
   }
 };
 
-export default seedSuperAdmin
+export default seedSuperAdmin;
