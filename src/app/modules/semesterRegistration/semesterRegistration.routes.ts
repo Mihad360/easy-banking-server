@@ -14,7 +14,7 @@ router.post(
   semesterRegistrationControllers.createSemesterRegistration,
 );
 router.get(
-  "/",
+  "/all-registered-semesters",
   auth(
     USER_ROLE.superAdmin,
     USER_ROLE.admin,

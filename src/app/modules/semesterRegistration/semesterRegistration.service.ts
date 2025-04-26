@@ -58,9 +58,9 @@ const getSemesterRegistrations = async (query: Record<string, unknown>) => {
     .sort()
     .pagination()
     .limitFields();
-    const meta = await semesterRegistrationQuery.countTotal()
+  const meta = await semesterRegistrationQuery.countTotal();
   const result = await semesterRegistrationQuery.modelQuery;
-  return {meta,result};
+  return { meta, result };
 };
 
 const getEachSemesterRegistration = async (id: string) => {
@@ -92,7 +92,7 @@ const updateSemesterRegistration = async (
   // checking the status updating methods
   const requestedStatus = payload?.status;
   if (
-    currentSemesterRequestedStatus ===
+    currentSemesterRequestedStatus === // database status
       SemesterRegistrationReadOnlyStatus.UPCOMING &&
     requestedStatus === SemesterRegistrationReadOnlyStatus.ENDED
   ) {

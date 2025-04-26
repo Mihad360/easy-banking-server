@@ -27,9 +27,7 @@ const getCourses = async (query: Record<string, unknown>) => {
 };
 
 const getAssignedFaculties = async () => {
-  const result = await CourseFacultyModel.find().populate(
-    "faculties",
-  );
+  const result = await CourseFacultyModel.find().populate("faculties");
   return result;
 };
 

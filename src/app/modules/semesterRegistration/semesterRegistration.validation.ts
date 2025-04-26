@@ -4,8 +4,8 @@ const SemesterRegistrationValidationSchema = z.object({
   body: z.object({
     academicSemester: z.string(),
     status: z.enum(["UPCOMING", "ONGOING", "ENDED"]),
-    startDate: z.string().datetime(),
-    endDate: z.string().datetime(),
+    startDate: z.string(),
+    endDate: z.string(),
     minCredit: z.number().min(1, "Minimum credit must be at least 1"),
     maxCredit: z.number().min(1, "Maximum credit must be at least 1"),
   }),
