@@ -108,6 +108,7 @@ const createOfferedCourse = async (payload: TOfferedCourse) => {
   return result;
   // return null;
 };
+
 const getOfferedCourse = async (query: Record<string, unknown>) => {
   const offeredCourseQuery = new QueryBuilder(OfferedCourseModel.find(), query)
     .filter()
@@ -131,6 +132,7 @@ const getMyOfferedCourses = async (
   if (!isStudentExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "This student did not exist");
   }
+
   // find current ongoing semester get
   const currentOngoingSemester = await SemesterRegistrationModel.findOne({
     status: "ONGOING",
@@ -139,7 +141,7 @@ const getMyOfferedCourses = async (
   if (!currentOngoingSemester) {
     throw new AppError(
       HttpStatus.NOT_FOUND,
-      "This Semester registration did not exist",
+      "This Semester registration is ENDED or UPCOMING",
     );
   }
 
@@ -148,7 +150,7 @@ const getMyOfferedCourses = async (
       $match: {
         semesterRegistration: currentOngoingSemester._id,
         academicDepartment: isStudentExist.academicDepartment,
-        academicFaculty: isStudentExist.academicFaculty,
+        // academicFaculty: isStudentExist.academicFaculty,
       },
     },
     {
@@ -275,9 +277,9 @@ const getMyOfferedCourses = async (
     ...aggregationQuery,
     ...paginationQuery,
   ]);
-
+// console.log(result);
   // pagination setup
-  const total = (await OfferedCourseModel.aggregate(aggregationQuery)).length
+  const total = (await OfferedCourseModel.aggregate(aggregationQuery)).length;
   const totalPage = Math.ceil(result.length / limit);
   const meta = {
     page,
