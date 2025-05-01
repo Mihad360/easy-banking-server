@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
 
 export type TCourseMarks = {
-  classTest1: number;
-  midTerm: number;
-  classTest2: number;
-  finalTerm: number;
+  classTest1?: number;
+  midTerm?: number;
+  classTest2?: number;
+  finalTerm?: number;
 };
 
 export type TGrade = "A" | "B" | "C" | "D" | "F" | "NA";

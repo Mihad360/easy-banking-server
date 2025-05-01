@@ -142,7 +142,9 @@ const createEnrolledCourse = async (
 };
 
 const getEnrolledCourses = async () => {
-  const result = await EnrolledCourse.find();
+  const result = await EnrolledCourse.find().populate(
+    "course offeredCourse semesterRegistration student faculty academicDepartment academicFaculty academicSemester",
+  );
   return result;
 };
 
@@ -215,33 +217,30 @@ const updateEnrolledCourses = async (
     throw new AppError(HttpStatus.FORBIDDEN, "You are forbidden");
   }
 
-  const modifiedData: Record<string, unknown> = {
-    ...courseMarks,
-  };
-  if (courseMarks?.finalTerm) {
-    const currentEnrolledCourse = await EnrolledCourse.findById(
-      isCourseBelongToFaculty?._id,
-    );
+  const currentEnrolledCourse = await EnrolledCourse.findById(
+    isCourseBelongToFaculty?._id,
+  );
 
-    const classTest1 = Number(
-      courseMarks.classTest1 ??
-        currentEnrolledCourse?.courseMarks.classTest1 ??
-        0,
-    );
-    const midTerm = Number(
-      courseMarks.midTerm ?? currentEnrolledCourse?.courseMarks.midTerm ?? 0,
-    );
-    const classTest2 = Number(
-      courseMarks.classTest2 ??
-        currentEnrolledCourse?.courseMarks.classTest2 ??
-        0,
-    );
-    const finalTerm = Number(courseMarks.finalTerm);
+  const updatedMarks = {
+    classTest1:
+      courseMarks?.classTest1 ?? currentEnrolledCourse?.courseMarks.classTest1,
+    midTerm: courseMarks?.midTerm ?? currentEnrolledCourse?.courseMarks.midTerm,
+    classTest2:
+      courseMarks?.classTest2 ?? currentEnrolledCourse?.courseMarks.classTest2,
+    finalTerm:
+      courseMarks?.finalTerm ?? currentEnrolledCourse?.courseMarks.finalTerm,
+  };
+
+  const modifiedData: Record<string, unknown> = {
+    courseMarks: updatedMarks,
+  };
+  console.log(updatedMarks);
+  if (courseMarks?.finalTerm !== undefined && courseMarks.finalTerm > 0) {
     const totalMark =
-      Math.ceil(classTest1) +
-      Math.ceil(midTerm) +
-      Math.ceil(classTest2) +
-      Math.ceil(finalTerm);
+      Math.ceil(Number(updatedMarks.classTest1 || 0)) +
+      Math.ceil(Number(updatedMarks.midTerm || 0)) +
+      Math.ceil(Number(updatedMarks.classTest2 || 0)) +
+      Math.ceil(Number(updatedMarks.finalTerm));
 
     const totalGradePoints = calculateGradeAndPoints(totalMark);
     modifiedData.grade = totalGradePoints?.grade;
@@ -249,11 +248,11 @@ const updateEnrolledCourses = async (
     modifiedData.isCompleted = true;
   }
 
-  if (courseMarks && Object.keys(courseMarks).length) {
-    for (const [key, value] of Object.entries(courseMarks)) {
-      modifiedData[`courseMarks.${key}`] = value;
-    }
-  }
+  // if (courseMarks && Object.keys(courseMarks).length) {
+  //   for (const [key, value] of Object.entries(courseMarks)) {
+  //     modifiedData[`courseMarks.${key}`] = value;
+  //   }
+  // }
 
   const id = isCourseBelongToFaculty?._id;
   const result = await EnrolledCourse.findByIdAndUpdate(id, modifiedData, {
