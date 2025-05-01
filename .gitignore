@@ -1,7 +1,6 @@
 .env
 node_modules
 dist
-modules
-uploads
-builder
-dll
+'./uploads'
+'./src/app/builder'
+'./src/app/modules'
