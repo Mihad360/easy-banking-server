@@ -1,22 +1,24 @@
-// import config from "../config";
-// import { USER_ROLE } from "../modules/user/user.const";
-// import { User } from "../modules/user/user.model";
+import { UserModel } from "../modules/User/user.model";
 
-// const superUser = {
-//   id: "0001",
-//   email: "ahmedmihad962@gmail.com",
-//   password: config.super_admin_password,
-//   needsPasswordChange: false,
-//   role: USER_ROLE.superAdmin,
-//   status: "in-progress",
-//   isDeleted: false,
-// };
+const superUser = {
+  name: {
+    firstName: "Montasir",
+    lastName: "Mihad",
+  },
+  email: "ahmedmihad962@gmail.com",
+  password: "botmiyad360",
+  role: "admin",
+  phoneNumber: "+8801604223336",
+  address: "Adamjinagar, Siddhirgonj, Narayangonj",
+};
 
-// const seedSuperAdmin = async () => {
-//   const isSuperAdminExist = await User.findOne({ role: USER_ROLE.superAdmin });
-//   if (!isSuperAdminExist) {
-//     await User.create(superUser);
-//   }
-// };
+const seedSuperAdmin = async () => {
+  const isSuperAdminExist = await UserModel.findOne({
+    email: "ahmedmihad962@gmail.com",
+  });
+  if (!isSuperAdminExist) {
+    await UserModel.create(superUser);
+  }
+};
 
-// export default seedSuperAdmin;
+export default seedSuperAdmin;
