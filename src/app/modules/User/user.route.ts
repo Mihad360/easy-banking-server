@@ -6,9 +6,9 @@ import { userValidations } from "./user.validation";
 const router = express.Router();
 
 router.post(
-  "/create-user",
-  validateRequest(userValidations.createUserValidation),
-  userControllers.createUser,
+  "/create-customer",
+  // validateRequest(userValidations.createUserValidation),
+  userControllers.createCustomer,
 );
 router.get("/", userControllers.getUsers);
 

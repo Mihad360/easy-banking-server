@@ -1,30 +1,37 @@
 import { model, Schema } from "mongoose";
+import bcrypt from "bcrypt";
+import config from "../../config";
+import { TUserInterface, UserModel } from "./user.interface";
 
-const userNameSchema = new Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-});
-
-const userSchema = new Schema(
+const userSchema = new Schema<TUserInterface, UserModel>(
   {
-    name: userNameSchema,
+    customerId: { type: String, required: true, unique: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
-    role: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    address: { type: String, required: true },
+    role: { type: String },
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-    },
   },
 );
 
-userSchema.virtual("fullName").get(function (next) {
-  return `${this.name?.firstName} ${this.name?.lastName}`;
+userSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(config.bcrypt_salt_rounds),
+  );
   next();
 });
 
-export const UserModel = model("User", userSchema);
+userSchema.statics.isUserExistByEmail = async function (email: string) {
+  return await User.findOne({ email });
+};
+
+userSchema.statics.compareUserPassword = async function (
+  payloadPassword: string,
+  hashedPassword: string,
+) {
+  return await bcrypt.compare(payloadPassword, hashedPassword);
+};
+
+export const User = model<TUserInterface, UserModel>("User", userSchema);

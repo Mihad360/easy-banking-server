@@ -1,18 +1,11 @@
 import { z } from "zod";
 
-const userNameValidation = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-});
-
 const createUserValidation = z.object({
   body: z.object({
-    name: userNameValidation,
+    customerId: z.string().optional(),
     email: z.string().email(),
     password: z.string().min(6),
-    role: z.string(),
-    address: z.string(),
-    phoneNumber: z.string(),
+    role: z.string().optional(),
   }),
 });
 

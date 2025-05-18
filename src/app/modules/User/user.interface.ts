@@ -1,13 +1,16 @@
-type TUserName = {
-  firstName: string;
-  lastName: string;
-};
+import { Model } from "mongoose";
 
 export type TUserInterface = {
-  name: TUserName;
+  customerId: string;
   email: string;
   password: string;
   role: string;
-  phoneNumber: string;
-  address: string;
 };
+
+export interface UserModel extends Model<TUserInterface> {
+  isUserExistByEmail(email: string): Promise<TUserInterface>;
+  compareUserPassword(
+    payloadPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean>;
+}
