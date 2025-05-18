@@ -1,13 +1,13 @@
 import express from "express";
 import { userControllers } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
-import { userValidations } from "./user.validation";
+import { customerValidations } from "../Customer/customer.validation";
 
 const router = express.Router();
 
 router.post(
   "/create-customer",
-  // validateRequest(userValidations.createUserValidation),
+  validateRequest(customerValidations.createCustomerValidation),
   userControllers.createCustomer,
 );
 router.get("/", userControllers.getUsers);

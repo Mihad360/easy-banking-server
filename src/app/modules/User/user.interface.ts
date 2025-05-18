@@ -5,6 +5,7 @@ export type TUserInterface = {
   email: string;
   password: string;
   role: string;
+  isDeleted: boolean;
 };
 
 export interface UserModel extends Model<TUserInterface> {

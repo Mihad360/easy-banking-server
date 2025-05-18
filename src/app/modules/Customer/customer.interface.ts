@@ -19,4 +19,5 @@ export interface TCustomer {
   postalCode: string;
   country: string;
   profilePhotoUrl?: string;
+  isDeleted: boolean;
 }

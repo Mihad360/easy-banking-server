@@ -59,6 +59,7 @@ const customerSchema = new Schema(
       type: String,
       default: "",
     },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,
