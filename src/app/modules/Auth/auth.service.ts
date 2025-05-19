@@ -2,7 +2,7 @@ import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { User } from "../User/user.model";
 import { TLoginUser } from "./auth.interface";
-import { createToken } from "./auth.utils";
+import { createToken, verifyToken } from "./auth.utils";
 import config from "../../config";
 
 const loginUser = async (payload: TLoginUser) => {
@@ -35,10 +35,41 @@ const loginUser = async (payload: TLoginUser) => {
   );
   return {
     accessToken,
-    refreshToken
+    refreshToken,
+  };
+};
+
+const refreshToken = async (token: string) => {
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
+  const user = await User.findOne({
+    customerId: decoded?.user,
+    email: decoded?.email,
+  });
+  if (!user) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
+  }
+  if (user?.isDeleted) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
+  }
+  
+  const jwtPayload = {
+    user: user?.customerId,
+    email: user?.email,
+    role: user?.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+  
+  return {
+    accessToken,
   };
 };
 
 export const authServices = {
   loginUser,
+  refreshToken,
 };

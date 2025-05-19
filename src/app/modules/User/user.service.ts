@@ -6,6 +6,7 @@ import { TCustomer } from "../Customer/customer.interface";
 import { CustomerModel } from "../Customer/customer.model";
 import mongoose from "mongoose";
 import { generateCustomerId } from "./user.utils";
+import { USER_ROLE } from "../../interface/global";
 
 const createCustomer = async (payload: TCustomer) => {
   const userData: Partial<TUserInterface> = {};
@@ -21,7 +22,7 @@ const createCustomer = async (payload: TCustomer) => {
     throw new AppError(HttpStatus.BAD_REQUEST, "The User is already exist");
   }
 
-  userData.role = "customer";
+  userData.role = USER_ROLE.customer;
   userData.email = payload.email;
   userData.password = payload.password;
 
@@ -46,7 +47,7 @@ const createCustomer = async (payload: TCustomer) => {
     await session.commitTransaction();
     await session.endSession();
     return newCustomer;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
