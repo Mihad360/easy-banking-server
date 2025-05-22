@@ -7,7 +7,7 @@ const userSchema = new Schema<TUserInterface, UserModel>(
   {
     customerId: { type: String, required: true, unique: true },
     email: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: 0 },
     role: { type: String },
     isDeleted: { type: Boolean, default: false },
   },

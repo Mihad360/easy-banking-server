@@ -46,7 +46,7 @@ const deleteCustomer = async (id: string) => {
 
   const session = await mongoose.startSession();
   try {
- session.startTransaction()
+    session.startTransaction();
     const deleteCustomer = await CustomerModel.findByIdAndUpdate(
       id,
       { isDeleted: true },
@@ -68,7 +68,7 @@ const deleteCustomer = async (id: string) => {
     await session.commitTransaction();
     await session.endSession();
     return deleteCustomer;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();

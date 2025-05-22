@@ -3,3 +3,5 @@ export const USER_ROLE = {
   customer: "customer",
   manager: "manager",
 } as const;
+
+export type TUserRole = keyof typeof USER_ROLE;
