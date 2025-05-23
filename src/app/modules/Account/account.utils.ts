@@ -4,9 +4,7 @@ import { AccountModel } from "./account.model";
 
 const findLastSavingAccount = async () => {
   const result = await AccountModel.findOne(
-    {
-      accountType: "savings",
-    },
+    {},
     {
       accountNumber: 1,
       _id: 0,
@@ -40,7 +38,8 @@ export const generateSavingAccountNumber = async (payload: TBankAccount) => {
     incrementAccountNumber = `${branchCode}${accountTp}-${incrementAccountNumber}`;
     // console.log(incrementAccountNumber);
     return incrementAccountNumber;
-  }else{
-    return 
+  } else {
+    const firstAccountNumber = `${branchCode}${accountTp}-0000001`;
+    return firstAccountNumber;
   }
 };
