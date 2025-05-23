@@ -1,15 +1,15 @@
-export interface BankAccount {
+import { Types } from "mongoose";
+
+export interface TBankAccount {
   accountNumber: string;
-  userId: string;
+  user: Types.ObjectId;
+  customer: Types.ObjectId;
   accountType: "savings" | "checking" | "business";
   balance: number;
   currency: string;
   status: "active" | "closed" | "suspended";
-  createdAt: Date;
-  updatedAt: Date;
   branchCode?: string;
   accountHolderName: string;
-  accountNickname?: string;
   interestRate?: number;
   transactions?: string[];
   minimumBalance?: number;

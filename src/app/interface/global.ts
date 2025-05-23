@@ -4,4 +4,10 @@ export const USER_ROLE = {
   manager: "manager",
 } as const;
 
+export const ACCOUNT_TYPE = {
+  savings: "SAV",
+  checking: "CHK",
+  business: "BUS",
+} as const;
+
 export type TUserRole = keyof typeof USER_ROLE;
