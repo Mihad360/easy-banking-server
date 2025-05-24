@@ -4,6 +4,7 @@ export interface TBankAccount {
   accountNumber: string;
   user: Types.ObjectId;
   customer: Types.ObjectId;
+  branch: Types.ObjectId;
   accountType: "savings" | "checking" | "business";
   balance: number;
   currency: string;

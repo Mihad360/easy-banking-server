@@ -7,7 +7,7 @@ const userSchema = new Schema<TUserInterface, UserModel>(
   {
     customerId: { type: String, required: true, unique: true },
     email: { type: String, required: true },
-    password: { type: String, required: true, select: 0 },
+    password: { type: String, required: true },
     role: { type: String },
     isDeleted: { type: Boolean, default: false },
   },
@@ -32,7 +32,8 @@ userSchema.statics.compareUserPassword = async function (
   payloadPassword: string,
   hashedPassword: string,
 ) {
-  return await bcrypt.compare(payloadPassword, hashedPassword);
+  const compare = await bcrypt.compare(payloadPassword, hashedPassword);
+  return compare;
 };
 
 export const User = model<TUserInterface, UserModel>("User", userSchema);

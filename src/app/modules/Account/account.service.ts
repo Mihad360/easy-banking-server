@@ -5,6 +5,7 @@ import { TBankAccount } from "./account.interface";
 import { AccountModel } from "./account.model";
 import { generateSavingAccountNumber } from "./account.utils";
 import { CustomerModel } from "../Customer/customer.model";
+import { BranchModel } from "../Branches/branch.model";
 
 const createAccount = async (payload: TBankAccount) => {
   const isUserExist = await User.findById(payload?.user);
@@ -14,6 +15,10 @@ const createAccount = async (payload: TBankAccount) => {
   const isCustomerExist = await CustomerModel.findById(payload?.customer);
   if (!isCustomerExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The customer is not found");
+  }
+  const isBranchExist = await BranchModel.findById(payload?.branch);
+  if (!isBranchExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The Branch is not found");
   }
   const accountNumber = await generateSavingAccountNumber(payload);
   payload.accountNumber = accountNumber;

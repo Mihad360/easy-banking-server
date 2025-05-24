@@ -6,6 +6,7 @@ const accountSchema = new Schema<TBankAccount>(
     accountNumber: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     customer: { type: Schema.Types.ObjectId, ref: "Customer", required: true },
+    branch: { type: Schema.Types.ObjectId, ref: "Branch", required: true },
     accountType: {
       type: String,
       enum: ["savings", "checking", "business"],

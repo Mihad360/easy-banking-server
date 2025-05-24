@@ -35,11 +35,11 @@ export const generateSavingAccountNumber = async (payload: TBankAccount) => {
     let incrementAccountNumber = (Number(currentAccountNumber) + 1)
       .toString()
       .padStart(7, "0");
-    incrementAccountNumber = `${branchCode}${accountTp}-${incrementAccountNumber}`;
+    incrementAccountNumber = `EB${branchCode}${accountTp}-${incrementAccountNumber}`;
     // console.log(incrementAccountNumber);
     return incrementAccountNumber;
   } else {
-    const firstAccountNumber = `${branchCode}${accountTp}-0000001`;
+    const firstAccountNumber = `EB${branchCode}${accountTp}-0000001`;
     return firstAccountNumber;
   }
 };

@@ -20,9 +20,11 @@ export const generateCustomerId = async () => {
   const lastCustomerId = await findLastCustomer();
   if (lastCustomerId) {
     currentId = lastCustomerId.split("-")[1];
+    let incrementId = (Number(currentId) + 1).toString().padStart(3, "0");
+    incrementId = `CUS-${incrementId}`;
+    //   console.log(incrementId)
+    return incrementId;
+  } else {
+    return "CUS-001";
   }
-  let incrementId = (Number(currentId) + 1).toString().padStart(3, "0");
-  incrementId = `CUS-${incrementId}`;
-//   console.log(incrementId)
-  return incrementId;
 };
