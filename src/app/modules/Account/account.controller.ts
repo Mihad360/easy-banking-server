@@ -25,7 +25,36 @@ const getAccounts = catchAsync(async (req, res) => {
   });
 });
 
+const updateAccount = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await accountServices.updateAccount(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Account updated succesfully",
+    data: result,
+  });
+});
+
+const updateAccountStatusOrInterest = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await accountServices.updateAccountStatusOrInterest(
+    id,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Account updated succesfully",
+    data: result,
+  });
+});
+
 export const accountControllers = {
   createAccount,
   getAccounts,
+  updateAccount,
+  updateAccountStatusOrInterest,
 };

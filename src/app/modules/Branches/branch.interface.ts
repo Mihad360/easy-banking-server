@@ -16,4 +16,5 @@ export interface TBranch {
     closeTime: string; // e.g., "17:00"
     status: "open" | "closed";
   };
+  branchOpenedAt: string;
 }

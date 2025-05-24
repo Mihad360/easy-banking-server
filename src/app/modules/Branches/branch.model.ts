@@ -19,6 +19,7 @@ const branchSchema = new Schema(
       closeTime: { type: String, required: true }, // e.g., "17:00"
       status: { type: String, enum: ["open", "closed"], default: "open" },
     },
+    branchOpenedAt: { type: Date },
   },
   {
     timestamps: true,
