@@ -25,6 +25,18 @@ const getAccounts = catchAsync(async (req, res) => {
   });
 });
 
+const getEachAccount = catchAsync(async (req, res) => {
+  const id = req.params.id
+  const result = await accountServices.getEachAccount(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Account retrieved succesfully",
+    data: result,
+  });
+});
+
 const updateAccount = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await accountServices.updateAccount(id, req.body);
@@ -52,9 +64,23 @@ const updateAccountStatusOrInterest = catchAsync(async (req, res) => {
   });
 });
 
+const deleteAccount = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await accountServices.deleteAccount(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Account deleted succesfully",
+    data: result,
+  });
+});
+
 export const accountControllers = {
   createAccount,
   getAccounts,
+  getEachAccount,
   updateAccount,
   updateAccountStatusOrInterest,
+  deleteAccount,
 };

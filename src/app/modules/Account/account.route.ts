@@ -14,7 +14,12 @@ router.post(
   accountControllers.createAccount,
 );
 router.get("/", accountControllers.getAccounts);
+router.get("/:id", accountControllers.getEachAccount);
 router.patch("/:id", accountControllers.updateAccount);
-router.patch("/update-status/:id", accountControllers.updateAccountStatusOrInterest);
+router.patch(
+  "/update-status/:id",
+  accountControllers.updateAccountStatusOrInterest,
+);
+router.delete("/:id", accountControllers.deleteAccount);
 
 export const accountRoutes = router;

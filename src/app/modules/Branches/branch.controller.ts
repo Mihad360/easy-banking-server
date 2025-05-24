@@ -25,7 +25,33 @@ const getBranches = catchAsync(async (req, res) => {
   });
 });
 
+const getEachBranch = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await branchServices.getEachBranch(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Branch retrieved succesfully",
+    data: result,
+  });
+});
+
+const updateBranch = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await branchServices.updateBranch(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Branch updated succesfully",
+    data: result,
+  });
+});
+
 export const branchControllers = {
   createBranch,
   getBranches,
+  getEachBranch,
+  updateBranch,
 };

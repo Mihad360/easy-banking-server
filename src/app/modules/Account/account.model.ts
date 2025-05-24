@@ -24,6 +24,7 @@ const accountSchema = new Schema<TBankAccount>(
     interestRate: { type: Number },
     transactions: [{ type: String }],
     minimumBalance: { type: Number },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

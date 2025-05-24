@@ -11,6 +11,7 @@ router.post(
   branchControllers.createBranch,
 );
 router.get("/", branchControllers.getBranches);
-// router.get("/", userControllers.getUsers);
+router.get("/:id", branchControllers.getEachBranch);
+router.patch("/:id", branchControllers.updateBranch);
 
 export const branchRoutes = router;

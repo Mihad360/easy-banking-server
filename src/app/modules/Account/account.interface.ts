@@ -14,4 +14,5 @@ export interface TBankAccount {
   interestRate?: number;
   transactions?: string[];
   minimumBalance?: number;
+  isDeleted: boolean;
 }

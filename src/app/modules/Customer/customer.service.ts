@@ -16,6 +16,11 @@ const getEachCustomer = async (id: string) => {
 };
 
 const updateCustomer = async (id: string, payload: Partial<TCustomer>) => {
+  const isCustomerExist = await CustomerModel.findById(id);
+  if (!isCustomerExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The customer is not found");
+  }
+
   const { name, ...remainingData } = payload;
   const modifiedData: Record<string, unknown> = {
     ...remainingData,

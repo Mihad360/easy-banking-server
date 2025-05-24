@@ -32,6 +32,11 @@ const getAccounts = async () => {
   return result;
 };
 
+const getEachAccount = async (id: string) => {
+  const result = await AccountModel.findById(id).populate("user customer");
+  return result;
+};
+
 const updateAccount = async (
   id: string,
   payload: {
@@ -128,9 +133,31 @@ const updateAccountStatusOrInterest = async (
   return result;
 };
 
+const deleteAccount = async (id: string) => {
+  const isAccountExist = await AccountModel.findById(id);
+  if (!isAccountExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The account is not found");
+  }
+  if (isAccountExist?.isDeleted) {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      "The account is already deleted",
+    );
+  }
+
+  const result = await AccountModel.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
+  return result;
+};
+
 export const accountServices = {
   createAccount,
   getAccounts,
+  getEachAccount,
   updateAccount,
   updateAccountStatusOrInterest,
+  deleteAccount,
 };
