@@ -2,6 +2,7 @@ import express from "express";
 import { userControllers } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { customerValidations } from "../Customer/customer.validation";
+import { managerValidations } from "../Manager/manager.validation";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.post(
 );
 router.post(
   "/create-manager",
-  // validateRequest(),
+  validateRequest(managerValidations.createManagerValidation),
   userControllers.createManager,
 );
 router.get("/", userControllers.getUsers);

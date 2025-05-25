@@ -79,14 +79,12 @@ const createManager = async (payload: TManager) => {
   userData.email = payload.email;
   userData.password = payload.password;
 
-  userData.managerId = await generateManagerId();
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
+    userData.managerId = await generateManagerId();
 
-    console.log(userData);
     const newUser = await User.create([userData], { session });
-    console.log(newUser)
     if (!newUser) {
       throw new AppError(HttpStatus.BAD_REQUEST, "New User create failed");
     }
