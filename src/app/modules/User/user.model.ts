@@ -5,7 +5,8 @@ import { TUserInterface, UserModel } from "./user.interface";
 
 const userSchema = new Schema<TUserInterface, UserModel>(
   {
-    customerId: { type: String, required: true, unique: true },
+    customerId: { type: String, unique: true },
+    managerId: { type: String, unique: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String },

@@ -5,8 +5,10 @@ import { User } from "./user.model";
 import { TCustomer } from "../Customer/customer.interface";
 import { CustomerModel } from "../Customer/customer.model";
 import mongoose from "mongoose";
-import { generateCustomerId } from "./user.utils";
+import { generateCustomerId, generateManagerId } from "./user.utils";
 import { USER_ROLE } from "../../interface/global";
+import { TManager } from "../Manager/manager.interface";
+import { ManagerModel } from "../Manager/manager.model";
 
 const createCustomer = async (payload: TCustomer) => {
   const userData: Partial<TUserInterface> = {};
@@ -60,7 +62,55 @@ const getUsers = async () => {
   return result;
 };
 
+const createManager = async (payload: TManager) => {
+  const userData: Partial<TUserInterface> = {};
+  const isManagerExist = await ManagerModel.findOne({
+    managerId: payload.managerId,
+  });
+  if (isManagerExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The Manager already exist");
+  }
+  const isUserExist = await User.findOne({ email: payload.email });
+  if (isUserExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The User is already exist");
+  }
+
+  userData.role = USER_ROLE.manager;
+  userData.email = payload.email;
+  userData.password = payload.password;
+
+  userData.managerId = await generateManagerId();
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    console.log(userData);
+    const newUser = await User.create([userData], { session });
+    console.log(newUser)
+    if (!newUser) {
+      throw new AppError(HttpStatus.BAD_REQUEST, "New User create failed");
+    }
+    payload.managerId = newUser[0].managerId;
+    payload.user = newUser[0]._id;
+
+    const newManager = await ManagerModel.create([payload], { session });
+    if (!newManager) {
+      throw new AppError(HttpStatus.BAD_REQUEST, "New Customer create failed");
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+    return newManager;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Manager");
+  }
+};
+
 export const userServices = {
   createCustomer,
   getUsers,
+  createManager,
 };

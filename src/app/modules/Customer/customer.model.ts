@@ -30,31 +30,6 @@ const customerSchema = new Schema(
       type: String,
       required: true,
     },
-    dateOfBirth: {
-      type: String,
-      required: true,
-    },
-    gender: {
-      type: String,
-      enum: ["Male", "Female", "Other"],
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    postalCode: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
     profilePhotoUrl: {
       type: String,
       default: "",

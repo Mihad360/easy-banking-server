@@ -16,14 +16,40 @@ const accountSchema = new Schema<TBankAccount>(
     currency: { type: String, required: true },
     status: {
       type: String,
-      enum: ["active", "closed", "suspended"],
+      enum: ["pending", "active", "closed", "suspended"],
       required: true,
+      default: "pending"
     },
     branchCode: { type: String },
     accountHolderName: { type: String, required: true },
     interestRate: { type: Number },
     transactions: [{ type: String }],
     minimumBalance: { type: Number },
+    dateOfBirth: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {

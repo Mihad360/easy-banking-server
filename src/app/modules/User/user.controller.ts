@@ -25,7 +25,19 @@ const getUsers = catchAsync(async (req, res) => {
   });
 });
 
+const createManager = catchAsync(async (req, res) => {
+  const result = await userServices.createManager(req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Manager created succesfully",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createCustomer,
   getUsers,
+  createManager,
 };

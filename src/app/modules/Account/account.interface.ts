@@ -8,11 +8,17 @@ export interface TBankAccount {
   accountType: "savings" | "checking" | "business";
   balance: number;
   currency: string;
-  status: "active" | "closed" | "suspended";
+  status: "pending" | "active" | "closed" | "suspended";
   branchCode?: string;
   accountHolderName: string;
   interestRate?: number;
   transactions?: string[];
   minimumBalance?: number;
+  dateOfBirth: string;
+  gender: "Male" | "Female" | "Other";
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
   isDeleted: boolean;
 }

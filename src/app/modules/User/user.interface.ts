@@ -1,7 +1,8 @@
 import { Model } from "mongoose";
 
 export type TUserInterface = {
-  customerId: string;
+  customerId?: string;
+  managerId?: string;
   email: string;
   password: string;
   role: string;

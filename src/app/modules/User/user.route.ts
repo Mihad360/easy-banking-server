@@ -10,6 +10,11 @@ router.post(
   validateRequest(customerValidations.createCustomerValidation),
   userControllers.createCustomer,
 );
+router.post(
+  "/create-manager",
+  // validateRequest(),
+  userControllers.createManager,
+);
 router.get("/", userControllers.getUsers);
 
 export const userRoutes = router;

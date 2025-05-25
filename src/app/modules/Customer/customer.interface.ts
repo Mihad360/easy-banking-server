@@ -6,18 +6,18 @@ export interface TUserName {
 }
 
 export interface TCustomer {
-  customerId: string;
+  customerId?: string;
   user: Types.ObjectId;
   name: TUserName;
   email: string;
   password: string;
   phoneNumber: string;
-  dateOfBirth: string;
-  gender: "Male" | "Female" | "Other";
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
+  // dateOfBirth: string;
+  // gender: "Male" | "Female" | "Other";
+  // address: string;
+  // city: string;
+  // postalCode: string;
+  // country: string;
   profilePhotoUrl?: string;
   isDeleted: boolean;
 }
