@@ -5,6 +5,12 @@ import { TLoginUser } from "./auth.interface";
 import { createToken, verifyToken } from "./auth.utils";
 import config from "../../config";
 
+interface JwtPayload {
+  user: string; // No undefined allowed
+  email: string;
+  role: string;
+}
+
 const loginUser = async (payload: TLoginUser) => {
   const user = await User.isUserExistByEmail(payload.email);
   if (!user) {
@@ -17,8 +23,17 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(HttpStatus.FORBIDDEN, "Password did not matched");
   }
 
-  const jwtPayload = {
-    user: user?.customerId,
+  let userId;
+  if (user?.role === "admin") userId = user.adminId;
+  else if (user?.role === "manager") userId = user.managerId;
+  else if (user?.role === "customer") userId = user.customerId;
+
+  if (!userId) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
+  }
+
+  const jwtPayload: JwtPayload = {
+    user: userId,
     email: user?.email,
     role: user?.role,
   };
@@ -33,7 +48,7 @@ const loginUser = async (payload: TLoginUser) => {
     config.jwt_refresh_secret as string,
     config.jwt_refresh_expires_in as string,
   );
-  
+
   return {
     accessToken,
     refreshToken,
@@ -42,21 +57,43 @@ const loginUser = async (payload: TLoginUser) => {
 
 const refreshToken = async (token: string) => {
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
-  const user = await User.findOne({
-    customerId: decoded?.user,
-    email: decoded?.email,
-  });
+// console.log(decoded)
+  let user;
+  if (decoded?.role === "admin") {
+    user = await User.findOne({ adminId: decoded.user, email: decoded.email });
+  } else if (decoded?.role === "manager") {
+    user = await User.findOne({
+      managerId: decoded.user,
+      email: decoded.email,
+    });
+  } else if (decoded?.role === "customer") {
+    user = await User.findOne({
+      customerId: decoded.user,
+      email: decoded.email,
+    });
+  }
+
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
   if (user?.isDeleted) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
   }
-  
-  const jwtPayload = {
-    user: user?.customerId,
-    email: user?.email,
-    role: user?.role,
+
+  // Assign correct ID based on role
+  let userId;
+  if (user.role === "admin") userId = user.adminId;
+  else if (user.role === "manager") userId = user.managerId;
+  else userId = user.customerId;
+
+  if (!userId) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
+  }
+
+  const jwtPayload: JwtPayload = {
+    user: userId,
+    email: user.email,
+    role: user.role,
   };
 
   const accessToken = createToken(
@@ -64,7 +101,7 @@ const refreshToken = async (token: string) => {
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
-  
+
   return {
     accessToken,
   };

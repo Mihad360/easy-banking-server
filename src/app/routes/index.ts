@@ -6,6 +6,7 @@ import { accountRoutes } from "../modules/Account/account.route";
 import { branchRoutes } from "../modules/Branches/branch.route";
 import { managerRoutes } from "../modules/Manager/manager.route";
 import { adminRoutes } from "../modules/Admin/admin.route";
+import { transactionRoutes } from "../modules/Transactions/transaction.route";
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
   {
     path: "/admin",
     route: adminRoutes,
+  },
+  {
+    path: "/transaction",
+    route: transactionRoutes,
   },
 ];
 

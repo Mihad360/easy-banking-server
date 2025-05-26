@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
@@ -12,12 +12,14 @@ app.use(cookieParser());
 
 app.use("/api/v1", router);
 
-const test = async (req: Request, res: Response) => {
-  const a = 10;
-  res.send(a);
-};
+// const test = async (req: Request, res: Response) => {
+//   const a = 10;
+//   res.send(a);
+// };
 
-app.get("/", test);
+app.get("/", (req, res) => {
+  res.send("Easy Bank is running");
+});
 
 app.use(globalErrorHandler);
 

@@ -17,6 +17,25 @@ const createManagerValidation = z.object({
   profilePhotoUrl: z.string().optional(),
 });
 
+const updateManagerValidation = z.object({
+  body: z
+    .object({
+      managerId: z.string(),
+      user: z.string(),
+      name: z.object({
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      }),
+      email: z.string().email("Invalid email format"),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+      phoneNumber: z.string(),
+      profilePhotoUrl: z.string(),
+    })
+    .partial(),
+});
+// Makes all top-level fields optional
+
 export const managerValidations = {
   createManagerValidation,
+  updateManagerValidation,
 };

@@ -4,6 +4,35 @@ import { TBranch } from "./branch.interface";
 import { BranchModel } from "./branch.model";
 
 const createBranch = async (payload: TBranch) => {
+  const isSameCodeBranchExist = await BranchModel.findOne({
+    code: payload.code,
+  });
+  if (isSameCodeBranchExist) {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      "Same code of branch is already exist",
+    );
+  }
+
+  const isSameZipCodeBranchExist = await BranchModel.findOne({
+    zipCode: payload.zipCode,
+  });
+  if (isSameZipCodeBranchExist) {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      "Same Zip code of branch is already exist",
+    );
+  }
+
+
+
+
+  // ------ manager to---do ------ 
+
+
+
+
+
   const result = await BranchModel.create(payload);
   return result;
 };
