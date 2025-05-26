@@ -1,7 +1,7 @@
 import { User } from "../modules/User/user.model";
 
 const superUser = {
-  customerId: 'A-001',
+  adminId: 'A-001',
   email: "ahmedmihad962@gmail.com",
   password: "botmiyad360",
   role: "admin",

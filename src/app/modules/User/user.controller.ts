@@ -36,8 +36,20 @@ const createManager = catchAsync(async (req, res) => {
   });
 });
 
+const createAdmin = catchAsync(async (req, res) => {
+  const result = await userServices.createAdmin(req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Admin created succesfully",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createCustomer,
   getUsers,
   createManager,
+  createAdmin,
 };

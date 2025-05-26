@@ -7,6 +7,7 @@ const userSchema = new Schema<TUserInterface, UserModel>(
   {
     customerId: { type: String, unique: true, sparse: true },
     managerId: { type: String, unique: true, sparse: true },
+    adminId: { type: String, unique: true, sparse: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String },

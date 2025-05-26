@@ -5,10 +5,16 @@ import { User } from "./user.model";
 import { TCustomer } from "../Customer/customer.interface";
 import { CustomerModel } from "../Customer/customer.model";
 import mongoose from "mongoose";
-import { generateCustomerId, generateManagerId } from "./user.utils";
+import {
+  generateAdminId,
+  generateCustomerId,
+  generateManagerId,
+} from "./user.utils";
 import { USER_ROLE } from "../../interface/global";
 import { TManager } from "../Manager/manager.interface";
 import { ManagerModel } from "../Manager/manager.model";
+import { TAdmin } from "../Admin/admin.interface";
+import { AdminModel } from "../Admin/admin.model";
 
 const createCustomer = async (payload: TCustomer) => {
   const userData: Partial<TUserInterface> = {};
@@ -99,7 +105,7 @@ const createManager = async (payload: TManager) => {
     await session.commitTransaction();
     await session.endSession();
     return newManager;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -107,8 +113,54 @@ const createManager = async (payload: TManager) => {
   }
 };
 
+const createAdmin = async (payload: TAdmin) => {
+  const userData: Partial<TUserInterface> = {};
+  const isAdminExist = await AdminModel.findOne({
+    adminId: payload.adminId,
+  });
+  if (isAdminExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The Admin already exist");
+  }
+  const isUserExist = await User.findOne({ email: payload.email });
+  if (isUserExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The User is already exist");
+  }
+
+  userData.role = USER_ROLE.admin;
+  userData.email = payload.email;
+  userData.password = payload.password;
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    userData.adminId = await generateAdminId();
+
+    const newUser = await User.create([userData], { session });
+    if (!newUser) {
+      throw new AppError(HttpStatus.BAD_REQUEST, "New User create failed");
+    }
+    payload.adminId = newUser[0].adminId;
+    payload.user = newUser[0]._id;
+
+    const newAdmin = await AdminModel.create([payload], { session });
+    if (!newAdmin) {
+      throw new AppError(HttpStatus.BAD_REQUEST, "New Admin create failed");
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+    return newAdmin;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(HttpStatus.NOT_FOUND, "Failed to create The Admin");
+  }
+};
+
 export const userServices = {
   createCustomer,
   getUsers,
   createManager,
+  createAdmin,
 };

@@ -1,31 +1,30 @@
 import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
-import { TManager } from "./manager.interface";
-import { ManagerModel } from "./manager.model";
 import { User } from "../User/user.model";
+import { TAdmin } from "./admin.interface";
+import { AdminModel } from "./admin.model";
 import mongoose from "mongoose";
 
-const getManagers = async () => {
-  const result = await ManagerModel.find().populate("user");
+const getAdmins = async () => {
+  const result = await AdminModel.find().populate("user");
   return result;
 };
 
-const getEachManager = async (id: string) => {
-  const result = await ManagerModel.findById(id).populate("user");
+const getEachAdmin = async (id: string) => {
+  const result = await AdminModel.findById(id).populate("user");
   return result;
 };
 
-const updateManager = async (id: string, payload: Partial<TManager>) => {
+const updateAdmin = async (id: string, payload: Partial<TAdmin>) => {
   const { name, ...remainingData } = payload;
-  const isManagerExist = await ManagerModel.findById(id);
-  if (!isManagerExist) {
-    throw new AppError(HttpStatus.NOT_FOUND, "The manager is not found");
+  const isAdminExist = await AdminModel.findById(id);
+  if (!isAdminExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The admin is not found");
   }
-  const isUserExist = await User.findById(isManagerExist?.user);
+  const isUserExist = await User.findById(isAdminExist?.user);
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
-
   const modifiedData: Record<string, unknown> = {
     ...remainingData,
   };
@@ -38,13 +37,13 @@ const updateManager = async (id: string, payload: Partial<TManager>) => {
         modifiedData[`name.${key}`] = value;
       }
     }
-    const updateManager = await ManagerModel.findByIdAndUpdate(
+    const updateAdmin = await AdminModel.findByIdAndUpdate(
       id,
       modifiedData,
       { session, new: true },
     );
-    if (!updateManager) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Manager update failed");
+    if (!updateAdmin) {
+      throw new AppError(HttpStatus.BAD_REQUEST, "Admin update failed");
     }
 
     const updateUser = await User.findByIdAndUpdate(
@@ -53,22 +52,22 @@ const updateManager = async (id: string, payload: Partial<TManager>) => {
       { session, new: true },
     );
     if (!updateUser) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Manager update failed");
+      throw new AppError(HttpStatus.BAD_REQUEST, "Admin update failed");
     }
 
     await session.commitTransaction();
     await session.endSession();
-    return updateManager;
+    return updateAdmin;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(HttpStatus.BAD_REQUEST, "Manager updating failed");
+    throw new AppError(HttpStatus.BAD_REQUEST, "Admin updating failed");
   }
 };
 
-export const managerServices = {
-  getManagers,
-  getEachManager,
-  updateManager,
+export const adminServices = {
+  getAdmins,
+  getEachAdmin,
+  updateAdmin,
 };

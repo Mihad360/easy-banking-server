@@ -16,6 +16,11 @@ router.post(
   validateRequest(managerValidations.createManagerValidation),
   userControllers.createManager,
 );
+router.post(
+  "/create-admin",
+  // validateRequest(managerValidations.createManagerValidation),
+  userControllers.createAdmin,
+);
 router.get("/", userControllers.getUsers);
 
 export const userRoutes = router;

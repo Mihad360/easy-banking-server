@@ -57,3 +57,32 @@ export const generateManagerId = async () => {
     return "MAN-001";
   }
 };
+
+const findLastAdmin = async () => {
+  const result = await User.findOne(
+    {
+      role: "admin",
+    },
+    {
+      adminId: 1,
+      _id: 0,
+    },
+  )
+    .sort({ createdAt: -1 })
+    .lean();
+  return result?.adminId ? result?.adminId : undefined;
+};
+
+export const generateAdminId = async () => {
+  let currentId = (0).toString();
+  const lastAdminId = await findLastAdmin();
+  if (lastAdminId) {
+    currentId = lastAdminId.split("-")[1];
+    let incrementId = (Number(currentId) + 1).toString().padStart(3, "0");
+    incrementId = `A-${incrementId}`;
+    //   console.log(incrementId)
+    return incrementId;
+  } else {
+    return "A-001";
+  }
+};
