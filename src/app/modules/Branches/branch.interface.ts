@@ -8,7 +8,7 @@ export interface TBranch {
   zipCode: string;
   contactNumber: string[];
   email?: string;
-  managerName?: string;
+  managers?: string[];
   services: string[];
   openingSchedule: {
     days: string[]; // e.g., ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]

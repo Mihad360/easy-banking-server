@@ -3,8 +3,10 @@ import { z } from "zod";
 export const createAccountValidation = z.object({
   body: z.object({
     accountNumber: z.string().optional(),
-    user: z.string(), // ObjectId as string
-    customer: z.string(),
+    user: z.string().optional(), // ObjectId as string
+    customer: z.string().optional(),
+    manager: z.string().optional(),
+    admin: z.string().optional(),
     branch: z.string(),
     accountType: z.enum(["savings", "checking", "business"]),
     balance: z.number().default(0),

@@ -5,7 +5,9 @@ const accountSchema = new Schema<TBankAccount>(
   {
     accountNumber: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    customer: { type: Schema.Types.ObjectId, ref: "Customer", required: true },
+    customer: { type: Schema.Types.ObjectId, ref: "Customer", sparse: true },
+    manager: { type: Schema.Types.ObjectId, ref: "Manager", sparse: true  },
+    admin: { type: Schema.Types.ObjectId, ref: "Admin", sparse: true  },
     branch: { type: Schema.Types.ObjectId, ref: "Branch", required: true },
     accountType: {
       type: String,
@@ -18,7 +20,7 @@ const accountSchema = new Schema<TBankAccount>(
       type: String,
       enum: ["pending", "active", "closed", "suspended"],
       required: true,
-      default: "pending"
+      default: "pending",
     },
     branchCode: { type: String },
     accountHolderName: { type: String, required: true },

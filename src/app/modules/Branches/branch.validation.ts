@@ -35,7 +35,7 @@ const updateBranchValidation = z.object({
       zipCode: z.string(),
       contactNumber: z.array(z.string()),
       email: z.string().email().optional(),
-      managerName: z.string().optional(),
+      managers: z.array(z.string()).optional(),
       services: z.array(z.string()).optional(),
       openingSchedule: z
         .object({

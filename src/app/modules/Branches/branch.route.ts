@@ -29,5 +29,10 @@ router.patch(
   validateRequest(branchValidations.updateBranchValidation),
   branchControllers.updateBranch,
 );
+router.patch(
+  "/update-branch-manager/:id",
+  auth(USER_ROLE.admin),
+  branchControllers.updateBranchManagers,
+);
 
 export const branchRoutes = router;

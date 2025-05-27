@@ -38,7 +38,15 @@ const customerSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
   },
 );
+
+customerSchema.virtual("fullName").get(function (next) {
+  return `${this?.name?.firstName} ${this?.name?.lastName}`;
+  next();
+});
 
 export const CustomerModel = model("Customer", customerSchema);

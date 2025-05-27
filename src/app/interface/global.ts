@@ -11,3 +11,11 @@ export const ACCOUNT_TYPE = {
 } as const;
 
 export type TUserRole = keyof typeof USER_ROLE;
+
+export type TJwtUser = {
+  user: string;
+  email: string;
+  role: string;
+  iat: number;
+  exp: number;
+};

@@ -49,9 +49,22 @@ const updateBranch = catchAsync(async (req, res) => {
   });
 });
 
+const updateBranchManagers = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await branchServices.updateBranchManagers(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Branch updated succesfully",
+    data: result,
+  });
+});
+
 export const branchControllers = {
   createBranch,
   getBranches,
   getEachBranch,
   updateBranch,
+  updateBranchManagers,
 };

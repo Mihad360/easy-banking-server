@@ -2,9 +2,11 @@ import HttpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { accountServices } from "./account.service";
+import { TJwtUser } from "../../interface/global";
 
 const createAccount = catchAsync(async (req, res) => {
-  const result = await accountServices.createAccount(req.body);
+  const user = req.user as TJwtUser;
+  const result = await accountServices.createAccount(user, req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -26,7 +28,7 @@ const getAccounts = catchAsync(async (req, res) => {
 });
 
 const getEachAccount = catchAsync(async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   const result = await accountServices.getEachAccount(id);
 
   sendResponse(res, {

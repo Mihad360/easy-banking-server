@@ -24,21 +24,12 @@ const createBranch = async (payload: TBranch) => {
     );
   }
 
-
-
-
-  // ------ manager to---do ------ 
-
-
-
-
-
   const result = await BranchModel.create(payload);
   return result;
 };
 
 const getBranches = async () => {
-  const result = await BranchModel.find();
+  const result = await BranchModel.find().populate("managers");
   return result;
 };
 
@@ -84,9 +75,18 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   return result;
 };
 
+const updateBranchManagers = async (
+  id: string,
+  data: { managers: string[] },
+) => {
+  const { managers } = data;
+  return managers;
+};
+
 export const branchServices = {
   createBranch,
   getBranches,
   getEachBranch,
   updateBranch,
+  updateBranchManagers,
 };
