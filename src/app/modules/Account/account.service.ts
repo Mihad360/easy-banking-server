@@ -15,6 +15,7 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
   }
+
   let query = {};
 
   if (user.role === "customer") {
@@ -66,6 +67,9 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   payload.accountNumber = accountNumber;
   payload.user = isUserExist._id;
   payload.accountHolderName = `${accountId.name?.firstName} ${accountId.name?.lastName}`;
+  payload.currency = "BDT";
+  payload.balance = 0;
+  payload.interestRate = 3;
 
   const result = await AccountModel.create(payload);
   return result;
@@ -81,13 +85,7 @@ const getEachAccount = async (id: string) => {
   return result;
 };
 
-const updateAccount = async (
-  id: string,
-  payload: {
-    accountHolderName: string;
-    accountType: "savings" | "checking" | "business";
-  },
-) => {
+const updateAccount = async (id: string, payload: Partial<TBankAccount>) => {
   const isAccountExist = await AccountModel.findById(id);
   if (!isAccountExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The account is not found");
@@ -96,20 +94,10 @@ const updateAccount = async (
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The User is not found");
   }
-  const isCustomerExist = await CustomerModel.findById(
-    isAccountExist?.customer,
-  );
-  if (!isCustomerExist) {
-    throw new AppError(HttpStatus.NOT_FOUND, "The customer is not found");
-  }
-  const isBranchExist = await BranchModel.findById(isAccountExist?.branch);
-  if (!isBranchExist) {
-    throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
-  }
 
   let accountTp;
   const accountNumber = isAccountExist?.accountNumber;
-  if (accountNumber) {
+  if (payload.accountType && accountNumber) {
     accountTp = accountNumber.substring(4, 7);
     if (payload.accountType === "savings") {
       accountTp = ACCOUNT_TYPE.savings;
@@ -125,16 +113,32 @@ const updateAccount = async (
     }
   }
 
-  const newAccountNumber = `${accountNumber.substring(0, 4)}${accountTp}${accountNumber.substring(7, 15)}`;
+  let newAccountNumber;
+  if (
+    !payload.accountType ||
+    payload.accountType === isAccountExist.accountType
+  ) {
+    newAccountNumber = isAccountExist?.accountNumber;
+  } else if (
+    payload.accountType &&
+    payload.accountType !== isAccountExist.accountType
+  ) {
+    newAccountNumber = `${accountNumber.substring(0, 4)}${accountTp}${accountNumber.substring(7, 15)}`;
+  }
 
+  // let branch;
+  if (payload.branchCode && payload.branchCode !== isAccountExist.branchCode) {
+    newAccountNumber = `${newAccountNumber?.substring(0, 2)}${payload.branchCode}${newAccountNumber?.substring(4, 15)}`;
+  } else {
+    // eslint-disable-next-line no-self-assign
+    newAccountNumber = newAccountNumber;
+  }
   const result = await AccountModel.findByIdAndUpdate(
     id,
+    { ...payload, accountNumber: newAccountNumber && newAccountNumber },
     {
-      accountHolderName: payload.accountHolderName,
-      accountType: payload.accountType,
-      accountNumber: newAccountNumber,
+      new: true,
     },
-    { new: true },
   );
 
   return result;

@@ -11,19 +11,16 @@ const router = express.Router();
 
 router.post(
   "/create-customer",
-  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   validateRequest(customerValidations.createCustomerValidation),
   userControllers.createCustomer,
 );
 router.post(
   "/create-manager",
-  auth(USER_ROLE.admin),
   validateRequest(managerValidations.createManagerValidation),
   userControllers.createManager,
 );
 router.post(
   "/create-admin",
-  auth(USER_ROLE.admin),
   validateRequest(adminValidations.createAdminValidation),
   userControllers.createAdmin,
 );

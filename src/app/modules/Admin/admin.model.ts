@@ -27,7 +27,7 @@ const adminSchema = new Schema<TAdmin>(
       required: true,
       unique: true,
     },
-    password: { type: String, required: true },
+    // password: { type: String, required: true },
     phoneNumber: {
       type: String,
       required: true,

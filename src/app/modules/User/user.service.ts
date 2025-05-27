@@ -121,10 +121,10 @@ const createAdmin = async (payload: TAdmin) => {
   if (isAdminExist) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The Admin already exist");
   }
-  // const isUserExist = await User.findOne({ email: payload.email });
-  // if (isUserExist) {
-  //   throw new AppError(HttpStatus.BAD_REQUEST, "The User is already exist");
-  // }
+  const isUserExist = await User.findOne({ email: payload.email });
+  if (isUserExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The User is already exist");
+  }
 
   userData.role = USER_ROLE.admin;
   userData.email = payload.email;

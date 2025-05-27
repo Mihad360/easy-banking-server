@@ -8,13 +8,13 @@ export interface TBankAccount {
   admin?: Types.ObjectId;
   branch: Types.ObjectId;
   accountType: "savings" | "checking" | "business";
-  balance: number;
-  currency: string;
+  balance?: number;
+  currency?: string;
   status: "pending" | "active" | "closed" | "suspended";
-  branchCode?: string;
-  accountHolderName: string;
+  branchCode: string;
+  accountHolderName?: string;
   interestRate?: number;
-  transactions?: string[];
+  transactions?: Types.ObjectId[];
   minimumBalance?: number;
   dateOfBirth: string;
   gender: "Male" | "Female" | "Other";

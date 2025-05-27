@@ -13,6 +13,12 @@ router.post(
   validateRequest(accountValidations.createAccountValidation),
   accountControllers.createAccount,
 );
+// router.post(
+//   "/create-manager-account",
+//   auth(USER_ROLE.admin, USER_ROLE.manager),
+//   validateRequest(accountValidations.createAccountValidation),
+//   accountControllers.createAccount,
+// );
 router.get(
   "/",
   auth(USER_ROLE.admin, USER_ROLE.manager),
