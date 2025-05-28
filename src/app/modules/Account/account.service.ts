@@ -151,7 +151,7 @@ const updateAccountStatusOrInterest = async (
     interestRate: number;
   }>,
 ) => {
-  const isAccountExist = await AccountModel.findById(id);
+  const isAccountExist = await AccountModel.findOne({ accountNumber: id });
   if (!isAccountExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The account is not found");
   }
@@ -170,8 +170,8 @@ const updateAccountStatusOrInterest = async (
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
   }
 
-  const result = await AccountModel.findByIdAndUpdate(
-    id,
+  const result = await AccountModel.findOneAndUpdate(
+    { accountNumber: id },
     {
       status: payload.status && payload.status,
       interestRate: payload.interestRate && payload.interestRate,

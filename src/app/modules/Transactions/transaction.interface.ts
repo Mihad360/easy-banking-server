@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type TTransaction = {
-  account: Types.ObjectId;
+  account?: string;
   transactionType: "deposit" | "withdraw" | "transfer";
   amount: number;
   fromAccount?: Types.ObjectId;

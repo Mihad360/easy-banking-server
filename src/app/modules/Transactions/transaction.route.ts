@@ -3,7 +3,7 @@ import { transactionControllers } from "./transaction.controller";
 
 const router = express.Router();
 
-router.post("/create-transaction", transactionControllers.createTransaction);
+router.post("/create-deposit", transactionControllers.createDeposit);
 // router.get("/:id", transactionControllers);
 // router.patch("/:id", transactionControllers);
 

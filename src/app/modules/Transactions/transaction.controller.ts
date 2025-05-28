@@ -3,8 +3,8 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { transactionServices } from "./transaction.service";
 
-const createTransaction = catchAsync(async (req, res) => {
-  const result = await transactionServices.createTransaction(req.body);
+const createDeposit = catchAsync(async (req, res) => {
+  const result = await transactionServices.createDeposit(req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -15,5 +15,5 @@ const createTransaction = catchAsync(async (req, res) => {
 });
 
 export const transactionControllers = {
-  createTransaction,
+  createDeposit,
 };
