@@ -4,16 +4,35 @@ import { AccountModel } from "../Account/account.model";
 import { TTransaction } from "./transaction.interface";
 import mongoose from "mongoose";
 import { TransactionModel } from "./transaction.model";
+import { generateTransactionId } from "./transaction.utils";
+import { TJwtUser } from "../../interface/global";
+import { User } from "../User/user.model";
 
-const createDeposit = async (payload: TTransaction) => {
+const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
+  let query = {};
+
+  if (user.role === "customer") {
+    query = { customerId: user.user };
+  } else if (user.role === "manager") {
+    query = { managerId: user.user };
+  } else if (user.role === "admin") {
+    query = { adminId: user.user };
+  } else {
+    throw new AppError(HttpStatus.BAD_REQUEST, "Invalid user role");
+  }
+
+  const isUserExist = await User.findOne(query);
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
+  }
   const isAccountExist = await AccountModel.findOne({
     accountNumber: payload.account,
+    user: isUserExist?._id,
   });
-
   if (!isAccountExist) {
     throw new AppError(
       HttpStatus.NOT_FOUND,
-      "The account is invalid or not found",
+      "The account Number is invalid or not matching your Identity",
     );
   }
 
@@ -33,7 +52,6 @@ const createDeposit = async (payload: TTransaction) => {
 
   try {
     session.startTransaction();
-
     const updateAmount = await AccountModel.findOneAndUpdate(
       {
         accountNumber: payload.account,
@@ -46,10 +64,14 @@ const createDeposit = async (payload: TTransaction) => {
       throw new AppError(HttpStatus.BAD_REQUEST, "Balance update failed");
     }
 
+    payload.transaction_Id = await generateTransactionId(
+      payload.transactionType,
+    );
+    payload.user = isAccountExist?.user;
     const transactionData = {
       ...payload,
       status: "pending",
-      account: isAccountExist._id,
+      account: payload.account,
     };
 
     const createTransaction = await TransactionModel.create([transactionData], {
@@ -75,8 +97,9 @@ const createDeposit = async (payload: TTransaction) => {
 
     await session.commitTransaction();
     return createTransaction;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.log("💥 Transaction Error:", error);
+    // console.log("💥 Transaction Error:", error);
     await session.abortTransaction();
     throw new AppError(HttpStatus.BAD_REQUEST, "Transaction Failed");
   } finally {
@@ -84,6 +107,12 @@ const createDeposit = async (payload: TTransaction) => {
   }
 };
 
+const createWithdraw = async (user: TJwtUser, payload: TTransaction) => {
+  console.log(user);
+  return payload;
+};
+
 export const transactionServices = {
   createDeposit,
+  createWithdraw,
 };

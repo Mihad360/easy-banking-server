@@ -5,6 +5,8 @@ import { TTransaction } from "./transaction.interface";
 const transactionSchema = new Schema<TTransaction>(
   {
     account: { type: String, ref: "Account" },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    transaction_Id: { type: String },
     transactionType: {
       type: String,
       enum: ["deposit", "withdraw", "transfer"],

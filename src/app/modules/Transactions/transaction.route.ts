@@ -1,9 +1,24 @@
 import express from "express";
 import { transactionControllers } from "./transaction.controller";
+import auth from "../../middlewares/auth";
+import { USER_ROLE } from "../../interface/global";
+import validateRequest from "../../middlewares/validateRequest";
+import { transactionValidations } from "./transaction.validation";
 
 const router = express.Router();
 
-router.post("/create-deposit", transactionControllers.createDeposit);
+router.post(
+  "/create-deposit",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  validateRequest(transactionValidations.createTransactionSchema),
+  transactionControllers.createDeposit,
+);
+router.post(
+  "/create-withdraw",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  validateRequest(transactionValidations.createTransactionSchema),
+  transactionControllers.createWithdraw,
+);
 // router.get("/:id", transactionControllers);
 // router.patch("/:id", transactionControllers);
 
