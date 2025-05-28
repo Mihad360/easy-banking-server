@@ -6,8 +6,8 @@ export type TTransaction = {
   transaction_Id?: string;
   transactionType: "deposit" | "withdraw" | "transfer";
   amount: number;
-  fromAccount?: Types.ObjectId;
-  toAccount?: Types.ObjectId;
+  fromAccount?: string;
+  toAccount?: string;
   status?: "pending" | "completed" | "failed";
   description?: string;
 };

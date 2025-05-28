@@ -30,7 +30,7 @@ const accountSchema = new Schema<TBankAccount>(
       ref: "Transaction",
       default: [],
     },
-    minimumBalance: { type: Number },
+    minimumBalance: { type: Number, default: 2000 },
     dateOfBirth: {
       type: String,
       required: true,

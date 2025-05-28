@@ -19,6 +19,12 @@ router.post(
   validateRequest(transactionValidations.createTransactionSchema),
   transactionControllers.createWithdraw,
 );
+router.post(
+  "/create-transfer",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  validateRequest(transactionValidations.createTransactionSchema),
+  transactionControllers.createTransfer,
+);
 // router.get("/:id", transactionControllers);
 // router.patch("/:id", transactionControllers);
 

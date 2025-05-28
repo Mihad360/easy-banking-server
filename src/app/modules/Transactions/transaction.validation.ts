@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const createTransactionSchema = z.object({
   body: z.object({
-    account: z.string().min(1, "Account number is required"),
+    account: z.string().optional(),
     user: z.string().optional(),
     transaction_Id: z.string().optional(),
 

@@ -68,8 +68,9 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   payload.user = isUserExist._id;
   payload.accountHolderName = `${accountId.name?.firstName} ${accountId.name?.lastName}`;
   payload.currency = "BDT";
-  payload.balance = 0;
+  payload.balance = 2000;
   payload.interestRate = 3;
+  payload.minimumBalance = 2000;
 
   const result = await AccountModel.create(payload);
   return result;

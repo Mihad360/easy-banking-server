@@ -13,8 +13,8 @@ const transactionSchema = new Schema<TTransaction>(
       required: true,
     },
     amount: { type: Number, required: true },
-    fromAccount: { type: Schema.Types.ObjectId, ref: "fromAccount" },
-    toAccount: { type: Schema.Types.ObjectId, ref: "toAccount" },
+    fromAccount: { type: String, ref: "fromAccount" },
+    toAccount: { type: String, ref: "toAccount" },
     status: {
       type: String,
       enum: ["pending", "completed", "failed"],
