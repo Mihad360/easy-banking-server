@@ -1,17 +1,22 @@
 import { model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import config from "../../config";
-import { TUserInterface, UserModel } from "./user.interface";
+import { TOtp, TUserInterface, UserModel } from "./user.interface";
 
 const userSchema = new Schema<TUserInterface, UserModel>(
   {
-    customerId: { type: String, unique: true, sparse: true },
-    managerId: { type: String, unique: true, sparse: true },
-    adminId: { type: String, unique: true, sparse: true },
+    // customerId: { type: String, unique: true, sparse: true },
+    // managerId: { type: String, unique: true, sparse: true },
+    // adminId: { type: String, unique: true, sparse: true },
+    name: {
+      firstName: { type: String, trim: true },
+      lastName: { type: String, trim: true },
+    },
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String },
     isDeleted: { type: Boolean, default: false },
+    profilePhotoUrl: { type: String },
   },
   {
     timestamps: true,
@@ -39,3 +44,19 @@ userSchema.statics.compareUserPassword = async function (
 };
 
 export const User = model<TUserInterface, UserModel>("User", userSchema);
+
+const otpSchema = new Schema<TOtp>({
+  otp: { type: String, required: true },
+  expiresAt: { type: Date, required: true },
+  name: {
+    firstName: { type: String, trim: true },
+    lastName: { type: String, trim: true },
+  },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  role: { type: String },
+  isDeleted: { type: Boolean, default: false },
+  profilePhotoUrl: { type: String },
+});
+
+export const OtpModel = model<TOtp>("Otp", otpSchema);

@@ -15,21 +15,27 @@ router.post(
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
-    next()
+    next();
   },
   validateRequest(customerValidations.createCustomerValidation),
   userControllers.createCustomer,
 );
-router.post(
-  "/create-manager",
-  validateRequest(managerValidations.createManagerValidation),
-  userControllers.createManager,
+router.post("/verify-otp", userControllers.verifyOtp);
+router.patch(
+  "/update-role/:id",
+  auth(USER_ROLE.admin),
+  userControllers.updateUserRole,
 );
-router.post(
-  "/create-admin",
-  validateRequest(adminValidations.createAdminValidation),
-  userControllers.createAdmin,
-);
+// router.post(
+//   "/create-manager",
+//   validateRequest(managerValidations.createManagerValidation),
+//   userControllers.createManager,
+// );
+// router.post(
+//   "/create-admin",
+//   validateRequest(adminValidations.createAdminValidation),
+//   userControllers.createAdmin,
+// );
 router.get(
   "/",
   auth(USER_ROLE.admin, USER_ROLE.manager),

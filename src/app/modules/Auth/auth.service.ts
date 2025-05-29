@@ -4,15 +4,16 @@ import { User } from "../User/user.model";
 import { TLoginUser } from "./auth.interface";
 import { createToken, verifyToken } from "./auth.utils";
 import config from "../../config";
+import { Types } from "mongoose";
 
-interface JwtPayload {
-  user: string; // No undefined allowed
+export interface JwtPayload {
+  user: Types.ObjectId; // No undefined allowed
   email: string;
   role: string;
 }
 
 const loginUser = async (payload: TLoginUser) => {
-  const user = await User.isUserExistByEmail(payload.email);
+  const user = await User.findOne({ email: payload.email });
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
@@ -23,10 +24,11 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(HttpStatus.FORBIDDEN, "Password did not matched");
   }
 
-  let userId;
-  if (user?.role === "admin") userId = user.adminId;
-  else if (user?.role === "manager") userId = user.managerId;
-  else if (user?.role === "customer") userId = user.customerId;
+  const userId = user?._id;
+  // let userId;
+  // if (user?.role === "admin") userId = user.adminId;
+  // else if (user?.role === "manager") userId = user.managerId;
+  // else if (user?.role === "customer") userId = user.customerId;
 
   if (!userId) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
@@ -57,7 +59,7 @@ const loginUser = async (payload: TLoginUser) => {
 
 const refreshToken = async (token: string) => {
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
-// console.log(decoded)
+  // console.log(decoded)
   let user;
   if (decoded?.role === "admin") {
     user = await User.findOne({ adminId: decoded.user, email: decoded.email });
@@ -79,12 +81,12 @@ const refreshToken = async (token: string) => {
   if (user?.isDeleted) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
   }
-
+const userId = user._id
   // Assign correct ID based on role
-  let userId;
-  if (user.role === "admin") userId = user.adminId;
-  else if (user.role === "manager") userId = user.managerId;
-  else userId = user.customerId;
+  // let userId;
+  // if (user.role === "admin") userId = user.adminId;
+  // else if (user.role === "manager") userId = user.managerId;
+  // else userId = user.customerId;
 
   if (!userId) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");

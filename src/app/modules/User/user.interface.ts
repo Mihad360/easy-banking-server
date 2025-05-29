@@ -1,14 +1,33 @@
 import { Model } from "mongoose";
 
 export type TUserInterface = {
-  customerId?: string;
-  managerId?: string;
-  adminId?: string;
+  // customerId?: string;
+  // managerId?: string;
+  // adminId?: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
   email: string;
   password: string;
   role: string;
   isDeleted: boolean;
+  profilePhotoUrl?: string;
 };
+
+export interface TOtp {
+  otp: string;
+  expiresAt: Date;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  email: string;
+  password: string;
+  role: string;
+  isDeleted: boolean;
+  profilePhotoUrl?: string;
+}
 
 export interface UserModel extends Model<TUserInterface> {
   isUserExistByEmail(email: string): Promise<TUserInterface>;

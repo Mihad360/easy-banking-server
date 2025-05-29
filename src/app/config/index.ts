@@ -17,5 +17,7 @@ export default {
   cloudinary_name: process.env.CLOUDINARY_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+  node_mail_email: process.env.NODE_MAIL_EMAIL,
+  node_mail_pass: process.env.NODE_MAIL_PASS,
   // super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 };

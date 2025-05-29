@@ -10,9 +10,8 @@ import { User } from "../User/user.model";
 import { checkUserRole } from "../../utils/checkUserRole";
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
-  const query = await checkUserRole(user);
-
-  const isUserExist = await User.findOne(query);
+  // const query = await checkUserRole(user);
+  const isUserExist = await User.findById(user?.user);
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
@@ -99,9 +98,9 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
 };
 
 const createWithdraw = async (user: TJwtUser, payload: TTransaction) => {
-  const query = await checkUserRole(user);
+  // const query = await checkUserRole(user);
 
-  const isUserExist = await User.findOne(query);
+  const isUserExist = await User.findById(user?.user);
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
@@ -208,8 +207,8 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
       "Please enter valid account numbers",
     );
   }
-  const query = await checkUserRole(user);
-  const isUserExist = await User.findOne(query);
+  // const query = await checkUserRole(user);
+  const isUserExist = await User.findById(user?.user);
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
