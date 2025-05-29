@@ -4,6 +4,8 @@ import sendResponse from "../../utils/sendResponse";
 import { userServices } from "./user.service";
 
 const createCustomer = catchAsync(async (req, res) => {
+  const file = req.file
+  console.log(file, req.body)
   const result = await userServices.createCustomer(req.body);
 
   sendResponse(res, {

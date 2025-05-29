@@ -28,7 +28,7 @@ const updateCustomerValidation = z.object({
       email: z.string().email("Invalid email address"),
       password: z.string().min(6, "Password must be at least 6 characters"), // you can adjust the rules
       phoneNumber: z.string().min(1, "Phone number is required"),
-      profilePhotoUrl: z.string().optional(),
+      // profilePhotoUrl: z.string().optional(),
       isDeleted: z.boolean().optional(),
     })
     .partial(),

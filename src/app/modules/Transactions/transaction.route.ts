@@ -25,7 +25,15 @@ router.post(
   validateRequest(transactionValidations.createTransactionSchema),
   transactionControllers.createTransfer,
 );
-// router.get("/:id", transactionControllers);
-// router.patch("/:id", transactionControllers);
+router.get(
+  "/",
+  auth(USER_ROLE.admin, USER_ROLE.manager),
+  transactionControllers.getTransactions,
+);
+router.get(
+  "/personal-transactions",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  transactionControllers.getPersonalTransactions,
+);
 
 export const transactionRoutes = router;

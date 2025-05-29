@@ -15,6 +15,7 @@ import { TManager } from "../Manager/manager.interface";
 import { ManagerModel } from "../Manager/manager.model";
 import { TAdmin } from "../Admin/admin.interface";
 import { AdminModel } from "../Admin/admin.model";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 const createCustomer = async (payload: TCustomer) => {
   const userData: Partial<TUserInterface> = {};
@@ -39,22 +40,24 @@ const createCustomer = async (payload: TCustomer) => {
     session.startTransaction();
     userData.customerId = await generateCustomerId();
 
-    const newUser = await User.create([userData], { session });
-    if (!newUser) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "New User create failed");
-    }
+    sendImageToCloudinary();
 
-    payload.customerId = newUser[0].customerId;
-    payload.user = newUser[0]._id;
+    // const newUser = await User.create([userData], { session });
+    // if (!newUser) {
+    //   throw new AppError(HttpStatus.BAD_REQUEST, "New User create failed");
+    // }
 
-    const newCustomer = await CustomerModel.create([payload], { session });
-    if (!newCustomer) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "New Customer create failed");
-    }
+    // payload.customerId = newUser[0].customerId;
+    // payload.user = newUser[0]._id;
 
-    await session.commitTransaction();
-    await session.endSession();
-    return newCustomer;
+    // const newCustomer = await CustomerModel.create([payload], { session });
+    // if (!newCustomer) {
+    //   throw new AppError(HttpStatus.BAD_REQUEST, "New Customer create failed");
+    // }
+
+    // await session.commitTransaction();
+    // await session.endSession();
+    // return newCustomer;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await session.abortTransaction();

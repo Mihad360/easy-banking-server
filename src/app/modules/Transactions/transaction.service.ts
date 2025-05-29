@@ -265,7 +265,8 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
   }
   const newBalance =
     Number(isFromAccountExist.balance) - Number(payload.amount);
-  const newToBalance = Number(isToAccountExist.balance) + Number(payload.amount);
+  const newToBalance =
+    Number(isToAccountExist.balance) + Number(payload.amount);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -338,8 +339,29 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
   }
 };
 
+const getTransactions = async () => {
+  const result = await TransactionModel.find();
+  return result;
+};
+
+const getPersonalTransactions = async (user: TJwtUser) => {
+  const query = await checkUserRole(user);
+  const isUserExist = await User.findOne(query);
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
+  }
+  const isAccountExist = await AccountModel.findOne({ user: isUserExist._id });
+  if (!isAccountExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The Account is not found");
+  }
+  const result = await TransactionModel.find({ user: isAccountExist.user });
+  return result;
+};
+
 export const transactionServices = {
   createDeposit,
   createWithdraw,
   createTransfer,
+  getTransactions,
+  getPersonalTransactions,
 };
