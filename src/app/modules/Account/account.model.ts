@@ -56,6 +56,10 @@ const accountSchema = new Schema<TBankAccount>(
       type: String,
       required: true,
     },
+    lastInterestDate: {
+      type: Date,
+      default: Date.now,
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {

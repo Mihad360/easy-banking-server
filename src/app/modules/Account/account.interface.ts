@@ -22,5 +22,6 @@ export interface TBankAccount {
   city: string;
   postalCode: string;
   country: string;
+  lastInterestDate: Date;
   isDeleted: boolean;
 }

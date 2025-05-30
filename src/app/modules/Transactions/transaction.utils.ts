@@ -24,6 +24,8 @@ export const generateTransactionId = async (payload: string) => {
     curreentTraType = "WITHDRAW";
   } else if (payload === "transfer") {
     curreentTraType = "TRANSFER";
+  } else if (payload === "interest") {
+    curreentTraType = "INTEREST";
   } else {
     throw new AppError(
       HttpStatus.BAD_REQUEST,

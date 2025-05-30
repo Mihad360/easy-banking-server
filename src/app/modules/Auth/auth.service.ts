@@ -10,6 +10,7 @@ export interface JwtPayload {
   user: Types.ObjectId; // No undefined allowed
   email: string;
   role: string;
+  profilePhotoUrl?: string;
 }
 
 const loginUser = async (payload: TLoginUser) => {
@@ -38,6 +39,7 @@ const loginUser = async (payload: TLoginUser) => {
     user: userId,
     email: user?.email,
     role: user?.role,
+    profilePhotoUrl: user?.profilePhotoUrl,
   };
 
   const accessToken = createToken(
@@ -81,7 +83,7 @@ const refreshToken = async (token: string) => {
   if (user?.isDeleted) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
   }
-const userId = user._id
+  const userId = user._id;
   // Assign correct ID based on role
   // let userId;
   // if (user.role === "admin") userId = user.adminId;
@@ -96,6 +98,7 @@ const userId = user._id
     user: userId,
     email: user.email,
     role: user.role,
+    profilePhotoUrl: user?.profilePhotoUrl,
   };
 
   const accessToken = createToken(

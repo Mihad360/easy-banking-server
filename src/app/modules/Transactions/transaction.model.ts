@@ -9,7 +9,7 @@ const transactionSchema = new Schema<TTransaction>(
     transaction_Id: { type: String },
     transactionType: {
       type: String,
-      enum: ["deposit", "withdraw", "transfer"],
+      enum: ["deposit", "withdraw", "transfer", "interest"],
       required: true,
     },
     amount: { type: Number, required: true },

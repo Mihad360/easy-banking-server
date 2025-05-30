@@ -121,6 +121,9 @@ const createCustomer = async (file: any, payload: TOtp) => {
 };
 
 const verifyOtp = async (payload: { email: string; otp: string }) => {
+  if (!payload.email || !payload.otp) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "Email or OTP required");
+  }
   const result = await verifyOtpAndCreateUser(payload);
   return result;
 };

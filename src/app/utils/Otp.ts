@@ -66,6 +66,7 @@ export const verifyOtpAndCreateUser = async (payload: {
         user: newUser[0]._id,
         email: newUser[0].email,
         role: newUser[0].role,
+        profilePhotoUrl: newUser[0].profilePhotoUrl,
       };
       const accessToken = createToken(
         jwtPayload,

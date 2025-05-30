@@ -4,6 +4,7 @@ import config from "./app/config";
 import mongoose from "mongoose";
 import { Server } from "http";
 import seedSuperAdmin from "./app/DB";
+import { applyMonthlyInterests } from "./app/utils/updateInterest";
 
 let server: Server;
 
@@ -32,6 +33,7 @@ async function main() {
     seedSuperAdmin().catch((err) =>
       console.error("Super admin seeding error:", err),
     );
+    applyMonthlyInterests()
 
     server = app.listen(config.port, () => {
       console.log(`app listening on port ${config.port}`);
