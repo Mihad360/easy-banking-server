@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { Server } from "http";
 import seedSuperAdmin from "./app/DB";
 import { applyMonthlyInterests } from "./app/utils/updateInterest";
+import cron from "node-cron";
 
 let server: Server;
 
@@ -33,7 +34,16 @@ async function main() {
     seedSuperAdmin().catch((err) =>
       console.error("Super admin seeding error:", err),
     );
-    applyMonthlyInterests()
+
+    cron.schedule("0 0 * * *", async () => {
+      console.log("🎯 Running yearly compound interest job...");
+      try {
+        await applyMonthlyInterests();
+        console.log("✅ Yearly compound interest applied.");
+      } catch (error) {
+        console.log("Interest update faild", error);
+      }
+    });
 
     server = app.listen(config.port, () => {
       console.log(`app listening on port ${config.port}`);

@@ -12,15 +12,17 @@ export const applyMonthlyInterests = async () => {
   const now = new Date();
   for (const account of accounts) {
     const lastApplied = account.lastInterestDate;
-    const monthPassed = dayjs(now).diff(dayjs(lastApplied), "month");
+    const monthPassed = dayjs(now).diff(dayjs(lastApplied), "year");
     if (monthPassed >= 1) {
-      const interestRate = 0.09;
-      const monthlyRate = interestRate / 12;
-      const interest = Math.ceil(
-        Number(account.balance) * Number(monthlyRate) * Number(monthPassed),
-      );
-      let balance = account.balance as number;
-      const newBalance = (balance += interest);
+      const interestRate = 0.08;
+      const balance = account.balance as number;
+      const n = 1;
+      const t = monthPassed;
+
+      // Compound interest formula: A = P * (1 + r/n)^(nt)
+      const A = Math.pow(1 + interestRate / n, n * t);
+      const interest = Math.ceil(A - balance);
+      const newBalance = balance + interest;
       const session = await mongoose.startSession();
       try {
         session.startTransaction();

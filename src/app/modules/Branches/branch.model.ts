@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
+import { TBranch } from "./branch.interface";
 
-const branchSchema = new Schema(
+const branchSchema = new Schema<TBranch>(
   {
     name: { type: String, required: true },
     code: { type: String, required: true, unique: true },
@@ -9,6 +10,8 @@ const branchSchema = new Schema(
     state: { type: String },
     country: { type: String, required: true },
     zipCode: { type: String, required: true },
+    reserevedBalance: { type: Number, default: 0 },
+    usedBalance: { type: Number, default: 0 },
     contactNumber: { type: [String], required: true },
     email: { type: String },
     managers: [{ type: Schema.Types.ObjectId, ref: "Manager" }],
@@ -26,4 +29,4 @@ const branchSchema = new Schema(
   },
 );
 
-export const BranchModel = model("Branch", branchSchema);
+export const BranchModel = model<TBranch>("Branch", branchSchema);
