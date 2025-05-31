@@ -16,6 +16,32 @@ const requestLoan = catchAsync(async (req, res) => {
   });
 });
 
+const updateRequestedLoan = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await loadServices.updateRequestedLoan(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Loan approved and updated succesfully",
+    data: result,
+  });
+});
+
+const updateRePaymentSchedule = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await loadServices.updateRePaymentSchedule(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Loan payment details updated succesfully",
+    data: result,
+  });
+});
+
 export const loanControllers = {
   requestLoan,
+  updateRequestedLoan,
+  updateRePaymentSchedule,
 };
