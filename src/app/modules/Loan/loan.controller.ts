@@ -28,9 +28,9 @@ const updateRequestedLoan = catchAsync(async (req, res) => {
   });
 });
 
-const updateRePaymentSchedule = catchAsync(async (req, res) => {
+const payLoan = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const result = await loadServices.updateRePaymentSchedule(id, req.body);
+  const result = await loadServices.payLoan(id, req.body);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -43,5 +43,5 @@ const updateRePaymentSchedule = catchAsync(async (req, res) => {
 export const loanControllers = {
   requestLoan,
   updateRequestedLoan,
-  updateRePaymentSchedule,
+  payLoan,
 };

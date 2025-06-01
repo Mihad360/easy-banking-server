@@ -20,7 +20,7 @@ export const applyMonthlyInterests = async () => {
       const t = monthPassed;
 
       // Compound interest formula: A = P * (1 + r/n)^(nt)
-      const A = Math.pow(1 + interestRate / n, n * t);
+      const A = balance * Math.pow(1 + interestRate / n, n * t);
       const interest = Math.ceil(A - balance);
       const newBalance = balance + interest;
       const session = await mongoose.startSession();

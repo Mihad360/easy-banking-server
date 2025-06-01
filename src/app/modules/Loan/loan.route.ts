@@ -18,9 +18,9 @@ router.patch(
   loanControllers.updateRequestedLoan,
 );
 router.patch(
-  "/update-loan-payment-schedule/:id",
+  "/pay-loan/:id",
   auth(USER_ROLE.admin, USER_ROLE.manager),
   //   validateRequest(branchValidations.createBranchValidation),
-  loanControllers.updateRePaymentSchedule,
+  loanControllers.payLoan,
 );
 export const loanRoutes = router;
