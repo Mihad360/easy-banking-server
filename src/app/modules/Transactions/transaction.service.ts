@@ -8,6 +8,7 @@ import { generateTransactionId } from "./transaction.utils";
 import { TJwtUser } from "../../interface/global";
 import { User } from "../User/user.model";
 import { checkUserRole } from "../../utils/checkUserRole";
+import { createPayment } from "../../utils/stripePayment";
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
   const isUserExist = await User.findById(user?.user);
@@ -41,22 +42,10 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
 
   try {
     session.startTransaction();
-    const updateAmount = await AccountModel.findOneAndUpdate(
-      {
-        accountNumber: payload.account,
-      },
-      { balance: newBalance },
-      { session, new: true },
-    );
-
-    if (!updateAmount) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "Balance update failed");
-    }
 
     payload.transaction_Id = await generateTransactionId(
       payload.transactionType,
     );
-    payload.user = isAccountExist?.user;
     const transactionData = {
       ...payload,
       status: "pending",
@@ -71,26 +60,20 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
       throw new AppError(HttpStatus.BAD_REQUEST, "Transaction creation failed");
     }
 
-    const updateTransactionStatus = await TransactionModel.findByIdAndUpdate(
-      createTransaction[0]._id,
-      { status: "completed" },
-      { session, new: true },
-    );
-
-    if (!updateTransactionStatus) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        "Transaction status update failed",
-      );
-    }
-    await AccountModel.findByIdAndUpdate(
-      isAccountExist._id,
-      { $push: { transactions: updateTransactionStatus._id } },
-      { session, new: true },
-    );
+    const metaData = {
+      transactionType: payload.transactionType,
+      amount: payload.amount.toString(),
+      newBalance: newBalance.toString(),
+      accountNumber: payload.account,
+      user: isAccountExist.user.toString(),
+      description: payload.description,
+      transactionId: createTransaction[0]._id.toString(),
+    };
+    const url = await createPayment(newBalance, isUserExist.email, metaData);
+    console.log(url);
 
     await session.commitTransaction();
-    return updateTransactionStatus;
+    return createTransaction;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // console.log("💥 Transaction Error:", error);
@@ -102,8 +85,6 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
 };
 
 const createWithdraw = async (user: TJwtUser, payload: TTransaction) => {
-  // const query = await checkUserRole(user);
-
   const isUserExist = await User.findById(user?.user);
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");

@@ -5,6 +5,7 @@ dotenv.config({ path: path.join((process.cwd(), ".env")) });
 
 export default {
   port: process.env.PORT,
+  client_url: process.env.CLIENT_URL,
   database_url: process.env.DATABASE_URL,
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
   // default_pass: process.env.DEFAULT_PASS,
@@ -19,5 +20,7 @@ export default {
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   node_mail_email: process.env.NODE_MAIL_EMAIL,
   node_mail_pass: process.env.NODE_MAIL_PASS,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  stripe_webhook_key: process.env.STRIPE_WEBHOOK_KEY,
   // super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 };

@@ -7,7 +7,7 @@ import { AccountModel } from "../Account/account.model";
 import { BranchModel } from "../Branches/branch.model";
 import { LoanModel } from "./loan.model";
 import dayjs from "dayjs";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { TransactionModel } from "../Transactions/transaction.model";
 import { generateTransactionId } from "../Transactions/transaction.utils";
 
@@ -100,7 +100,6 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
         Number(isLoanExist.loanAmount);
       const newUsedBalance =
         Number(isBranchExist?.usedBalance) + Number(isLoanExist.loanAmount);
-      console.log(newReserveBalance, newUsedBalance);
       const updateBranchBalance = await BranchModel.findOneAndUpdate(
         {
           _id: isLoanExist.branch,
@@ -272,7 +271,10 @@ const payLoan = async (id: string, payload: { monthsToPay: number }) => {
       (loan) => loan.paid === false,
     );
     if (!unPaids) {
-      throw new AppError(HttpStatus.NOT_FOUND, "payment schedule not found");
+      throw new AppError(
+        HttpStatus.NOT_FOUND,
+        "Loan is already submitted or not found",
+      );
     }
     if (unPaids.length < payload.monthsToPay) {
       throw new AppError(
@@ -310,7 +312,7 @@ const payLoan = async (id: string, payload: { monthsToPay: number }) => {
     const transaction = {
       account: isLoanExist.accountNumber,
       user: isLoanExist.user,
-      transactionType: "loan",
+      transactionType: "deposit-loan",
       transaction_Id: transaction_Id,
       status: "completed",
       description: "Loan Deposit successfull",

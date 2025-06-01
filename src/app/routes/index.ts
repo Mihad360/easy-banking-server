@@ -8,6 +8,7 @@ import { managerRoutes } from "../modules/Manager/manager.route";
 import { adminRoutes } from "../modules/Admin/admin.route";
 import { transactionRoutes } from "../modules/Transactions/transaction.route";
 import { loanRoutes } from "../modules/Loan/loan.route";
+import { paymentRoutes } from "../modules/Payment/payment.route";
 
 const router = Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
   {
     path: "/loan",
     route: loanRoutes,
+  },
+  {
+    path: "/payment",
+    route: paymentRoutes,
   },
 ];
 

@@ -4,7 +4,14 @@ import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
 import router from "./app/routes";
 import cookieParser from "cookie-parser";
+import { stripeWebhookHandler } from "./app/utils/stripeWebhookHandler";
 const app: Application = express();
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler,
+);
 
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
@@ -22,7 +29,6 @@ app.get("/", (req, res) => {
 });
 
 app.use(globalErrorHandler);
-
 app.use(notFound);
 
 export default app;
