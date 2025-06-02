@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import { AccountModel } from "../../modules/Account/account.model";
 import AppError from "../../erros/AppError";
 import { TransactionModel } from "../../modules/Transactions/transaction.model";
+import Stripe from "stripe";
 
-export const completeDeposit = async (metaData) => {
-//   console.log(metaData);
+export const completeDeposit = async (metaData: Stripe.Metadata) => {
+  // console.log(metaData);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -47,6 +48,7 @@ export const completeDeposit = async (metaData) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    console.log(error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    throw new AppError(HttpStatus.BAD_REQUEST, error as any);
   }
 };

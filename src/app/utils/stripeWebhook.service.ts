@@ -1,16 +1,17 @@
 import Stripe from "stripe";
 import { completeDeposit } from "./completePayments/completeDeposit";
+import { completeDepostiLoan } from "./completePayments/completeDepostiLoan";
 
 export const handleCheckoutSessionCompleted = async (
   session: Stripe.Checkout.Session,
 ) => {
-  // console.log(session)
-  // Extract metadata you passed when creating the checkout session
   const { metadata } = session;
-
+// console.log(metadata)
   if (metadata?.transactionType === "deposit") {
-    await completeDeposit(metadata);
-  } else if (metadata?.transactionType === "transfer") {
-    // await completeTransfer(userId, accountId, session.amount_total);
+    const result = await completeDeposit(metadata);
+    console.log(result);
+  } else if (metadata?.transactionType === "deposit-loan") {
+    const result = await completeDepostiLoan(metadata);
+    console.log(result);
   }
 };

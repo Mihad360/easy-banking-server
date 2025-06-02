@@ -64,16 +64,16 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
       transactionType: payload.transactionType,
       amount: payload.amount.toString(),
       newBalance: newBalance.toString(),
-      accountNumber: payload.account,
+      accountNumber: payload.account || "",
       user: isAccountExist.user.toString(),
-      description: payload.description,
+      description: payload.description || "",
       transactionId: createTransaction[0]._id.toString(),
     };
     const url = await createPayment(newBalance, isUserExist.email, metaData);
     console.log(url);
 
     await session.commitTransaction();
-    return createTransaction;
+    return url;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // console.log("💥 Transaction Error:", error);

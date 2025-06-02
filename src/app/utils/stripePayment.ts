@@ -7,9 +7,9 @@ const stripe = new Stripe(config.stripe_secret_key as string, {
 export const createPayment = async (
   amount: number,
   email: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  metaData: any,
+  metaData: Stripe.Metadata,
 ) => {
+  // console.log(metaData)
   try {
     const session = stripe.checkout.sessions.create({
       payment_method_types: ["card"],
