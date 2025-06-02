@@ -2,7 +2,8 @@ import { z } from "zod";
 
 const loginValidation = z.object({
   body: z.object({
-    email: z.string().email(),
+    phoneNumber: z.string().optional(),
+    email: z.string().optional(),
     password: z.string(),
   }),
 });

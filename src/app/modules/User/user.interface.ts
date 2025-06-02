@@ -13,6 +13,7 @@ export type TUserInterface = {
   role: string;
   isDeleted: boolean;
   profilePhotoUrl?: string;
+  phoneNumber: string;
 };
 
 export interface TOtp {
@@ -27,6 +28,7 @@ export interface TOtp {
   role: string;
   isDeleted: boolean;
   profilePhotoUrl?: string;
+  phoneNumber: string;
 }
 
 export interface UserModel extends Model<TUserInterface> {

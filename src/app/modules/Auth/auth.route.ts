@@ -11,6 +11,7 @@ router.post(
   authControllers.loginUser,
 );
 router.post("/refresh-token", authControllers.refreshToken);
-// router.get("/", userControllers.getUsers);
+router.post("/forget-password", authControllers.forgetPassword);
+router.get("/reset-password", authControllers.resetPassword);
 
 export const authRoutes = router;

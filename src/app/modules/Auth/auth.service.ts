@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { User } from "../User/user.model";
@@ -5,16 +6,28 @@ import { TLoginUser } from "./auth.interface";
 import { createToken, verifyToken } from "./auth.utils";
 import config from "../../config";
 import { Types } from "mongoose";
+import { sendEmail } from "../../utils/sendEmail";
 
 export interface JwtPayload {
   user: Types.ObjectId; // No undefined allowed
   email: string;
   role: string;
   profilePhotoUrl?: string;
+  phoneNumber: string;
 }
 
 const loginUser = async (payload: TLoginUser) => {
-  const user = await User.findOne({ email: payload.email });
+  let user;
+  user = await User.findOne({
+    email: payload.email,
+  });
+
+  if (!user) {
+    user = await User.findOne({
+      phoneNumber: payload.email,
+    });
+  }
+
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
@@ -26,10 +39,6 @@ const loginUser = async (payload: TLoginUser) => {
   }
 
   const userId = user?._id;
-  // let userId;
-  // if (user?.role === "admin") userId = user.adminId;
-  // else if (user?.role === "manager") userId = user.managerId;
-  // else if (user?.role === "customer") userId = user.customerId;
 
   if (!userId) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
@@ -40,6 +49,7 @@ const loginUser = async (payload: TLoginUser) => {
     email: user?.email,
     role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,
+    phoneNumber: user?.phoneNumber,
   };
 
   const accessToken = createToken(
@@ -84,11 +94,6 @@ const refreshToken = async (token: string) => {
     throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
   }
   const userId = user._id;
-  // Assign correct ID based on role
-  // let userId;
-  // if (user.role === "admin") userId = user.adminId;
-  // else if (user.role === "manager") userId = user.managerId;
-  // else userId = user.customerId;
 
   if (!userId) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
@@ -99,6 +104,7 @@ const refreshToken = async (token: string) => {
     email: user.email,
     role: user.role,
     profilePhotoUrl: user?.profilePhotoUrl,
+    phoneNumber: user?.phoneNumber,
   };
 
   const accessToken = createToken(
@@ -112,7 +118,85 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const forgetPassword = async (email: string) => {
+  const user = await User.findOne({
+    email: email,
+  });
+
+  if (!user) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This User is not exist");
+  }
+  // checking if the user is already deleted
+  if (user?.isDeleted) {
+    throw new AppError(HttpStatus.FORBIDDEN, "This User is deleted");
+  }
+
+  const userId = user?._id;
+
+  if (!userId) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The user id is missing");
+  }
+
+  const jwtPayload: JwtPayload = {
+    user: userId,
+    email: user?.email,
+    role: user?.role,
+    profilePhotoUrl: user?.profilePhotoUrl,
+    phoneNumber: user?.phoneNumber,
+  };
+
+  const resetToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    "10m",
+  );
+  const resetUiLink = `${config.reset_pass_ui_link}?email=${user?.email}&token=${resetToken}`;
+  const userEmail = user?.email;
+  sendEmail(userEmail, "Forget link", resetUiLink);
+};
+
+const resetPassword = async (
+  payload: { email: string; newPassword: string },
+  token: string,
+) => {
+  const user = await User.findOne({
+    email: payload.email,
+  });
+
+  if (!user) {
+    throw new AppError(HttpStatus.NOT_FOUND, "This User is not exist");
+  }
+  // checking if the user is already deleted
+  if (user?.isDeleted) {
+    throw new AppError(HttpStatus.FORBIDDEN, "This User is deleted");
+  }
+
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
+
+  if (payload.email !== decoded.email) {
+    throw new AppError(HttpStatus.FORBIDDEN, "You are forbidden");
+  }
+
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  const result = await User.findOneAndUpdate(
+    {
+      email: decoded.email,
+      role: decoded.role,
+    },
+    {
+      password: newHashedPassword,
+    },
+  );
+  return result;
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
+  forgetPassword,
+  resetPassword,
 };

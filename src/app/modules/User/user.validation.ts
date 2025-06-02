@@ -12,6 +12,7 @@ const createUserValidation = z.object({
     password: z.string().min(6),
     role: z.string().optional(),
     profilePhotoUrl: z.string().optional(),
+    phoneNumber: z.string(),
   }),
 });
 

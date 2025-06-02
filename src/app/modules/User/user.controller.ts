@@ -61,35 +61,9 @@ const updateUserRole = catchAsync(async (req, res) => {
   });
 });
 
-// const createManager = catchAsync(async (req, res) => {
-//   const file = req.file;
-//   const result = await userServices.createManager(file, req.body);
-
-//   sendResponse(res, {
-//     statusCode: HttpStatus.OK,
-//     success: true,
-//     message: "Manager created succesfully",
-//     data: result,
-//   });
-// });
-
-// const createAdmin = catchAsync(async (req, res) => {
-//   const file = req.file;
-//   const result = await userServices.createAdmin(file, req.body);
-
-//   sendResponse(res, {
-//     statusCode: HttpStatus.OK,
-//     success: true,
-//     message: "Admin created succesfully",
-//     data: result,
-//   });
-// });
-
 export const userControllers = {
   createCustomer,
   getUsers,
   updateUserRole,
   verifyOtp,
-  // createManager,
-  // createAdmin,
 };

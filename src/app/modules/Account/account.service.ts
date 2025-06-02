@@ -4,11 +4,8 @@ import { User } from "../User/user.model";
 import { TBankAccount } from "./account.interface";
 import { AccountModel } from "./account.model";
 import { generateSavingAccountNumber } from "./account.utils";
-import { CustomerModel } from "../Customer/customer.model";
 import { BranchModel } from "../Branches/branch.model";
 import { ACCOUNT_TYPE, TJwtUser } from "../../interface/global";
-import { ManagerModel } from "../Manager/manager.model";
-import { AdminModel } from "../Admin/admin.model";
 
 const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   console.log(user);
@@ -16,18 +13,6 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
   }
-
-  // let query;
-
-  // if (user.role === "customer") {
-  //   query = user.user;
-  // } else if (user.role === "manager") {
-  //   query = user.user;
-  // } else if (user.role === "admin") {
-  //   query = user.user;
-  // } else {
-  //   throw new AppError(HttpStatus.BAD_REQUEST, "Invalid user role");
-  // }
 
   const isUserExist = await User.findById(user?.user);
   if (!isUserExist) {
@@ -40,36 +25,6 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
       "The user already have an account",
     );
   }
-
-  // let accountId;
-  // // Check based on user role
-  // if (isUserExist.role === "customer") {
-  //   accountId = await CustomerModel.findOne({ user: isUserExist._id });
-  //   if (!accountId) {
-  //     throw new AppError(
-  //       HttpStatus.NOT_FOUND,
-  //       "Customer profile not found for this user",
-  //     );
-  //   }
-  //   payload.customer = accountId?._id;
-  // } else if (isUserExist.role === "manager") {
-  //   accountId = await ManagerModel.findOne({ user: isUserExist._id });
-  //   if (!accountId) {
-  //     throw new AppError(HttpStatus.NOT_FOUND, "The manager is not found");
-  //   }
-  //   payload.manager = accountId?._id;
-  // } else if (isUserExist.role === "admin") {
-  //   accountId = await AdminModel.findOne({ user: isUserExist._id });
-  //   if (!accountId) {
-  //     throw new AppError(HttpStatus.NOT_FOUND, "The admin is not found");
-  //   }
-  //   payload.admin = accountId?._id;
-  // } else {
-  //   throw new AppError(
-  //     HttpStatus.BAD_REQUEST,
-  //     "User role not authorized to open account",
-  //   );
-  // }
 
   const accountNumber = await generateSavingAccountNumber(payload);
   payload.accountNumber = accountNumber;
@@ -142,6 +97,7 @@ const updateAccount = async (id: string, payload: Partial<TBankAccount>) => {
     // eslint-disable-next-line no-self-assign
     newAccountNumber = newAccountNumber;
   }
+  
   if (
     payload.balance &&
     Number(payload.balance) < Number(isAccountExist.minimumBalance)

@@ -26,7 +26,8 @@ export const sendOtpToEmail = async (payload: TOtp) => {
   if (result) {
     const subject = "Easy Banking Registratin OTP";
     const html = `Here is your Easy Banking Registratin OTP: <h1>${otp}</h1> Please verify this OTP for registration`;
-    await sendEmail(payload.email, subject, html);
+    const sendMail = await sendEmail(payload.email, subject, html);
+    console.log(sendMail)
   }
 };
 
@@ -54,6 +55,7 @@ export const verifyOtpAndCreateUser = async (payload: {
         role: isUserExist.role,
         password: isUserExist.password,
         profilePhotoUrl: isUserExist.profilePhotoUrl,
+        phoneNumber: isUserExist.phoneNumber,
       };
       const newUser = await User.create([userData], { session });
       if (!newUser) {
@@ -67,6 +69,7 @@ export const verifyOtpAndCreateUser = async (payload: {
         email: newUser[0].email,
         role: newUser[0].role,
         profilePhotoUrl: newUser[0].profilePhotoUrl,
+        phoneNumber: newUser[0].phoneNumber,
       };
       const accessToken = createToken(
         jwtPayload,

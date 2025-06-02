@@ -5,6 +5,7 @@ import { BranchModel } from "./branch.model";
 import { ManagerModel } from "../Manager/manager.model";
 import { Document, Types } from "mongoose";
 import { TManager } from "../Manager/manager.interface";
+import { User } from "../User/user.model";
 
 const createBranch = async (payload: TBranch) => {
   const isSameCodeBranchExist = await BranchModel.findOne({
@@ -109,7 +110,8 @@ const updateBranchManagers = async (
   }
 
   if (managerObjectIds.length > 0) {
-    const existingManagers = await ManagerModel.find({
+    const existingManagers = await User.find({
+      role: "manager",
       _id: { $in: managerObjectIds },
     });
 
@@ -123,7 +125,9 @@ const updateBranchManagers = async (
 
   const result = await BranchModel.findByIdAndUpdate(
     id,
-    { $set: { managers: managerObjectIds } },
+    {
+      $addToSet: { managers: { $each: managerObjectIds } },
+    },
     { new: true },
   );
 

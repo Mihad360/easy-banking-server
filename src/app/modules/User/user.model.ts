@@ -17,6 +17,7 @@ const userSchema = new Schema<TUserInterface, UserModel>(
     role: { type: String },
     isDeleted: { type: Boolean, default: false },
     profilePhotoUrl: { type: String },
+    phoneNumber: { type: String },
   },
   {
     timestamps: true,
@@ -57,6 +58,7 @@ const otpSchema = new Schema<TOtp>({
   role: { type: String },
   isDeleted: { type: Boolean, default: false },
   profilePhotoUrl: { type: String },
+  phoneNumber: { type: String },
 });
 
 export const OtpModel = model<TOtp>("Otp", otpSchema);
