@@ -8,7 +8,7 @@ const loanSchema = new Schema<TLoan>(
     user: { type: Schema.Types.ObjectId, ref: "User" },
     branch: { type: Schema.Types.ObjectId, ref: "Branch", required: true },
     loanAmount: { type: Number, required: true },
-    interestRate: { type: Number, default: 0.1 },
+    interestRate: { type: Number, default: 0.01 },
     term: { type: Number }, // e.g., months
     startDate: { type: Date },
     endDate: { type: Date },

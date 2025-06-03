@@ -126,21 +126,28 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
       updateLoan.status === "approved" &&
       !updateLoan.repaymentSchedule?.length
     ) {
-      const monthlyAmount =
-        Number(updateLoan.loanAmount) / Number(updateLoan.term);
+      const loanAmount = Number(updateLoan.loanAmount);
+      const term = Number(updateLoan.term);
+      const interestRate = Number(updateLoan.interestRate);
+      let remainingPrincipal = loanAmount;
+      const rePaymentDetails = [];
+      for (let i = 0; i < term; i++) {
+        const interestThisMonth = remainingPrincipal * interestRate;
+        const principalThisMonth = loanAmount / term;
+        const totalDue = principalThisMonth + interestThisMonth;
 
-      const rePaymentDetails = Array.from(
-        { length: updateLoan.term as number },
-        (_, index) => ({
+        rePaymentDetails.push({
           dueDate: dayjs(updateLoan.startDate)
-            .add(index + 1, "month")
+            .add(i + 1, "month")
             .hour(24)
             .toDate(),
-          amountDue: monthlyAmount,
+          amountDue: Math.ceil(totalDue),
           paid: false,
           paidDate: null,
-        }),
-      );
+        });
+
+        remainingPrincipal -= principalThisMonth;
+      }
 
       const updateRepaymentDetails = await LoanModel.findByIdAndUpdate(
         updateLoan._id,
@@ -237,6 +244,7 @@ const payLoan = async (
     const paidBalance =
       (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
       payload.monthsToPay;
+
     const newUserBalance = Number(isAccountExist.balance) - paidBalance;
     const newReserveBalance =
       Number(isBranchExist.reserevedBalance) + paidBalance;

@@ -19,6 +19,8 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
   const newReserveBalance = Number(metadata.newReserveBalance);
   const newUsedBalance = Number(metadata.newUsedBalance);
   const monthsToPay = Number(metadata.monthsToPay);
+  const newRemainingBalance =
+    Number(isLoanExist.remainingBalance) - paidBalance;
 
   const session = await mongoose.startSession();
   try {
@@ -88,7 +90,10 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
     });
     const updatedPay = await LoanModel.findByIdAndUpdate(
       isLoanExist._id,
-      { $set: { repaymentSchedule: updatedSchedule } },
+      {
+        $set: { repaymentSchedule: updatedSchedule },
+        remainingBalance: newRemainingBalance && newRemainingBalance,
+      },
       { session, new: true },
     );
 
@@ -109,7 +114,7 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
 
     await session.commitTransaction();
     await session.endSession();
-    return updatedPay
+    return updatedPay;
     return updatedPay;
   } catch (error) {
     await session.abortTransaction();

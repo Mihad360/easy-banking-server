@@ -19,7 +19,7 @@ router.patch(
 );
 router.patch(
   "/pay-loan/:id",
-  auth(USER_ROLE.admin, USER_ROLE.manager),
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   //   validateRequest(branchValidations.createBranchValidation),
   loanControllers.payLoan,
 );
