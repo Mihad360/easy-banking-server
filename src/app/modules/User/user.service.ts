@@ -34,6 +34,11 @@ const getUsers = async () => {
   return result;
 };
 
+const getEachUsers = async (id: string) => {
+  const result = await User.findById(id);
+  return result;
+};
+
 const updateUserRole = async (id: string, payload: { role: string }) => {
   const isUserExist = await User.findById(id);
   if (!isUserExist) {
@@ -49,9 +54,22 @@ const updateUserRole = async (id: string, payload: { role: string }) => {
   return result;
 };
 
+const getManagers = async () => {
+  const result = await User.find({ role: "manager" });
+  return result;
+};
+
+const getAdmins = async () => {
+  const result = await User.find({ role: "admin" });
+  return result;
+};
+
 export const userServices = {
   createCustomer,
   getUsers,
   updateUserRole,
   verifyOtp,
+  getManagers,
+  getAdmins,
+  getEachUsers,
 };

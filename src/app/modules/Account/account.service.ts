@@ -39,13 +39,26 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
 };
 
 const getAccounts = async () => {
-  const result = await AccountModel.find().populate("user customer");
+  const result = await AccountModel.find().populate("user branch");
   return result;
 };
 
-const getEachAccount = async (id: string) => {
-  const result = await AccountModel.findById(id).populate("user customer");
-  return result;
+const getEachAccount = async (id: string, user: TJwtUser) => {
+  const account = await AccountModel.findById(id).populate("user branch");
+  if (!account) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Account not found");
+  }
+
+  if (["admin", "manager"].includes(user.role)) {
+    return account;
+  }
+  if (account.user._id.toString() === user.user) {
+    return account;
+  }
+  throw new AppError(
+    HttpStatus.FORBIDDEN,
+    "You are not authorized to access this account",
+  );
 };
 
 const updateAccount = async (id: string, payload: Partial<TBankAccount>) => {
@@ -96,7 +109,7 @@ const updateAccount = async (id: string, payload: Partial<TBankAccount>) => {
     // eslint-disable-next-line no-self-assign
     newAccountNumber = newAccountNumber;
   }
-  
+
   if (
     payload.balance &&
     Number(payload.balance) < Number(isAccountExist.minimumBalance)

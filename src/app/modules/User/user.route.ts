@@ -29,5 +29,16 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager),
   userControllers.getUsers,
 );
+router.get(
+  "/managers",
+  auth(USER_ROLE.admin, USER_ROLE.manager),
+  userControllers.getManagers,
+);
+router.get("/admins", auth(USER_ROLE.admin), userControllers.getAdmins);
+router.get(
+  "/:id",
+  auth(USER_ROLE.admin, USER_ROLE.manager),
+  userControllers.getEachUsers,
+);
 
 export const userRoutes = router;

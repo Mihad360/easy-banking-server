@@ -1,5 +1,5 @@
 import fs from "fs";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import config from "../config";
 import multer from "multer";
 
@@ -9,7 +9,10 @@ cloudinary.config({
   api_secret: config.cloudinary_api_secret,
 });
 
-export const sendImageToCloudinary = (path: string, imageName: string) => {
+export const sendImageToCloudinary = (
+  path: string,
+  imageName: string,
+): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       path,
@@ -19,6 +22,10 @@ export const sendImageToCloudinary = (path: string, imageName: string) => {
       function (error, result) {
         if (error) {
           reject(error);
+        }
+        if (!result) {
+          reject(new Error("Cloudinary did not return a result"));
+          return;
         }
         resolve(result);
         fs.unlink(path, (err) => {

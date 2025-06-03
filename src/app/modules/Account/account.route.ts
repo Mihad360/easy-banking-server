@@ -13,12 +13,6 @@ router.post(
   validateRequest(accountValidations.createAccountValidation),
   accountControllers.createAccount,
 );
-// router.post(
-//   "/create-manager-account",
-//   auth(USER_ROLE.admin, USER_ROLE.manager),
-//   validateRequest(accountValidations.createAccountValidation),
-//   accountControllers.createAccount,
-// );
 router.get(
   "/",
   auth(USER_ROLE.admin, USER_ROLE.manager),
@@ -26,7 +20,7 @@ router.get(
 );
 router.get(
   "/:id",
-  auth(USER_ROLE.admin, USER_ROLE.manager),
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   accountControllers.getEachAccount,
 );
 router.patch(

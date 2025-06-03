@@ -29,7 +29,8 @@ const getAccounts = catchAsync(async (req, res) => {
 
 const getEachAccount = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const result = await accountServices.getEachAccount(id);
+  const user = req.user as TJwtUser;
+  const result = await accountServices.getEachAccount(id, user);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,

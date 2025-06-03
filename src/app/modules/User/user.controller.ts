@@ -49,9 +49,43 @@ const getUsers = catchAsync(async (req, res) => {
   });
 });
 
+const getManagers = catchAsync(async (req, res) => {
+  const result = await userServices.getManagers();
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Managers retrived succesfully",
+    data: result,
+  });
+});
+
+const getAdmins = catchAsync(async (req, res) => {
+  const result = await userServices.getAdmins();
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "User retrived succesfully",
+    data: result,
+  });
+});
+
 const updateUserRole = catchAsync(async (req, res) => {
   const id = req.params.id;
   const result = await userServices.updateUserRole(id, req.body);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "User retrived succesfully",
+    data: result,
+  });
+});
+
+const getEachUsers = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await userServices.getEachUsers(id);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -66,4 +100,7 @@ export const userControllers = {
   getUsers,
   updateUserRole,
   verifyOtp,
+  getManagers,
+  getAdmins,
+  getEachUsers,
 };
