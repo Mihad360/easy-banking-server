@@ -320,8 +320,6 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
     );
   }
 
-  // if (isFromAccountExist.accountType === "checking") {
-
   const newBalance =
     Number(isFromAccountExist.balance) - Number(payload.amount);
   const newToBalance =

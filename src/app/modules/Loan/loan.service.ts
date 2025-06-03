@@ -241,9 +241,25 @@ const payLoan = async (
   try {
     session.startTransaction();
 
+    const rePaymentDetails = isLoanExist.repaymentSchedule?.filter(
+      (month) => !month.paid,
+    );
+    
     const paidBalance =
-      (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
-      payload.monthsToPay;
+      rePaymentDetails &&
+      rePaymentDetails
+        .slice(0, payload.monthsToPay)
+        .reduce((sum, month) => sum + month.amountDue, 0);
+
+    if (!paidBalance) {
+      throw new AppError(
+        HttpStatus.NOT_FOUND,
+        "The repayment schedule not found",
+      );
+    }
+    // const paidBalance =
+    //   (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
+    //   payload.monthsToPay;
 
     const newUserBalance = Number(isAccountExist.balance) - paidBalance;
     const newReserveBalance =

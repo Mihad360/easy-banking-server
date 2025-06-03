@@ -9,7 +9,7 @@ import { generateTransactionId } from "../../modules/Transactions/transaction.ut
 import Stripe from "stripe";
 
 export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
-  // console.log(metadata);
+  console.log(metadata);
   const isLoanExist = await LoanModel.findById(metadata.loan);
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
