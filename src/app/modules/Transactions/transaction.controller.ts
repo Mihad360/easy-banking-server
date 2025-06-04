@@ -51,6 +51,18 @@ const getTransactions = catchAsync(async (req, res) => {
   });
 });
 
+const getEachTransactions = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await transactionServices.getEachTransactions(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Transfer retrieved succesfully",
+    data: result,
+  });
+});
+
 const getPersonalTransactions = catchAsync(async (req, res) => {
   const user = req.user as TJwtUser;
   const result = await transactionServices.getPersonalTransactions(user);
@@ -69,4 +81,5 @@ export const transactionControllers = {
   createTransfer,
   getTransactions,
   getPersonalTransactions,
+  getEachTransactions,
 };

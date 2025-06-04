@@ -40,8 +40,33 @@ const payLoan = catchAsync(async (req, res) => {
   });
 });
 
+const getLoans = catchAsync(async (req, res) => {
+  const result = await loadServices.getLoans();
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Loans retrieved succesfully",
+    data: result,
+  });
+});
+
+const getEachLoans = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await loadServices.getEachLoans(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Loans retrieved succesfully",
+    data: result,
+  });
+});
+
 export const loanControllers = {
   requestLoan,
   updateRequestedLoan,
   payLoan,
+  getLoans,
+  getEachLoans,
 };

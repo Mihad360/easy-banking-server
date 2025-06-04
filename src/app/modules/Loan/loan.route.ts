@@ -14,7 +14,6 @@ router.post(
 router.patch(
   "/update-requested-loan/:id",
   auth(USER_ROLE.admin, USER_ROLE.manager),
-  //   validateRequest(branchValidations.createBranchValidation),
   loanControllers.updateRequestedLoan,
 );
 router.patch(
@@ -23,4 +22,15 @@ router.patch(
   //   validateRequest(branchValidations.createBranchValidation),
   loanControllers.payLoan,
 );
+router.get(
+  "/",
+  auth(USER_ROLE.admin, USER_ROLE.manager),
+  loanControllers.getLoans,
+);
+router.get(
+  "/:id",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  loanControllers.getEachLoans,
+);
+
 export const loanRoutes = router;

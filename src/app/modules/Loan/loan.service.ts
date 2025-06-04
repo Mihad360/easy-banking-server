@@ -26,6 +26,23 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
   }
+  const isUserHaveLoan = await LoanModel.findOne({
+    user: isUserExist._id,
+    accountNumber: isAccountExist.accountNumber,
+  });
+  if (!isUserHaveLoan) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Your loan is not found");
+  }
+  const isLastLoanCompleted = isUserHaveLoan.repaymentSchedule?.filter(
+    (loan) => !loan.paid,
+  );
+
+  if (isLastLoanCompleted && isLastLoanCompleted?.length > 0) {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      "You already have an unpaid loan. Please paid this first to get another loan",
+    );
+  }
 
   payload.user = isUserExist._id;
   payload.account = isAccountExist._id;
@@ -77,7 +94,12 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
           .endOf("month")
           .toDate();
     payload.endDate = endDate;
-    payload.remainingBalance = isLoanExist.loanAmount;
+    const principal = isLoanExist.loanAmount;
+    const rate = isLoanExist.interestRate as number;
+    const totalPayable =
+      principal + (principal * rate * Number(isLoanExist.term)) / 100;
+    payload.remainingBalance = totalPayable;
+    
     const updateLoan = await LoanModel.findByIdAndUpdate(
       id,
       {
@@ -244,7 +266,16 @@ const payLoan = async (
     const rePaymentDetails = isLoanExist.repaymentSchedule?.filter(
       (month) => !month.paid,
     );
-    
+    if (!rePaymentDetails) {
+      throw new AppError(HttpStatus.NOT_FOUND, "Payment schedule not found");
+    }
+    if (payload.monthsToPay > rePaymentDetails.length) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        `You only have ${rePaymentDetails.length} unpaid months left.`,
+      );
+    }
+
     const paidBalance =
       rePaymentDetails &&
       rePaymentDetails
@@ -290,8 +321,26 @@ const payLoan = async (
   }
 };
 
+const getLoans = async () => {
+  const result = await LoanModel.find().sort({
+    status: -1,
+  });
+  return result;
+};
+
+const getEachLoans = async (id: string) => {
+  const isLoanExist = await LoanModel.findById(id);
+  if (!isLoanExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "The loan is not exist");
+  }
+  const result = await LoanModel.findById(id);
+  return result;
+};
+
 export const loadServices = {
   requestLoan,
   updateRequestedLoan,
   payLoan,
+  getLoans,
+  getEachLoans,
 };

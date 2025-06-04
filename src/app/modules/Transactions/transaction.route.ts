@@ -31,6 +31,11 @@ router.get(
   transactionControllers.getTransactions,
 );
 router.get(
+  "/:id",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  transactionControllers.getEachTransactions,
+);
+router.get(
   "/personal-transactions",
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.getPersonalTransactions,

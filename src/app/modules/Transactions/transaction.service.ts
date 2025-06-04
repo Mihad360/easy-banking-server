@@ -7,7 +7,6 @@ import { TransactionModel } from "./transaction.model";
 import { generateTransactionId } from "./transaction.utils";
 import { TJwtUser } from "../../interface/global";
 import { User } from "../User/user.model";
-import { checkUserRole } from "../../utils/checkUserRole";
 import { createPayment } from "../../utils/stripePayment";
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
@@ -46,6 +45,7 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
     payload.transaction_Id = await generateTransactionId(
       payload.transactionType,
     );
+    payload.user = isAccountExist.user;
     const transactionData = {
       ...payload,
       status: "pending",
@@ -437,13 +437,25 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
 };
 
 const getTransactions = async () => {
-  const result = await TransactionModel.find();
+  const result = await TransactionModel.find().sort({
+    status: -1,
+  });
+  return result;
+};
+
+const getEachTransactions = async (id: string) => {
+  const result = await TransactionModel.findById(id)
   return result;
 };
 
 const getPersonalTransactions = async (user: TJwtUser) => {
-  const query = await checkUserRole(user);
-  const isUserExist = await User.findOne(query);
+  if (!user || !user.email) {
+    throw new AppError(HttpStatus.NOT_FOUND, "You are unAuthorized");
+  }
+  const isUserExist = await User.findOne({
+    role: user.role,
+    email: user.email,
+  });
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
@@ -451,7 +463,11 @@ const getPersonalTransactions = async (user: TJwtUser) => {
   if (!isAccountExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Account is not found");
   }
-  const result = await TransactionModel.find({ user: isAccountExist.user });
+  const result = await TransactionModel.find({
+    user: isAccountExist.user,
+  }).sort({
+    status: -1,
+  });
   return result;
 };
 
@@ -461,4 +477,5 @@ export const transactionServices = {
   createTransfer,
   getTransactions,
   getPersonalTransactions,
+  getEachTransactions,
 };
