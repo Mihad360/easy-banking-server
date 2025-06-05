@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { transactionServices } from "./transaction.service";
 import { TJwtUser } from "../../interface/global";
+import { TransactionModel } from "./transaction.model";
 
 const createDeposit = catchAsync(async (req, res) => {
   const user = req.user as TJwtUser;
@@ -75,6 +76,27 @@ const getPersonalTransactions = catchAsync(async (req, res) => {
   });
 });
 
+const downloadTransaction = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const user = req.user as TJwtUser;
+  const pdfBuffer = await transactionServices.downloadTransaction(id, user);
+  const isTransactionExist = await TransactionModel.findById(id);
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=transaction-${isTransactionExist?.transaction_Id}.pdf`,
+  );
+  res.send(pdfBuffer);
+
+  // sendResponse(res, {
+  //   statusCode: HttpStatus.OK,
+  //   success: true,
+  //   message: "Reciept download succesfully",
+  //   data: result,
+  // });
+});
+
 export const transactionControllers = {
   createDeposit,
   createWithdraw,
@@ -82,4 +104,5 @@ export const transactionControllers = {
   getTransactions,
   getPersonalTransactions,
   getEachTransactions,
+  downloadTransaction,
 };

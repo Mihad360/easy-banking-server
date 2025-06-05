@@ -16,4 +16,6 @@ export type TTransaction = {
   toAccount?: string;
   status?: "pending" | "completed" | "failed";
   description?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };

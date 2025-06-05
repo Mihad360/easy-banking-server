@@ -40,5 +40,10 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.getPersonalTransactions,
 );
+router.get(
+  "/:id/download",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  transactionControllers.downloadTransaction,
+);
 
 export const transactionRoutes = router;

@@ -6,6 +6,8 @@ import { ManagerModel } from "../Manager/manager.model";
 import { Document, Types } from "mongoose";
 import { TManager } from "../Manager/manager.interface";
 import { User } from "../User/user.model";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { searchBranch } from "./branch.const";
 
 const createBranch = async (payload: TBranch) => {
   const isSameCodeBranchExist = await BranchModel.findOne({
@@ -50,9 +52,19 @@ const createBranch = async (payload: TBranch) => {
   return result;
 };
 
-const getBranches = async () => {
-  const result = await BranchModel.find().populate("managers");
-  return result;
+const getBranches = async (query: Record<string, unknown>) => {
+  const branchQuery = new QueryBuilder(
+    BranchModel.find().populate("managers"),
+    query,
+  )
+    .search(searchBranch)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  const meta = await branchQuery.countTotal();
+  const result = await branchQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachBranch = async (id: string) => {

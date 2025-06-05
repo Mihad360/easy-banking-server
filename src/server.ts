@@ -9,22 +9,6 @@ import cron from "node-cron";
 
 let server: Server;
 
-// async function main() {
-//   try {
-//     await mongoose.connect(config.database_url as string);
-//     seedSuperAdmin();
-//     // generateCustomerId()
-//     server = app.listen(config.port, () => {
-//       console.log(`app listening on port ${config.port}`);
-//       console.log("Connected Successfully !!!");
-//     });
-//   } catch (error) {
-//     if (error) {
-//       console.log(error, "something went wrong");
-//     }
-//   }
-// }
-
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);

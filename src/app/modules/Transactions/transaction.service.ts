@@ -1,3 +1,4 @@
+import PDFDocument from "pdfkit";
 import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { AccountModel } from "../Account/account.model";
@@ -8,6 +9,9 @@ import { generateTransactionId } from "./transaction.utils";
 import { TJwtUser } from "../../interface/global";
 import { User } from "../User/user.model";
 import { createPayment } from "../../utils/stripePayment";
+import { PassThrough } from "stream";
+import { BranchModel } from "../Branches/branch.model";
+import dayjs from "dayjs";
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
   const isUserExist = await User.findById(user?.user);
@@ -444,7 +448,7 @@ const getTransactions = async () => {
 };
 
 const getEachTransactions = async (id: string) => {
-  const result = await TransactionModel.findById(id)
+  const result = await TransactionModel.findById(id);
   return result;
 };
 
@@ -471,6 +475,114 @@ const getPersonalTransactions = async (user: TJwtUser) => {
   return result;
 };
 
+export const downloadTransaction = async (id: string, user: TJwtUser) => {
+  const isUserTransaction =
+    await TransactionModel.findById(id).populate("user");
+  if (!isUserTransaction) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Transaction not found");
+  }
+
+  const isAccountExist = await AccountModel.findOne({
+    accountNumber: isUserTransaction.account,
+    user: isUserTransaction.user,
+  })
+    .populate("branch")
+    .select("branch user accountHolderName");
+  if (!isAccountExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Bank account not found");
+  }
+
+  const isUserExist = await User.findOne({ _id: isAccountExist?.user });
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (
+    user.role === "customer" &&
+    isUserTransaction?.user?.toString() !== user.user.toString()
+  ) {
+    throw new AppError(
+      HttpStatus.FORBIDDEN,
+      "You are not authorized to download this transaction",
+    );
+  }
+
+  // PDF Generation
+  const doc = new PDFDocument();
+  const stream = new PassThrough();
+  const buffers: Uint8Array[] = [];
+
+  doc.on("data", buffers.push.bind(buffers));
+  doc.on("end", () => stream.end());
+
+  // Header
+  doc
+    .font("Helvetica-Bold")
+    .fontSize(22)
+    .text("Easy Bank Ltd.", { align: "center" });
+  doc
+    .font("Helvetica")
+    .fontSize(14)
+    .text("Transaction Receipt", { align: "center" });
+  doc.moveDown();
+
+  // Branch Name
+  doc.font("Helvetica-Bold").fontSize(12).text("Branch:", { continued: true });
+  doc.font("Helvetica").text(` ${isAccountExist?.branch?.name}`);
+  doc.moveDown(0.5);
+
+  // Horizontal line
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveDown();
+
+  // Transaction Details
+  const addField = (label: string, value: string | number | null) => {
+    doc.font("Helvetica-Bold").text(`${label}:`, { continued: true });
+    doc.font("Helvetica").text(` ${value ?? "N/A"}`);
+    doc.moveDown(0.3);
+  };
+
+  addField("Transaction ID", isUserTransaction.transaction_Id as string);
+  addField("Date", dayjs(isUserTransaction.createdAt).format("YYYY-MM-DD"));
+  addField("Type", isUserTransaction.transactionType);
+  addField("Amount", `BDT-${isUserTransaction.amount}`);
+  addField("Status", isUserTransaction.status || "N/A");
+  addField(
+    "From",
+    (isUserTransaction.fromAccount as string) &&
+      (isUserTransaction.fromAccount as string),
+  );
+  addField(
+    "To",
+    (isUserTransaction.toAccount as string) &&
+      (isUserTransaction.toAccount as string),
+  );
+
+  doc.moveDown();
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveDown();
+
+  // User Info
+  addField("Customer", isAccountExist.accountHolderName as string);
+  addField("Email", isUserExist.email);
+  addField("Description", isUserTransaction.description || "N/A");
+
+  // Footer
+  doc.moveDown(2);
+  doc
+    .font("Helvetica-Bold")
+    .text("Thank you for banking with us.", { align: "center" });
+  doc.moveDown(1);
+  doc.font("Helvetica").text("Authorized by Easy Bank", { align: "right" });
+
+  doc.end();
+
+  await new Promise((resolve) => doc.on("end", resolve));
+  const pdfBuffer = Buffer.concat(buffers);
+
+  return pdfBuffer;
+};
+
 export const transactionServices = {
   createDeposit,
   createWithdraw,
@@ -478,4 +590,5 @@ export const transactionServices = {
   getTransactions,
   getPersonalTransactions,
   getEachTransactions,
+  downloadTransaction,
 };

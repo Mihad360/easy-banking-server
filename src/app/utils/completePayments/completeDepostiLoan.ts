@@ -9,8 +9,10 @@ import { generateTransactionId } from "../../modules/Transactions/transaction.ut
 import Stripe from "stripe";
 
 export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
-  console.log(metadata);
-  const isLoanExist = await LoanModel.findById(metadata.loan);
+  // console.log(metadata);
+  const isLoanExist = await LoanModel.findById(metadata.loan).populate(
+    "branch",
+  );
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
   }
@@ -98,6 +100,8 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
     );
 
     const transaction_Id = await generateTransactionId("deposit-loan");
+    const fromAccount = isLoanExist.accountNumber;
+    const toAccount = isLoanExist?.branch?.name;
     const transaction = {
       account: isLoanExist.accountNumber,
       user: isLoanExist.user,
@@ -106,6 +110,8 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
       status: "completed",
       description: "Loan Deposit successfull",
       amount: paidBalance,
+      fromAccount: fromAccount,
+      toAccount: toAccount,
     };
     const sendTransaction = await TransactionModel.create(transaction);
     if (!sendTransaction) {

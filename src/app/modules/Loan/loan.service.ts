@@ -29,19 +29,19 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
   const isUserHaveLoan = await LoanModel.findOne({
     user: isUserExist._id,
     accountNumber: isAccountExist.accountNumber,
-  });
-  if (!isUserHaveLoan) {
-    throw new AppError(HttpStatus.NOT_FOUND, "Your loan is not found");
-  }
-  const isLastLoanCompleted = isUserHaveLoan.repaymentSchedule?.filter(
-    (loan) => !loan.paid,
-  );
+  }); // Get the most recent loan if multiple exist
 
-  if (isLastLoanCompleted && isLastLoanCompleted?.length > 0) {
-    throw new AppError(
-      HttpStatus.BAD_REQUEST,
-      "You already have an unpaid loan. Please paid this first to get another loan",
+  if (isUserHaveLoan) {
+    const unpaidInstallments = isUserHaveLoan.repaymentSchedule?.filter(
+      (repayment) => !repayment.paid,
     );
+
+    if (unpaidInstallments?.length > 0) {
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        "You already have an unpaid loan. Please pay it off before requesting a new one.",
+      );
+    }
   }
 
   payload.user = isUserExist._id;
@@ -58,7 +58,7 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
 };
 
 const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
-  const isLoanExist = await LoanModel.findById(id);
+  const isLoanExist = await LoanModel.findById(id).populate("branch");
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
   }
@@ -94,27 +94,48 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
           .endOf("month")
           .toDate();
     payload.endDate = endDate;
+    const termInYears = Number(isLoanExist.term);
     const principal = isLoanExist.loanAmount;
     const rate = isLoanExist.interestRate as number;
-    const totalPayable =
-      principal + (principal * rate * Number(isLoanExist.term)) / 100;
-    payload.remainingBalance = totalPayable;
-    
-    const updateLoan = await LoanModel.findByIdAndUpdate(
-      id,
-      {
-        ...payload,
-        startDate:
-          payload.startDate && dayjs(payload.startDate).hour(24).toDate(),
-        interestRate: payload.interestRate && payload.interestRate,
-      },
-      { session, new: true },
-    );
-    if (!updateLoan) {
-      throw new AppError(HttpStatus.BAD_REQUEST, "The update is failed");
+    let totalPayable = 0;
+    let remaining = principal;
+    const monthlyPrincipal = principal / termInYears;
+
+    for (let i = 0; i < termInYears; i++) {
+      const interest = remaining * rate;
+      const amountDue = monthlyPrincipal + interest;
+      const roundedDue = Math.ceil(amountDue);
+      totalPayable += roundedDue;
+      remaining -= monthlyPrincipal;
+    }
+    payload.remainingBalance = Math.round(totalPayable);
+
+    if (payload.status !== "approved") {
+      await LoanModel.findByIdAndUpdate(
+        id,
+        {
+          status: payload.status && payload.status,
+        },
+        { session, new: true },
+      );
     }
 
+    let updateLoan;
     if (payload.status === "approved") {
+      updateLoan = await LoanModel.findByIdAndUpdate(
+        id,
+        {
+          ...payload,
+          startDate:
+            payload.startDate && dayjs(payload.startDate).hour(24).toDate(),
+          interestRate: payload.interestRate && payload.interestRate,
+        },
+        { session, new: true },
+      );
+      if (!updateLoan) {
+        throw new AppError(HttpStatus.BAD_REQUEST, "The update is failed");
+      }
+
       const isBranchExist = await BranchModel.findOne({
         _id: isLoanExist.branch,
       });
@@ -145,12 +166,12 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
     }
 
     if (
-      updateLoan.status === "approved" &&
-      !updateLoan.repaymentSchedule?.length
+      updateLoan?.status === "approved" &&
+      !updateLoan?.repaymentSchedule?.length
     ) {
-      const loanAmount = Number(updateLoan.loanAmount);
-      const term = Number(updateLoan.term);
-      const interestRate = Number(updateLoan.interestRate);
+      const loanAmount = Number(updateLoan?.loanAmount);
+      const term = Number(updateLoan?.term);
+      const interestRate = Number(updateLoan?.interestRate);
       let remainingPrincipal = loanAmount;
       const rePaymentDetails = [];
       for (let i = 0; i < term; i++) {
@@ -159,7 +180,7 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
         const totalDue = principalThisMonth + interestThisMonth;
 
         rePaymentDetails.push({
-          dueDate: dayjs(updateLoan.startDate)
+          dueDate: dayjs(updateLoan?.startDate)
             .add(i + 1, "month")
             .hour(24)
             .toDate(),
@@ -217,6 +238,8 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
         status: "completed",
         description: "Loan Approved",
         amount: isLoanExist.loanAmount,
+        fromAccount: isLoanExist.branch.name,
+        toAccount: isLoanExist.accountNumber,
       };
       const createLoanTransaction = await TransactionModel.create(transaction);
       if (!createLoanTransaction) {
@@ -267,7 +290,7 @@ const payLoan = async (
       (month) => !month.paid,
     );
     if (!rePaymentDetails) {
-      throw new AppError(HttpStatus.NOT_FOUND, "Payment schedule not found");
+      throw new AppError(HttpStatus.NOT_FOUND, "You already paid the loan");
     }
     if (payload.monthsToPay > rePaymentDetails.length) {
       throw new AppError(
@@ -288,14 +311,14 @@ const payLoan = async (
         "The repayment schedule not found",
       );
     }
-    // const paidBalance =
-    //   (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
-    //   payload.monthsToPay;
 
-    const newUserBalance = Number(isAccountExist.balance) - paidBalance;
+    const monthlyRenew =
+      (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
+      payload.monthsToPay;
+    const newUserBalance = Number(isAccountExist.balance) - monthlyRenew;
     const newReserveBalance =
       Number(isBranchExist.reserevedBalance) + paidBalance;
-    const newUsedBalance = Number(isBranchExist.usedBalance) - paidBalance;
+    const newUsedBalance = Number(isBranchExist.usedBalance) - monthlyRenew;
 
     const metaData = {
       loan: isLoanExist._id.toString(),
