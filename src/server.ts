@@ -22,7 +22,8 @@ async function main() {
     cron.schedule("0 0 * * *", async () => {
       console.log("🎯 Running yearly compound interest job...");
       try {
-        await applyMonthlyInterests();
+        const result = await applyMonthlyInterests();
+        console.log(result);
         console.log("✅ Yearly compound interest applied.");
       } catch (error) {
         console.log("Interest update faild", error);

@@ -127,10 +127,10 @@ const createWithdraw = async (user: TJwtUser, payload: TTransaction) => {
     },
   });
   // console.log(countTransactions);
-  if (isAccountExist.accountType === "business" && countTransactions >= 25) {
+  if (isAccountExist.accountType && countTransactions >= 25) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
-      "Monthly withdrawal limit to 25 already reached for savings account",
+      "Monthly withdrawal limit to 25 already reached",
     );
   }
 

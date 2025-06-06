@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import { userControllers } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
-import { customerValidations } from "../Customer/customer.validation";
 import auth from "../../middlewares/auth";
 import { USER_ROLE } from "../../interface/global";
 import { upload } from "../../utils/sendImageToCloudinary";
+import { userValidations } from "./user.validation";
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.post(
     req.body = JSON.parse(req.body.data);
     next();
   },
-  validateRequest(customerValidations.createCustomerValidation),
+  validateRequest(userValidations.createUserValidation),
   userControllers.createCustomer,
 );
 router.post("/verify-otp", userControllers.verifyOtp);

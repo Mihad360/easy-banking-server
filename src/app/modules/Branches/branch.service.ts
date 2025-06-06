@@ -2,12 +2,11 @@ import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { TBranch } from "./branch.interface";
 import { BranchModel } from "./branch.model";
-import { ManagerModel } from "../Manager/manager.model";
 import { Document, Types } from "mongoose";
-import { TManager } from "../Manager/manager.interface";
 import { User } from "../User/user.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { searchBranch } from "./branch.const";
+import { TUserInterface } from "../User/user.interface";
 
 const createBranch = async (payload: TBranch) => {
   const isSameCodeBranchExist = await BranchModel.findOne({
@@ -30,10 +29,14 @@ const createBranch = async (payload: TBranch) => {
     );
   }
 
-  let isManagersExist: (Document<unknown, TManager> &
-    TManager & { _id: Types.ObjectId } & { __v: number })[] = [];
+  let isManagersExist: (Document<unknown, TUserInterface> &
+    TUserInterface & {
+      _id: Types.ObjectId;
+    } & {
+      __v: number;
+    })[] = [];
   if (payload.managers && payload.managers?.length > 0) {
-    isManagersExist = await ManagerModel.find({
+    isManagersExist = await User.find({
       _id: {
         $in: payload.managers.map((id) => new Types.ObjectId(id)),
       },
