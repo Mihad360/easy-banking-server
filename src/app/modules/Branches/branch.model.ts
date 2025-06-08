@@ -14,7 +14,7 @@ const branchSchema = new Schema<TBranch>(
     usedBalance: { type: Number, default: 0 },
     contactNumber: { type: [String], required: true },
     email: { type: String },
-    managers: [{ type: Schema.Types.ObjectId, ref: "Manager" }],
+    managers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     services: { type: [String], default: [] },
     openingSchedule: {
       days: { type: [String], required: true },

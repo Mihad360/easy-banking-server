@@ -7,19 +7,25 @@ const stripe = new Stripe(config.stripe_secret_key as string, {
   apiVersion: "2025-05-28.basil",
 });
 
-const webhook = config.stripe_webhook_key;
+const webhook = config.stripe_webhook_key as string;
 
 export const stripeWebhookHandler = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const sig = req.headers["stripe-signature"];
+  const sig = req.headers["stripe-signature"] as string | undefined;
 
-  let event;
+  if (!sig || typeof sig !== "string") {
+    res.status(400).send("Missing or invalid Stripe signature");
+    return;
+  }
+
+  let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, webhook);
-  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }

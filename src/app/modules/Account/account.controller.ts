@@ -17,13 +17,14 @@ const createAccount = catchAsync(async (req, res) => {
 });
 
 const getAccounts = catchAsync(async (req, res) => {
-  const result = await accountServices.getAccounts();
+  const result = await accountServices.getAccounts(req.query);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "Accounts retrieved succesfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

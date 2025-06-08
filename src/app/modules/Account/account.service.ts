@@ -6,6 +6,8 @@ import { AccountModel } from "./account.model";
 import { generateSavingAccountNumber } from "./account.utils";
 import { BranchModel } from "../Branches/branch.model";
 import { ACCOUNT_TYPE, TJwtUser } from "../../interface/global";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { searchAccount } from "./account.const";
 
 const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   console.log(user);
@@ -38,9 +40,19 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   return result;
 };
 
-const getAccounts = async () => {
-  const result = await AccountModel.find().populate("user branch");
-  return result;
+const getAccounts = async (query: Record<string, unknown>) => {
+  const accountQuery = new QueryBuilder(
+    AccountModel.find().populate("user branch"),
+    query,
+  )
+    .search(searchAccount)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  const meta = await accountQuery.countTotal();
+  const result = await accountQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachAccount = async (id: string, user: TJwtUser) => {

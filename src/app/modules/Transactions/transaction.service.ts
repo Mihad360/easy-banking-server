@@ -3,15 +3,20 @@ import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { AccountModel } from "../Account/account.model";
 import { TTransaction } from "./transaction.interface";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { TransactionModel } from "./transaction.model";
 import { generateTransactionId } from "./transaction.utils";
 import { TJwtUser } from "../../interface/global";
 import { User } from "../User/user.model";
 import { createPayment } from "../../utils/stripePayment";
 import { PassThrough } from "stream";
-import { BranchModel } from "../Branches/branch.model";
 import dayjs from "dayjs";
+import { TBranch } from "../Branches/branch.interface";
+import { TBankAccount } from "../Account/account.interface";
+
+type LoanWithBranchPopulated = TBankAccount & {
+  branch: TBranch | Types.ObjectId;
+};
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
   const isUserExist = await User.findById(user?.user);
@@ -441,9 +446,25 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
 };
 
 const getTransactions = async () => {
-  const result = await TransactionModel.find().sort({
-    status: -1,
-  });
+  const result = await TransactionModel.aggregate([
+    {
+      $addFields: {
+        sortOrder: {
+          $cond: [{ $eq: ["$status", "pending"] }, 0, 1],
+        },
+      },
+    },
+    { $sort: { sortOrder: 1 } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    { $unwind: "$user" },
+  ]);
   return result;
 };
 
@@ -482,12 +503,12 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
     throw new AppError(HttpStatus.NOT_FOUND, "Transaction not found");
   }
 
-  const isAccountExist = await AccountModel.findOne({
+  const isAccountExist = (await AccountModel.findOne({
     accountNumber: isUserTransaction.account,
     user: isUserTransaction.user,
   })
     .populate("branch")
-    .select("branch user accountHolderName");
+    .select("branch user accountHolderName")) as LoanWithBranchPopulated;
   if (!isAccountExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "Bank account not found");
   }
@@ -506,7 +527,7 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
       "You are not authorized to download this transaction",
     );
   }
-
+  const branch = isAccountExist.branch as TBranch;
   // PDF Generation
   const doc = new PDFDocument();
   const stream = new PassThrough();
@@ -528,7 +549,7 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
 
   // Branch Name
   doc.font("Helvetica-Bold").fontSize(12).text("Branch:", { continued: true });
-  doc.font("Helvetica").text(` ${isAccountExist?.branch?.name}`);
+  doc.font("Helvetica").text(` ${branch?.name}`);
   doc.moveDown(0.5);
 
   // Horizontal line

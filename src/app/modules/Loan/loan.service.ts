@@ -7,10 +7,15 @@ import { AccountModel } from "../Account/account.model";
 import { BranchModel } from "../Branches/branch.model";
 import { LoanModel } from "./loan.model";
 import dayjs from "dayjs";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { TransactionModel } from "../Transactions/transaction.model";
 import { generateTransactionId } from "../Transactions/transaction.utils";
 import { createPayment } from "../../utils/stripePayment";
+import { TBranch } from "../Branches/branch.interface";
+
+type LoanWithBranchPopulated = TLoan & {
+  branch: TBranch | Types.ObjectId;
+};
 
 const requestLoan = async (user: TJwtUser, payload: TLoan) => {
   //   console.log(user);
@@ -36,7 +41,7 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
       (repayment) => !repayment.paid,
     );
 
-    if (unpaidInstallments?.length > 0) {
+    if (unpaidInstallments && unpaidInstallments?.length > 0) {
       throw new AppError(
         HttpStatus.BAD_REQUEST,
         "You already have an unpaid loan. Please pay it off before requesting a new one.",
@@ -58,7 +63,9 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
 };
 
 const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
-  const isLoanExist = await LoanModel.findById(id).populate("branch");
+  const isLoanExist = (await LoanModel.findById(id).populate(
+    "branch",
+  )) as LoanWithBranchPopulated;
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
   }
@@ -230,6 +237,7 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
       }
 
       const transaction_Id = await generateTransactionId("loan");
+      const branch = isLoanExist.branch as TBranch;
       const transaction = {
         account: isLoanExist.accountNumber,
         user: isLoanExist.user,
@@ -238,7 +246,7 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
         status: "completed",
         description: "Loan Approved",
         amount: isLoanExist.loanAmount,
-        fromAccount: isLoanExist.branch.name,
+        fromAccount: branch.name,
         toAccount: isLoanExist.accountNumber,
       };
       const createLoanTransaction = await TransactionModel.create(transaction);
@@ -345,9 +353,18 @@ const payLoan = async (
 };
 
 const getLoans = async () => {
-  const result = await LoanModel.find().sort({
-    status: -1,
-  });
+  const result = await LoanModel.aggregate([
+    {
+      $addFields: {
+        sortOrder: {
+          $cond: [{ $eq: ["$status", "pending"] }, 0, 1],
+        },
+      },
+    },
+    {
+      $sort: { sortOrder: 1 },
+    },
+  ]);
   return result;
 };
 

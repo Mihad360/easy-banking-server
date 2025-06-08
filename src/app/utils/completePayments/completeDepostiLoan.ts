@@ -1,18 +1,24 @@
 import HttpStatus from "http-status";
 import { LoanModel } from "../../modules/Loan/loan.model";
 import AppError from "../../erros/AppError";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { AccountModel } from "../../modules/Account/account.model";
 import { BranchModel } from "../../modules/Branches/branch.model";
 import { TransactionModel } from "../../modules/Transactions/transaction.model";
 import { generateTransactionId } from "../../modules/Transactions/transaction.utils";
 import Stripe from "stripe";
+import { TLoan } from "../../modules/Loan/loan.interface";
+import { TBranch } from "../../modules/Branches/branch.interface";
+
+type LoanWithBranchPopulated = TLoan & {
+  branch: TBranch | Types.ObjectId;
+};
 
 export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
   // console.log(metadata);
-  const isLoanExist = await LoanModel.findById(metadata.loan).populate(
+  const isLoanExist = (await LoanModel.findById(metadata.loan).populate(
     "branch",
-  );
+  )) as LoanWithBranchPopulated;
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
   }
@@ -90,8 +96,8 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
       }
       return item;
     });
-    const updatedPay = await LoanModel.findByIdAndUpdate(
-      isLoanExist._id,
+    const updatedPay = await LoanModel.findOneAndUpdate(
+      { accountNumber: isLoanExist.accountNumber },
       {
         $set: { repaymentSchedule: updatedSchedule },
         remainingBalance: newRemainingBalance && newRemainingBalance,
@@ -99,9 +105,10 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
       { session, new: true },
     );
 
+    const branch = isLoanExist.branch as TBranch;
     const transaction_Id = await generateTransactionId("deposit-loan");
     const fromAccount = isLoanExist.accountNumber;
-    const toAccount = isLoanExist?.branch?.name;
+    const toAccount = branch.name;
     const transaction = {
       account: isLoanExist.accountNumber,
       user: isLoanExist.user,

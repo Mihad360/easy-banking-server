@@ -15,7 +15,7 @@ router.post(
 );
 router.get(
   "/",
-  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  // auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   branchControllers.getBranches,
 );
 router.get(
