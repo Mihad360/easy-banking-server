@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { generateTransactionId } from "../modules/Transactions/transaction.utils";
 import { TransactionModel } from "../modules/Transactions/transaction.model";
 import mongoose from "mongoose";
+import { BranchModel } from "../modules/Branches/branch.model";
 
 export const applyMonthlyInterests = async () => {
   const accounts = await AccountModel.find({
@@ -36,6 +37,17 @@ export const applyMonthlyInterests = async () => {
             },
           },
           { session },
+        );
+
+        await BranchModel.findByIdAndUpdate(
+          account.branch,
+          {
+            $inc: {
+              reserevedBalance: -interest,
+              usedBalance: interest,
+            },
+          },
+          { session, new: true },
         );
 
         const transactionId = await generateTransactionId("interest");

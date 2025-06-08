@@ -18,12 +18,6 @@ const loanSchema = new Schema<TLoan>(
       enum: ["pending", "approved", "rejected", "active", "paid"],
       default: "pending",
     },
-    // repaymentSchedule: {
-    //   dueDate: { type: Date, default: null },
-    //   amountDue: { type: Number, default: 0 },
-    //   paid: { type: Boolean, default: false },
-    //   paidDate: { type: Date, default: null },
-    // },
     repaymentSchedule: {
       type: Array,
       default: [],

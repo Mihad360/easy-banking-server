@@ -8,6 +8,7 @@ import { BranchModel } from "../Branches/branch.model";
 import { ACCOUNT_TYPE, TJwtUser } from "../../interface/global";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { searchAccount } from "./account.const";
+import { sendEmail } from "../../utils/sendEmail";
 
 const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   console.log(user);
@@ -37,6 +38,16 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   payload.minimumBalance = 2000;
 
   const result = await AccountModel.create(payload);
+  if (result) {
+    const subject = `EasyBank ~ Congratulations !! ${result.accountHolderName}`;
+    const html = `Your Easy Bank Account Number is <h3>${result.accountNumber}</h3> From now you can do Transactions By this Number. <h4>Don't share it to anyone</h4>`;
+    const confirmAccountMail = await sendEmail(
+      isUserExist.email,
+      subject,
+      html,
+    );
+    console.log(confirmAccountMail);
+  }
   return result;
 };
 

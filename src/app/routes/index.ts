@@ -6,6 +6,7 @@ import { branchRoutes } from "../modules/Branches/branch.route";
 import { transactionRoutes } from "../modules/Transactions/transaction.route";
 import { loanRoutes } from "../modules/Loan/loan.route";
 import { typeRoutes } from "../modules/AccountTypes/type.route";
+import { statRoutes } from "../modules/Admin-Customer-Stats/stats.route";
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
   {
     path: "/type",
     route: typeRoutes,
+  },
+  {
+    path: "/stats",
+    route: statRoutes,
   },
 ];
 
