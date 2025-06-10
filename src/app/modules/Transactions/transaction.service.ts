@@ -25,7 +25,7 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
   }
   const isAccountExist = await AccountModel.findOne({
     accountNumber: payload.account,
-    user: isUserExist?._id,
+    user: user?.user,
   });
   if (!isAccountExist) {
     throw new AppError(
