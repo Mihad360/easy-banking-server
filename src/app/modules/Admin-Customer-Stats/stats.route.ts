@@ -20,5 +20,10 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager),
   statControllers.getBankDetails,
 );
+router.get(
+  "/customer-stats",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  statControllers.getCustomerStats,
+);
 
 export const statRoutes = router;

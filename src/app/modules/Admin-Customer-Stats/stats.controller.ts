@@ -1,7 +1,9 @@
 import HttpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { statServices } from "./stats.service";
+import { statServices } from "./adminStats.service";
+import { customerStatServices } from "./customerStats.service";
+import { TJwtUser } from "../../interface/global";
 
 const getAdminStats = catchAsync(async (req, res) => {
   const result = await statServices.getAdminStats();
@@ -39,8 +41,22 @@ const getBankDetails = catchAsync(async (req, res) => {
   });
 });
 
+const getCustomerStats = catchAsync(async (req, res) => {
+  const user = req.user as TJwtUser
+  const result = await customerStatServices.getCustomerStats(user);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Customer stats retrieved succesfully",
+    // meta: result.meta,
+    data: result,
+  });
+});
+
 export const statControllers = {
   getAdminStats,
   getLastMonthStats,
   getBankDetails,
+  getCustomerStats,
 };

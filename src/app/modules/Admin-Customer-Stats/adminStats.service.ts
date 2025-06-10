@@ -255,12 +255,73 @@ const getBankDetails = async () => {
               },
             },
           },
+          inactiveAccounts: {
+            $sum: {
+              $size: {
+                $filter: {
+                  input: "$accounts",
+                  as: "acc",
+                  cond: { $ne: ["$$acc.status", "active"] },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    const dailyTransationCount = await TransactionModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
+      },
+      {
+        $group: {
+          _id: "$account",
+          txCount: { $sum: 1 },
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const inactiveAccounts = await AccountModel.aggregate([
+      {
+        $lookup: {
+          from: "transactions",
+          localField: "accountNumber",
+          foreignField: "account",
+          as: "lastTx",
+        },
+      },
+      {
+        $addFields: {
+          lastActivity: { $max: "$lastTx.createdAt" },
+        },
+      },
+      {
+        $match: {
+          lastActivity: {
+            $lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+          }, // 90+ days inactive
+          balance: { $gt: 0 }, // With money left
+        },
+      },
+      {
+        $project: {
+          accountNumber: 1,
+          email: 1,
         },
       },
     ]);
     await session.commitTransaction();
     await session.endSession();
-    return { liquidityStats, userFunnel };
+    return {
+      liquidityStats,
+      userFunnel,
+      dailyTransationCount,
+      inactiveAccounts,
+    };
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   } catch (error: any) {
     await session.abortTransaction();
