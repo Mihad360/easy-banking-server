@@ -42,8 +42,21 @@ const getBankDetails = catchAsync(async (req, res) => {
 });
 
 const getCustomerStats = catchAsync(async (req, res) => {
-  const user = req.user as TJwtUser
+  const user = req.user as TJwtUser;
   const result = await customerStatServices.getCustomerStats(user);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Customer stats retrieved succesfully",
+    // meta: result.meta,
+    data: result,
+  });
+});
+
+const getAdditionalCustomerStats = catchAsync(async (req, res) => {
+  const user = req.user as TJwtUser;
+  const result = await customerStatServices.getAdditionalCustomerStats(user);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
@@ -59,4 +72,5 @@ export const statControllers = {
   getLastMonthStats,
   getBankDetails,
   getCustomerStats,
+  getAdditionalCustomerStats,
 };

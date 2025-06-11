@@ -248,11 +248,11 @@ const createWithdraw = async (user: TJwtUser, payload: TTransaction) => {
         "Transaction status update failed",
       );
     }
-    await AccountModel.findByIdAndUpdate(
-      isAccountExist._id,
-      { $push: { transactions: updateTransactionStatus._id } },
-      { session, new: true },
-    );
+    // await AccountModel.findByIdAndUpdate(
+    //   isAccountExist._id,
+    //   { $push: { transactions: updateTransactionStatus._id } },
+    //   { session, new: true },
+    // );
 
     await session.commitTransaction();
     return updateTransactionStatus;

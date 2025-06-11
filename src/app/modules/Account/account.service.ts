@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import HttpStatus from "http-status";
 import AppError from "../../erros/AppError";
 import { User } from "../User/user.model";
@@ -94,70 +95,33 @@ const updateAccount = async (id: string, payload: Partial<TBankAccount>) => {
     throw new AppError(HttpStatus.NOT_FOUND, "The User is not found");
   }
 
-  let accountTp;
-  const accountNumber = isAccountExist?.accountNumber;
-  if (payload.accountType && accountNumber) {
-    accountTp = accountNumber.substring(4, 7);
-    if (payload.accountType === "savings") {
-      accountTp = ACCOUNT_TYPE.savings;
-    } else if (payload.accountType === "checking") {
-      accountTp = ACCOUNT_TYPE.checking;
-    } else if (payload.accountType === "business") {
-      accountTp = ACCOUNT_TYPE.business;
-    } else {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        "Please enter a valid account type",
-      );
-    }
-  }
+  // Remove immutable fields from payload
+  const { accountType, branchCode, accountNumber, ...updateData } = payload;
 
-  let newAccountNumber;
+  // Validate balance requirements
   if (
-    !payload.accountType ||
-    payload.accountType === isAccountExist.accountType
-  ) {
-    newAccountNumber = isAccountExist?.accountNumber;
-  } else if (
-    payload.accountType &&
-    payload.accountType !== isAccountExist.accountType
-  ) {
-    newAccountNumber = `${accountNumber.substring(0, 4)}${accountTp}${accountNumber.substring(7, 15)}`;
-  }
-
-  // let branch;
-  if (payload.branchCode && payload.branchCode !== isAccountExist.branchCode) {
-    newAccountNumber = `${newAccountNumber?.substring(0, 2)}${payload.branchCode}${newAccountNumber?.substring(4, 15)}`;
-  } else {
-    // eslint-disable-next-line no-self-assign
-    newAccountNumber = newAccountNumber;
-  }
-
-  if (
-    payload.balance &&
-    Number(payload.balance) < Number(isAccountExist.minimumBalance)
+    updateData.balance &&
+    Number(updateData.balance) < Number(isAccountExist.minimumBalance)
   ) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
-      `You must have a balance of ${isAccountExist.minimumBalance} in your account`,
+      `You must maintain a minimum balance of ${isAccountExist.minimumBalance} in your account`,
     );
   }
+
   if (
-    payload.minimumBalance &&
-    Number(payload.minimumBalance) < Number(isAccountExist.minimumBalance)
+    updateData.minimumBalance &&
+    Number(updateData.minimumBalance) < Number(isAccountExist.minimumBalance)
   ) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
-      `You must have a balance of ${isAccountExist.minimumBalance} in your account`,
+      `Minimum balance cannot be lower than ${isAccountExist.minimumBalance}`,
     );
   }
-  const result = await AccountModel.findByIdAndUpdate(
-    id,
-    { ...payload, accountNumber: newAccountNumber && newAccountNumber },
-    {
-      new: true,
-    },
-  );
+
+  const result = await AccountModel.findByIdAndUpdate(id, updateData, {
+    new: true,
+  });
 
   return result;
 };

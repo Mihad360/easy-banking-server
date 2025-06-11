@@ -25,5 +25,10 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   statControllers.getCustomerStats,
 );
+router.get(
+  "/customer-additional-stats",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  statControllers.getAdditionalCustomerStats,
+);
 
 export const statRoutes = router;

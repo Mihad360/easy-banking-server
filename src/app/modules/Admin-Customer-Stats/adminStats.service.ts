@@ -146,7 +146,7 @@ const getLastMonthStats = async () => {
           totalAmount: { $sum: "$amount" },
         },
       },
-    ]);
+    ]).session(session)
     const loans = await LoanModel.aggregate([
       {
         $match: {
@@ -160,7 +160,7 @@ const getLastMonthStats = async () => {
           totalAmount: { $sum: "$loanAmount" },
         },
       },
-    ]);
+    ]).session(session)
     // 3. Daily Trends (For Line Charts)
     const dailyTrends = await TransactionModel.aggregate([
       {
@@ -180,7 +180,7 @@ const getLastMonthStats = async () => {
       {
         $sort: { "_id.day": 1 },
       },
-    ]);
+    ]).session(session)
 
     await session.commitTransaction();
     await session.endSession();
@@ -226,7 +226,7 @@ const getBankDetails = async () => {
           },
         },
       },
-    ]);
+    ]).session(session)
 
     const userFunnel = await User.aggregate([
       {
@@ -268,7 +268,7 @@ const getBankDetails = async () => {
           },
         },
       },
-    ]);
+    ]).session(session)
 
     const dailyTransationCount = await TransactionModel.aggregate([
       {
@@ -283,7 +283,7 @@ const getBankDetails = async () => {
           totalAmount: { $sum: "$amount" },
         },
       },
-    ]);
+    ]).session(session)
 
     const inactiveAccounts = await AccountModel.aggregate([
       {
@@ -313,7 +313,7 @@ const getBankDetails = async () => {
           email: 1,
         },
       },
-    ]);
+    ]).session(session)
     await session.commitTransaction();
     await session.endSession();
     return {
