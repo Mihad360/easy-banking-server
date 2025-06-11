@@ -66,6 +66,7 @@ const getCustomerStats = async (user: TJwtUser) => {
                           "transfer",
                           "loan",
                           "deposit-loan",
+                          "interest",
                         ],
                       },
                     },
@@ -170,6 +171,21 @@ const getCustomerStats = async (user: TJwtUser) => {
                           input: "$transactions",
                           as: "txn",
                           cond: { $eq: ["$$txn.type", "deposit-loan"] },
+                        },
+                      },
+                      as: "lr",
+                      in: "$$lr.amount",
+                    },
+                  },
+                },
+                interests: {
+                  $sum: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$transactions",
+                          as: "txn",
+                          cond: { $eq: ["$$txn.type", "interest"] },
                         },
                       },
                       as: "lr",
@@ -312,13 +328,19 @@ const getAdditionalCustomerStats = async (user: TJwtUser) => {
   try {
     session.startTransaction();
 
-    // 1. Spending by Category (Top 5 categories)
     const spendingByCategory = await TransactionModel.aggregate([
       {
         $match: {
           user: userId,
           transactionType: {
-            $in: ["deposit", "withdraw", "transfer", "loan", "deposit-loan"],
+            $in: [
+              "deposit",
+              "withdraw",
+              "transfer",
+              "loan",
+              "deposit-loan",
+              "interest",
+            ],
           },
           createdAt: { $gte: oneMonthAgo },
         },
@@ -328,6 +350,20 @@ const getAdditionalCustomerStats = async (user: TJwtUser) => {
           _id: "$transactionType",
           total: { $sum: "$amount" },
           count: { $sum: 1 },
+          // Add the most recent update date for each type
+          lastUpdated: { $max: "$updatedAt" },
+          // Optional: include the earliest transaction date
+          firstTransaction: { $min: "$createdAt" },
+        },
+      },
+      {
+        $project: {
+          transactionType: "$_id",
+          total: 1,
+          count: 1,
+          lastUpdated: 1,
+          firstTransaction: 1,
+          _id: 0,
         },
       },
       { $sort: { total: -1 } },

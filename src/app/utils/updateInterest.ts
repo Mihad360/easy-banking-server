@@ -51,7 +51,7 @@ export const applyMonthlyInterests = async () => {
         );
 
         const transactionId = await generateTransactionId("interest");
-        await TransactionModel.create(
+        const result = await TransactionModel.create(
           [
             {
               account: account.accountNumber,
@@ -71,6 +71,7 @@ export const applyMonthlyInterests = async () => {
         console.log(
           `✅ Interest of ${interest} BDT added to account ${account.accountNumber}`,
         );
+        return result;
       } catch (err) {
         await session.abortTransaction();
         console.log(err);

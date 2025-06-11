@@ -29,7 +29,7 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
   const monthsToPay = Number(metadata.monthsToPay);
   const newRemainingBalance =
     Number(isLoanExist.remainingBalance) - paidBalance;
-
+console.log(newReserveBalance)
   const session = await mongoose.startSession();
   try {
     session.startTransaction();

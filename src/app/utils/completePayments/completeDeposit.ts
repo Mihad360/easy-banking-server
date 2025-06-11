@@ -36,11 +36,11 @@ export const completeDeposit = async (metaData: Stripe.Metadata) => {
         "Transaction status update failed",
       );
     }
-    await AccountModel.findOneAndUpdate(
-      { accountNumber: metaData.accountNumber },
-      { $push: { transactions: updateTransactionStatus._id } },
-      { session, new: true },
-    );
+    // await AccountModel.findOneAndUpdate(
+    //   { accountNumber: metaData.accountNumber },
+    //   { $push: { transactions: updateTransactionStatus._id } },
+    //   { session, new: true },
+    // );
 
     await session.commitTransaction();
     await session.endSession();

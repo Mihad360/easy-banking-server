@@ -327,7 +327,7 @@ const payLoan = async (
     const newReserveBalance =
       Number(isBranchExist.reserevedBalance) + paidBalance;
     const newUsedBalance = Number(isBranchExist.usedBalance) - monthlyRenew;
-
+    console.log(newReserveBalance);
     const metaData = {
       loan: isLoanExist._id.toString(),
       paidBalance: paidBalance.toString(),
@@ -337,7 +337,7 @@ const payLoan = async (
       monthsToPay: payload.monthsToPay.toString(),
       transactionType: payload.transactionType || "deposit-loan",
     };
-
+console.log(metaData.newReserveBalance)
     const url = await createPayment(paidBalance, isUserExist.email, metaData);
     console.log(url);
 
