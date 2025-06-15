@@ -14,6 +14,7 @@ export interface JwtPayload {
   role: string;
   profilePhotoUrl?: string;
   phoneNumber: string;
+  name?: string;
 }
 
 const loginUser = async (payload: TLoginUser) => {
@@ -46,6 +47,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   const jwtPayload: JwtPayload = {
     user: userId,
+    name: `${user?.name?.firstName} ${user?.name?.lastName}`,
     email: user?.email,
     role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,

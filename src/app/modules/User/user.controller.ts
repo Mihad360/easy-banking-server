@@ -33,6 +33,7 @@ const verifyOtp = catchAsync(async (req, res) => {
     message: "User created successfully",
     data: {
       accessToken,
+      refreshToken,
       newUser,
     },
   });

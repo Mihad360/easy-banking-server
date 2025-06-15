@@ -7,6 +7,7 @@ import { sendOtpToEmail, verifyOtpAndCreateUser } from "../../utils/Otp";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createCustomer = async (file: any, payload: TOtp) => {
+  console.log(payload)
   const isUserExist = await User.findOne({ email: payload?.email });
   if (isUserExist) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The User already exists");
@@ -18,7 +19,8 @@ const createCustomer = async (file: any, payload: TOtp) => {
     const profileImg = await sendImageToCloudinary(path, imageName);
     payload.profilePhotoUrl = profileImg?.secure_url;
   }
-  await sendOtpToEmail(payload);
+  const result = await sendOtpToEmail(payload);
+  return result;
 };
 
 const verifyOtp = async (payload: { email: string; otp: string }) => {

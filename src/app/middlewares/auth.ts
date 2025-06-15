@@ -22,7 +22,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       ) as JwtPayload;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw new AppError(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 

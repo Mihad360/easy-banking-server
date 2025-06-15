@@ -27,7 +27,7 @@ export const sendOtpToEmail = async (payload: TOtp) => {
     const subject = "Easy Banking Registratin OTP";
     const html = `Here is your Easy Banking Registratin OTP: <h1>${otp}</h1> Please verify this OTP for registration`;
     const sendMail = await sendEmail(payload.email, subject, html);
-    console.log(sendMail)
+    return { sendMail, email: result?.email };
   }
 };
 
