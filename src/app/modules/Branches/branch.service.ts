@@ -50,7 +50,7 @@ const createBranch = async (payload: TBranch) => {
   } else {
     isManagersExist = [];
   }
-
+  payload.branchOpenedAt = new Date();
   const result = await BranchModel.create(payload);
   return result;
 };
@@ -80,7 +80,7 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not exist");
   }
-  const { openingSchedule, contactNumber, services, ...remainingData } =
+  const { openingSchedule, contactNumber, ...remainingData } =
     payload;
 
   const modifiedData: Record<string, unknown> = {
@@ -96,12 +96,6 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   if (contactNumber && Object.keys(contactNumber).length) {
     for (const [key, value] of Object.entries(contactNumber)) {
       modifiedData[`contactNumber.${key}`] = value;
-    }
-  }
-
-  if (services && Object.keys(services).length) {
-    for (const [key, value] of Object.entries(services)) {
-      modifiedData[`services.${key}`] = value;
     }
   }
 

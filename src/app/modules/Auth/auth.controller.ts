@@ -8,6 +8,12 @@ const loginUser = catchAsync(async (req, res) => {
   const result = await authServices.loginUser(req.body);
   const { accessToken, refreshToken } = result;
 
+  res.cookie("accessToken", accessToken, {
+    secure: config.node_env === "production",
+    httpOnly: true,
+    // sameSite: "none",
+    // maxAge: 1000 * 60 * 60 * 24 * 365,
+  });
   res.cookie("refreshToken", refreshToken, {
     secure: config.node_env === "production",
     httpOnly: true,

@@ -15,12 +15,10 @@ const branchSchema = new Schema<TBranch>(
     contactNumber: { type: [String], required: true },
     email: { type: String },
     managers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    services: { type: [String], default: [] },
     openingSchedule: {
       days: { type: [String], required: true },
       openTime: { type: String, required: true },
       closeTime: { type: String, required: true },
-      status: { type: String, enum: ["open", "closed"], default: "open" },
     },
     branchOpenedAt: { type: Date },
   },

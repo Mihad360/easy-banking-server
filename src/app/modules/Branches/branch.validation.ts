@@ -12,12 +12,10 @@ const createBranchValidation = z.object({
     contactNumber: z.array(z.string()),
     email: z.string().email().optional(),
     managerName: z.string().optional(),
-    services: z.array(z.string()).optional(),
     openingSchedule: z.object({
       days: z.array(z.string()), // You can also add `.min(1)` if you want at least one day
       openTime: z.string(), // Consider stricter time validation with regex if needed
       closeTime: z.string(),
-      status: z.enum(["open", "closed"]).optional().default("open"),
     }),
     branchOpenedAt: z.string().date().optional(),
   }),
