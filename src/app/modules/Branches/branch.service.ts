@@ -80,7 +80,7 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not exist");
   }
-  const { openingSchedule, contactNumber, ...remainingData } =
+  const { openingSchedule, ...remainingData } =
     payload;
 
   const modifiedData: Record<string, unknown> = {
@@ -90,12 +90,6 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   if (openingSchedule && Object.keys(openingSchedule).length) {
     for (const [key, value] of Object.entries(openingSchedule)) {
       modifiedData[`openingSchedule.${key}`] = value;
-    }
-  }
-
-  if (contactNumber && Object.keys(contactNumber).length) {
-    for (const [key, value] of Object.entries(contactNumber)) {
-      modifiedData[`contactNumber.${key}`] = value;
     }
   }
 

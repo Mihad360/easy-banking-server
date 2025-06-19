@@ -9,16 +9,16 @@ const loginUser = catchAsync(async (req, res) => {
   const { accessToken, refreshToken } = result;
 
   res.cookie("accessToken", accessToken, {
-    secure: config.node_env === "production",
+    secure: false,
     httpOnly: true,
-    // sameSite: "none",
-    // maxAge: 1000 * 60 * 60 * 24 * 365,
+    sameSite: "lax", // or "none" if using cross-site cookies with HTTPS
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
   res.cookie("refreshToken", refreshToken, {
-    secure: config.node_env === "production",
+    secure: false,
     httpOnly: true,
-    // sameSite: "none",
-    // maxAge: 1000 * 60 * 60 * 24 * 365,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   sendResponse(res, {

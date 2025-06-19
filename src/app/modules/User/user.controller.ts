@@ -20,11 +20,17 @@ const verifyOtp = catchAsync(async (req, res) => {
   const result = await userServices.verifyOtp(req.body);
   const { accessToken, refreshToken, newUser } = result;
 
-  res.cookie("refreshToken", refreshToken, {
-    secure: config.node_env === "production",
+  res.cookie("accessToken", accessToken, {
+    secure: false,
     httpOnly: true,
-    // sameSite: "none",
-    // maxAge: 1000 * 60 * 60 * 24 * 365,
+    sameSite: "lax", // or "none" if using cross-site cookies with HTTPS
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  });
+  res.cookie("refreshToken", refreshToken, {
+    secure: false,
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   sendResponse(res, {
@@ -40,13 +46,14 @@ const verifyOtp = catchAsync(async (req, res) => {
 });
 
 const getUsers = catchAsync(async (req, res) => {
-  const result = await userServices.getUsers();
+  const result = await userServices.getUsers(req.query);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "User retrived succesfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

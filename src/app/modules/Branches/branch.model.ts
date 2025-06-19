@@ -12,7 +12,7 @@ const branchSchema = new Schema<TBranch>(
     zipCode: { type: String, required: true },
     reserevedBalance: { type: Number, default: 0 },
     usedBalance: { type: Number, default: 0 },
-    contactNumber: { type: [String], required: true },
+    contactNumber: { type: String, required: true },
     email: { type: String },
     managers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     openingSchedule: {

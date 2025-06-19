@@ -9,7 +9,7 @@ const createBranchValidation = z.object({
     state: z.string().optional(),
     country: z.string(),
     zipCode: z.string(),
-    contactNumber: z.array(z.string()),
+    contactNumber: z.string().optional(),
     email: z.string().email().optional(),
     managerName: z.string().optional(),
     openingSchedule: z.object({

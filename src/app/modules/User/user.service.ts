@@ -4,10 +4,12 @@ import { TOtp } from "./user.interface";
 import { User } from "./user.model";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { sendOtpToEmail, verifyOtpAndCreateUser } from "../../utils/Otp";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { searchUsers } from "./user.const";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createCustomer = async (file: any, payload: TOtp) => {
-  console.log(payload)
+  console.log(payload);
   const isUserExist = await User.findOne({ email: payload?.email });
   if (isUserExist) {
     throw new AppError(HttpStatus.BAD_REQUEST, "The User already exists");
@@ -31,9 +33,16 @@ const verifyOtp = async (payload: { email: string; otp: string }) => {
   return result;
 };
 
-const getUsers = async () => {
-  const result = await User.find();
-  return result;
+const getUsers = async (query: Record<string, unknown>) => {
+  const userQuery = new QueryBuilder(User.find(), query)
+    .search(searchUsers)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  const meta = await userQuery.countTotal();
+  const result = await userQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachUsers = async (id: string) => {
