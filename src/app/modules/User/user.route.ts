@@ -37,8 +37,9 @@ router.get(
 router.get("/admins", auth(USER_ROLE.admin), userControllers.getAdmins);
 router.get(
   "/:id",
-  auth(USER_ROLE.admin, USER_ROLE.manager),
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   userControllers.getEachUsers,
 );
+router.delete("/:id", auth(USER_ROLE.admin), userControllers.deleteUser);
 
 export const userRoutes = router;

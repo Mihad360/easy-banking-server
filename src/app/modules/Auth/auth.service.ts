@@ -15,6 +15,7 @@ export interface JwtPayload {
   profilePhotoUrl?: string;
   phoneNumber: string;
   name?: string;
+  isDeleted: boolean;
 }
 
 const loginUser = async (payload: TLoginUser) => {
@@ -33,7 +34,7 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
   }
   if (user?.isDeleted) {
-    throw new AppError(HttpStatus.BAD_REQUEST, "The user is already deleted");
+    throw new AppError(HttpStatus.BAD_REQUEST, "The user is already Blocked");
   }
   if (!(await User.compareUserPassword(payload.password, user.password))) {
     throw new AppError(HttpStatus.FORBIDDEN, "Password did not matched");
@@ -52,6 +53,7 @@ const loginUser = async (payload: TLoginUser) => {
     role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,
     phoneNumber: user?.phoneNumber,
+    isDeleted: user?.isDeleted,
   };
 
   const accessToken = createToken(
@@ -107,6 +109,7 @@ const refreshToken = async (token: string) => {
     role: user.role,
     profilePhotoUrl: user?.profilePhotoUrl,
     phoneNumber: user?.phoneNumber,
+    isDeleted: user?.isDeleted,
   };
 
   const accessToken = createToken(
@@ -145,6 +148,7 @@ const forgetPassword = async (email: string) => {
     role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,
     phoneNumber: user?.phoneNumber,
+    isDeleted: user?.isDeleted,
   };
 
   const resetToken = createToken(

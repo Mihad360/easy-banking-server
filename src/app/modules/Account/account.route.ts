@@ -6,6 +6,11 @@ import validateRequest from "../../middlewares/validateRequest";
 import { accountValidations } from "./account.validation";
 
 const router = express.Router();
+router.get(
+  "/my-account",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  accountControllers.getMyAccount,
+);
 
 router.post(
   "/create-account",

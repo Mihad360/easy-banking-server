@@ -70,6 +70,7 @@ export const verifyOtpAndCreateUser = async (payload: {
         role: newUser[0].role,
         profilePhotoUrl: newUser[0].profilePhotoUrl,
         phoneNumber: newUser[0].phoneNumber,
+        isDeleted: newUser[0].isDeleted,
       };
       const accessToken = createToken(
         jwtPayload,

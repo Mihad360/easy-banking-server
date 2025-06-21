@@ -37,6 +37,7 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   payload.currency = "BDT";
   payload.balance = 2000;
   payload.minimumBalance = 2000;
+  payload.branchCode = isBranchExist?.code;
 
   const result = await AccountModel.create(payload);
   if (result) {
@@ -67,6 +68,14 @@ const getAccounts = async (query: Record<string, unknown>) => {
   return { meta, result };
 };
 
+const getMyAccount = async (user: TJwtUser) => {
+  const account = await AccountModel.findOne({ user: user?.user });
+  if (!account) {
+    throw new AppError(HttpStatus.NOT_FOUND, "You dont have an account");
+  }
+  return account;
+};
+
 const getEachAccount = async (id: string, user: TJwtUser) => {
   const account = await AccountModel.findById(id).populate("user branch");
   if (!account) {
@@ -76,7 +85,7 @@ const getEachAccount = async (id: string, user: TJwtUser) => {
   if (["admin", "manager"].includes(user.role)) {
     return account;
   }
-  if (account.user._id.toString() === user.user) {
+  if (account.user._id.toString() === user?.user.toString()) {
     return account;
   }
   throw new AppError(
@@ -184,4 +193,5 @@ export const accountServices = {
   updateAccount,
   updateAccountStatusOrInterest,
   deleteAccount,
+  getMyAccount,
 };

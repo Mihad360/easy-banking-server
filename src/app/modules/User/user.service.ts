@@ -17,8 +17,11 @@ const createCustomer = async (file: any, payload: TOtp) => {
 
   if (file) {
     const imageName = `${payload.name.firstName}-${payload.name.lastName}`;
-    const { path } = file;
-    const profileImg = await sendImageToCloudinary(path, imageName);
+    const profileImg = await sendImageToCloudinary(
+      file.buffer,
+      imageName,
+      file.mimetype,
+    );
     payload.profilePhotoUrl = profileImg?.secure_url;
   }
   const result = await sendOtpToEmail(payload);
@@ -47,6 +50,24 @@ const getUsers = async (query: Record<string, unknown>) => {
 
 const getEachUsers = async (id: string) => {
   const result = await User.findById(id);
+  return result;
+};
+
+const deleteUser = async (id: string) => {
+  const isUserExist = await User.findById(id);
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The User is not exist");
+  }
+  if (isUserExist.isDeleted) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "The User already deleted");
+  }
+  const result = await User.findByIdAndUpdate(
+    id,
+    {
+      isDeleted: true,
+    },
+    { new: true },
+  );
   return result;
 };
 
@@ -83,4 +104,5 @@ export const userServices = {
   getManagers,
   getAdmins,
   getEachUsers,
+  deleteUser,
 };

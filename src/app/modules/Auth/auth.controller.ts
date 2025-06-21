@@ -2,23 +2,22 @@ import HttpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { authServices } from "./auth.service";
-import config from "../../config";
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await authServices.loginUser(req.body);
   const { accessToken, refreshToken } = result;
 
   res.cookie("accessToken", accessToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: "lax", // or "none" if using cross-site cookies with HTTPS
+    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
   res.cookie("refreshToken", refreshToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 365,
+    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
+    maxAge: 1000 * 60 * 60 * 24 * 365, // 7 days
   });
 
   sendResponse(res, {

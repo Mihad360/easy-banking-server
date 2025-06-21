@@ -12,7 +12,7 @@ export const createAccountValidation = z.object({
     balance: z.number().default(0),
     currency: z.string().optional(),
     status: z.enum(["pending", "active", "closed", "suspended"]).optional(),
-    branchCode: z.string(),
+    branchCode: z.string().optional(),
     accountHolderName: z.string().optional(),
     interestRate: z.number().optional(),
     transactions: z.array(z.string()).optional(),

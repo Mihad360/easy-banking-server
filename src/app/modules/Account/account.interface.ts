@@ -11,7 +11,7 @@ export interface TBankAccount {
   balance?: number;
   currency?: string;
   status: "pending" | "active" | "closed" | "suspended";
-  branchCode: string;
+  branchCode?: string;
   accountHolderName?: string;
   interestRate?: number;
   transactions?: Types.ObjectId[];

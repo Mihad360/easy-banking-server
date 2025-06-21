@@ -28,6 +28,18 @@ const getAccounts = catchAsync(async (req, res) => {
   });
 });
 
+const getMyAccount = catchAsync(async (req, res) => {
+  const user = req.user as TJwtUser;
+  const result = await accountServices.getMyAccount(user);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Account retrieved succesfully",
+    data: result,
+  });
+});
+
 const getEachAccount = catchAsync(async (req, res) => {
   const id = req.params.id;
   const user = req.user as TJwtUser;
@@ -87,4 +99,5 @@ export const accountControllers = {
   updateAccount,
   updateAccountStatusOrInterest,
   deleteAccount,
+  getMyAccount,
 };

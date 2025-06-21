@@ -2,10 +2,10 @@ import HttpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { userServices } from "./user.service";
-import config from "../../config";
 
 const createCustomer = catchAsync(async (req, res) => {
   const file = req.file;
+  console.log(file);
   const result = await userServices.createCustomer(file, req.body);
 
   sendResponse(res, {
@@ -21,16 +21,16 @@ const verifyOtp = catchAsync(async (req, res) => {
   const { accessToken, refreshToken, newUser } = result;
 
   res.cookie("accessToken", accessToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: "lax", // or "none" if using cross-site cookies with HTTPS
+    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
   res.cookie("refreshToken", refreshToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 365,
+    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
+    maxAge: 1000 * 60 * 60 * 24 * 365, // 7 days
   });
 
   sendResponse(res, {
@@ -103,6 +103,18 @@ const getEachUsers = catchAsync(async (req, res) => {
   });
 });
 
+const deleteUser = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await userServices.deleteUser(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "User deleted succesfully",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createCustomer,
   getUsers,
@@ -111,4 +123,5 @@ export const userControllers = {
   getManagers,
   getAdmins,
   getEachUsers,
+  deleteUser,
 };
