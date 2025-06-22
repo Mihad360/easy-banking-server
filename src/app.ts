@@ -17,10 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "https://easy-banking-client.vercel.app",
-      // "http://localhost:3000",
-    ],
+    origin: ["https://easy-banking-client.vercel.app", "http://localhost:3000"],
     credentials: true,
   }),
 );

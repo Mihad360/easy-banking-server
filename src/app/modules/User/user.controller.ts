@@ -20,18 +20,18 @@ const verifyOtp = catchAsync(async (req, res) => {
   const result = await userServices.verifyOtp(req.body);
   const { accessToken, refreshToken, newUser } = result;
 
-  res.cookie("accessToken", accessToken, {
-    secure: true,
-    httpOnly: true,
-    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-  });
-  res.cookie("refreshToken", refreshToken, {
-    secure: true,
-    httpOnly: true,
-    sameSite: "none", // or "none" if using cross-site cookies with HTTPS
-    maxAge: 1000 * 60 * 60 * 24 * 365, // 7 days
-  });
+  // res.cookie("accessToken", accessToken, {
+  //   secure: config.node_env === "production", // true in production
+  //   httpOnly: false, // Set to false for Next.js to access
+  //   sameSite: config.node_env === "production" ? "none" : "lax",
+  //   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  // });
+  // res.cookie("refreshToken", refreshToken, {
+  //   secure: config.node_env === "production", // true in production
+  //   httpOnly: false, // Set to false for Next.js to access
+  //   sameSite: config.node_env === "production" ? "none" : "lax",
+  //   maxAge: 1000 * 60 * 60 * 24 * 365, // 7 days
+  // });
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
