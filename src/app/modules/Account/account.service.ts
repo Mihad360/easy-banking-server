@@ -12,7 +12,6 @@ import { searchAccount } from "./account.const";
 import { sendEmail } from "../../utils/sendEmail";
 
 const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
-  console.log(user);
   const isBranchExist = await BranchModel.findById(payload?.branch);
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
@@ -30,6 +29,7 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
     );
   }
 
+  payload.branchCode = isBranchExist?.code;
   const accountNumber = await generateSavingAccountNumber(payload);
   payload.accountNumber = accountNumber;
   payload.user = isUserExist._id;
@@ -37,7 +37,6 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
   payload.currency = "BDT";
   payload.balance = 2000;
   payload.minimumBalance = 2000;
-  payload.branchCode = isBranchExist?.code;
 
   const result = await AccountModel.create(payload);
   if (result) {
