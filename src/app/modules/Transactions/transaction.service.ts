@@ -77,8 +77,13 @@ const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
       user: isAccountExist.user.toString(),
       description: payload.description || "",
       transactionId: createTransaction[0]._id.toString(),
+      role: user?.role.toString(),
     };
-    const url = await createPayment(payload.amount, isUserExist.email, metaData);
+    const url = await createPayment(
+      payload.amount,
+      isUserExist.email,
+      metaData,
+    );
     console.log(url);
 
     await session.commitTransaction();

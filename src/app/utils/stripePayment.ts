@@ -27,7 +27,7 @@ export const createPayment = async (
       ],
       mode: "payment",
       customer_email: email,
-      success_url: `${config.client_url}/success`,
+      success_url: `${config.client_url}/dashboard/${metaData?.role}/success`,
       cancel_url: `${config.client_url}/cancel`,
       metadata: metaData,
     });

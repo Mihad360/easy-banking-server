@@ -8,7 +8,8 @@ export interface TBranch {
   zipCode: string;
   reserevedBalance?: number;
   usedBalance?: number;
-  contactNumber: string
+  interestBalance?: number;
+  contactNumber: string;
   email?: string;
   managers?: string[];
   openingSchedule: {
