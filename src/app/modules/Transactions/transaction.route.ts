@@ -45,5 +45,10 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.downloadTransaction,
 );
+router.get(
+  "/stripe/success/:id",
+  // auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  transactionControllers.getStripeSuccesSession,
+);
 
 export const transactionRoutes = router;

@@ -76,6 +76,18 @@ const getPersonalTransactions = catchAsync(async (req, res) => {
   });
 });
 
+const getStripeSuccesSession = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await transactionServices.getStripeSuccesSession(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "getStripeSuccesSession retrieved succesfully",
+    data: result,
+  });
+});
+
 const downloadTransaction = catchAsync(async (req, res) => {
   const id = req.params.id;
   const user = req.user as TJwtUser;
@@ -105,4 +117,5 @@ export const transactionControllers = {
   getPersonalTransactions,
   getEachTransactions,
   downloadTransaction,
+  getStripeSuccesSession,
 };

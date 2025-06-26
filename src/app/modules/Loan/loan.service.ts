@@ -319,7 +319,7 @@ const payLoan = async (
         "The repayment schedule not found",
       );
     }
-    
+
     const monthlyRenew =
       (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
       payload.monthsToPay;
@@ -336,6 +336,7 @@ const payLoan = async (
       newUsedBalance: newUsedBalance.toString(),
       monthsToPay: payload.monthsToPay.toString(),
       transactionType: payload.transactionType || "deposit-loan",
+      role: isUserExist?.role,
     };
     // console.log(metaData.newReserveBalance);
     const url = await createPayment(paidBalance, isUserExist.email, metaData);

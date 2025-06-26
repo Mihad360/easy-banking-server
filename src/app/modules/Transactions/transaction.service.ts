@@ -609,6 +609,11 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
   return pdfBuffer;
 };
 
+const getStripeSuccesSession = async (id: string) => {
+  const result = await TransactionModel.findById(id);
+  return result;
+};
+
 export const transactionServices = {
   createDeposit,
   createWithdraw,
@@ -617,4 +622,5 @@ export const transactionServices = {
   getPersonalTransactions,
   getEachTransactions,
   downloadTransaction,
+  getStripeSuccesSession,
 };
