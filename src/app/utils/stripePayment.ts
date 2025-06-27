@@ -27,7 +27,8 @@ export const createPayment = async (
       ],
       mode: "payment",
       customer_email: email,
-      success_url: `${config.client_url}/dashboard/${metaData?.role}/success?session_id=${metaData.transactionId}`,
+      // success_url: `${config.client_url}/dashboard/${metaData?.role}/success?session_id=${metaData.transactionId}`,
+      success_url: `${config.client_url}/stripe/success?session_id=${metaData.transactionId}`,
       cancel_url: `${config.client_url}/cancel`,
       metadata: metaData,
     });

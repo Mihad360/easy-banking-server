@@ -7,6 +7,11 @@ import { transactionValidations } from "./transaction.validation";
 
 const router = express.Router();
 
+router.get(
+  "/personal-transactions",
+  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
+  transactionControllers.getPersonalTransactions,
+);
 router.post(
   "/create-deposit",
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
@@ -34,11 +39,6 @@ router.get(
   "/:id",
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.getEachTransactions,
-);
-router.get(
-  "/personal-transactions",
-  auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
-  transactionControllers.getPersonalTransactions,
 );
 router.get(
   "/:id/download",

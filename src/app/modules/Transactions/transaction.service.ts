@@ -496,7 +496,7 @@ const getPersonalTransactions = async (user: TJwtUser) => {
   const result = await TransactionModel.find({
     user: isAccountExist.user,
   }).sort({
-    status: -1,
+    createdAt: -1,
   });
   return result;
 };

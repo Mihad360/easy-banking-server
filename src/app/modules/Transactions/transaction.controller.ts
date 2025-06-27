@@ -1,8 +1,8 @@
 import HttpStatus from "http-status";
+import { TJwtUser } from "../../interface/global";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { transactionServices } from "./transaction.service";
-import { TJwtUser } from "../../interface/global";
 import { TransactionModel } from "./transaction.model";
 
 const createDeposit = catchAsync(async (req, res) => {
