@@ -5,6 +5,11 @@ import { loanControllers } from "./loan.controller";
 
 const router = express.Router();
 
+router.get(
+  "/my-loan",
+  auth(USER_ROLE.customer, USER_ROLE.manager),
+  loanControllers.myLoan,
+);
 router.post(
   "/request-loan",
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),

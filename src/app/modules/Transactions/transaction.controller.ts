@@ -99,14 +99,14 @@ const downloadTransaction = catchAsync(async (req, res) => {
     "Content-Disposition",
     `attachment; filename=transaction-${isTransactionExist?.transaction_Id}.pdf`,
   );
-  res.send(pdfBuffer);
+  // res.send(pdfBuffer);
 
-  // sendResponse(res, {
-  //   statusCode: HttpStatus.OK,
-  //   success: true,
-  //   message: "Reciept download succesfully",
-  //   data: result,
-  // });
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Reciept download succesfully",
+    data: pdfBuffer,
+  });
 });
 
 export const transactionControllers = {

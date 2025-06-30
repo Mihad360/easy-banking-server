@@ -40,7 +40,7 @@ router.get(
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.getEachTransactions,
 );
-router.get(
+router.post(
   "/:id/download",
   auth(USER_ROLE.admin, USER_ROLE.manager, USER_ROLE.customer),
   transactionControllers.downloadTransaction,

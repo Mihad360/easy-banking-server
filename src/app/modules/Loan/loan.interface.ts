@@ -18,4 +18,5 @@ export interface TLoan {
     paid: boolean;
     paidDate?: Date;
   }>;
+  isDeleted: boolean;
 }

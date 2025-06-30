@@ -22,6 +22,7 @@ const loanSchema = new Schema<TLoan>(
       type: Array,
       default: [],
     },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

@@ -68,9 +68,10 @@ const getAccounts = async (query: Record<string, unknown>) => {
 };
 
 const getMyAccount = async (user: TJwtUser) => {
-  const account = await AccountModel.findOne({ user: user?.user }).populate(
-    "user branch",
-  );
+  const account = await AccountModel.findOne({
+    user: user?.user,
+    status: "active",
+  }).populate("user branch");
   if (!account) {
     throw new AppError(HttpStatus.NOT_FOUND, "You dont have an account");
   }

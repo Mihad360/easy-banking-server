@@ -63,10 +63,24 @@ const getEachLoans = catchAsync(async (req, res) => {
   });
 });
 
+const myLoan = catchAsync(async (req, res) => {
+  const user = req.user as TJwtUser;
+  const id = user?.user.toString();
+  const result = await loadServices.myLoan(id);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Loan retrieved succesfully",
+    data: result,
+  });
+});
+
 export const loanControllers = {
   requestLoan,
   updateRequestedLoan,
   payLoan,
   getLoans,
   getEachLoans,
+  myLoan,
 };

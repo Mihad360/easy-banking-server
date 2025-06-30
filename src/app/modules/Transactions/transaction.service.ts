@@ -522,10 +522,10 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "User not found");
   }
-
+  
   if (
     user.role === "customer" &&
-    isUserTransaction?.user?.toString() !== user.user.toString()
+    isUserTransaction?.user?._id?.toString() !== user?.user?.toString()
   ) {
     throw new AppError(
       HttpStatus.FORBIDDEN,

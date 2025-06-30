@@ -31,6 +31,17 @@ const requestLoan = async (user: TJwtUser, payload: TLoan) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not found");
   }
+  const isLoanExist = await LoanModel.findOne({
+    user: isUserExist._id,
+    status: { $in: ["pending", "active"] },
+  });
+  if (isLoanExist) {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      "You already have an unpaid loan",
+    );
+  }
+
   const isUserHaveLoan = await LoanModel.findOne({
     user: isUserExist._id,
     accountNumber: isAccountExist.accountNumber,
@@ -378,10 +389,23 @@ const getEachLoans = async (id: string) => {
   return result;
 };
 
+const myLoan = async (userId: string) => {
+  const id = new Types.ObjectId(userId);
+  const loan = await LoanModel.findOne({
+    user: id,
+    status: { $in: ["pending", "active"] },
+  });
+  if (!loan) {
+    throw new AppError(HttpStatus.NOT_FOUND, "You dont have any Loan");
+  }
+  return loan;
+};
+
 export const loadServices = {
   requestLoan,
   updateRequestedLoan,
   payLoan,
   getLoans,
   getEachLoans,
+  myLoan,
 };
