@@ -7,6 +7,7 @@ import { User } from "../User/user.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { searchBranch } from "./branch.const";
 import { TUserInterface } from "../User/user.interface";
+import { TJwtUser } from "../../interface/global";
 
 const createBranch = async (payload: TBranch) => {
   const isSameCodeBranchExist = await BranchModel.findOne({
@@ -70,6 +71,26 @@ const getBranches = async (query: Record<string, unknown>) => {
   return { meta, result };
 };
 
+const getMyBranch = async (user: TJwtUser) => {
+  const isUserExist = await User.findOne({
+    _id: new Types.ObjectId(user?.user),
+    role: "manager",
+  });
+  if (!isUserExist) {
+    throw new AppError(HttpStatus.NOT_FOUND, "Manager not found");
+  }
+  const isBranchExist = await BranchModel.findOne({
+    managers: isUserExist?._id,
+  }).populate("managers");
+  if (!isBranchExist) {
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      "The manager is not added in any branch",
+    );
+  }
+  return isBranchExist;
+};
+
 const getEachBranch = async (id: string) => {
   const result = await BranchModel.findById(id);
   return result;
@@ -80,8 +101,7 @@ const updateBranch = async (id: string, payload: Partial<TBranch>) => {
   if (!isBranchExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The branch is not exist");
   }
-  const { openingSchedule, ...remainingData } =
-    payload;
+  const { openingSchedule, ...remainingData } = payload;
 
   const modifiedData: Record<string, unknown> = {
     ...remainingData,
@@ -147,4 +167,5 @@ export const branchServices = {
   getEachBranch,
   updateBranch,
   updateBranchManagers,
+  getMyBranch,
 };

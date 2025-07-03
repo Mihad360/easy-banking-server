@@ -22,6 +22,6 @@ export type TJwtUser = {
   phoneNumber: string;
   name?: string;
   isDeleted: boolean;
-  iat: number;
-  exp: number;
+  iat?: number;
+  exp?: number;
 };

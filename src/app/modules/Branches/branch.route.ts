@@ -7,6 +7,11 @@ import { USER_ROLE } from "../../interface/global";
 
 const router = express.Router();
 
+router.get(
+  "/my-branch",
+  auth(USER_ROLE.manager),
+  branchControllers.getMyBranch,
+);
 router.post(
   "/create-branch",
   auth(USER_ROLE.admin, USER_ROLE.manager),

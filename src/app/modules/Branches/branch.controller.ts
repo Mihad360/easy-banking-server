@@ -2,6 +2,7 @@ import HttpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { branchServices } from "./branch.service";
+import { TJwtUser } from "../../interface/global";
 
 const createBranch = catchAsync(async (req, res) => {
   const result = await branchServices.createBranch(req.body);
@@ -23,6 +24,18 @@ const getBranches = catchAsync(async (req, res) => {
     message: "Branch retrieved succesfully",
     meta: result.meta,
     data: result.result,
+  });
+});
+
+const getMyBranch = catchAsync(async (req, res) => {
+  const user = req.user as TJwtUser;
+  const result = await branchServices.getMyBranch(user);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "Branch retrieved succesfully",
+    data: result,
   });
 });
 
@@ -68,4 +81,5 @@ export const branchControllers = {
   getEachBranch,
   updateBranch,
   updateBranchManagers,
+  getMyBranch,
 };
