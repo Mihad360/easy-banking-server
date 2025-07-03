@@ -12,10 +12,13 @@ import { TransactionModel } from "../Transactions/transaction.model";
 import { generateTransactionId } from "../Transactions/transaction.utils";
 import { createPayment } from "../../utils/stripePayment";
 import { TBranch } from "../Branches/branch.interface";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 type LoanWithBranchPopulated = TLoan & {
   branch: TBranch | Types.ObjectId;
 };
+
+const searchLoans = ["accountNumber"];
 
 const requestLoan = async (user: TJwtUser, payload: TLoan) => {
   //   console.log(user);
@@ -364,20 +367,20 @@ const payLoan = async (
   }
 };
 
-const getLoans = async () => {
-  const result = await LoanModel.aggregate([
-    {
-      $addFields: {
-        sortOrder: {
-          $cond: [{ $eq: ["$status", "pending"] }, 0, 1],
-        },
-      },
-    },
-    {
-      $sort: { sortOrder: 1 },
-    },
-  ]);
-  return result;
+const getLoans = async (query: Record<string, unknown>) => {
+  const loanQuery = new QueryBuilder(
+    LoanModel.find().populate("user account branch"),
+    query,
+  )
+    .search(searchLoans)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await loanQuery.countTotal();
+  const result = await loanQuery.modelQuery;
+  return { meta, result };
 };
 
 const getEachLoans = async (id: string) => {
@@ -390,15 +393,22 @@ const getEachLoans = async (id: string) => {
 };
 
 const myLoan = async (userId: string) => {
+  if (!Types.ObjectId.isValid(userId)) {
+    throw new AppError(HttpStatus.BAD_REQUEST, "Invalid user ID");
+  }
+
   const id = new Types.ObjectId(userId);
-  const loan = await LoanModel.findOne({
+
+  const loans = await LoanModel.findOne({
     user: id,
     status: { $in: ["pending", "active"] },
-  });
-  if (!loan) {
-    throw new AppError(HttpStatus.NOT_FOUND, "You dont have any Loan");
+  }).populate("branch user account");
+
+  if (!loans) {
+    throw new AppError(HttpStatus.NOT_FOUND, "You don't have any loan");
   }
-  return loan;
+
+  return loans; // or return all if you expect multiple
 };
 
 export const loadServices = {

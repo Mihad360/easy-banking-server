@@ -41,13 +41,14 @@ const payLoan = catchAsync(async (req, res) => {
 });
 
 const getLoans = catchAsync(async (req, res) => {
-  const result = await loadServices.getLoans();
+  const result = await loadServices.getLoans(req.query);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "Loans retrieved succesfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

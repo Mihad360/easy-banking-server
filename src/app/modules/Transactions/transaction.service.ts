@@ -13,10 +13,20 @@ import { PassThrough } from "stream";
 import dayjs from "dayjs";
 import { TBranch } from "../Branches/branch.interface";
 import { TBankAccount } from "../Account/account.interface";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 type LoanWithBranchPopulated = TBankAccount & {
   branch: TBranch | Types.ObjectId;
 };
+
+const searchTransaction = [
+  "account",
+  "transactionType",
+  "fromAccount",
+  "toAccount",
+  "transaction_Id",
+  "description",
+];
 
 const createDeposit = async (user: TJwtUser, payload: TTransaction) => {
   const isUserExist = await User.findById(user?.user);
@@ -450,27 +460,21 @@ const createTransfer = async (user: TJwtUser, payload: TTransaction) => {
   }
 };
 
-const getTransactions = async () => {
-  const result = await TransactionModel.aggregate([
-    {
-      $addFields: {
-        sortOrder: {
-          $cond: [{ $eq: ["$status", "pending"] }, 0, 1],
-        },
-      },
-    },
-    { $sort: { sortOrder: 1 } },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    { $unwind: "$user" },
-  ]);
-  return result;
+const getTransactions = async (query: Record<string, unknown>) => {
+  const transactionQuery = new QueryBuilder(
+    TransactionModel.find().populate("user"),
+    query,
+  )
+    .search(searchTransaction)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await transactionQuery.countTotal();
+  const result = await transactionQuery.modelQuery;
+
+  return { meta, result };
 };
 
 const getEachTransactions = async (id: string) => {
@@ -522,7 +526,7 @@ export const downloadTransaction = async (id: string, user: TJwtUser) => {
   if (!isUserExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "User not found");
   }
-  
+
   if (
     user.role === "customer" &&
     isUserTransaction?.user?._id?.toString() !== user?.user?.toString()
