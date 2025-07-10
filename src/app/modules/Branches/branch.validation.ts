@@ -24,28 +24,23 @@ const createBranchValidation = z.object({
 const updateBranchValidation = z.object({
   body: z
     .object({
-      name: z.string(),
-      code: z.string(),
-      address: z.string(),
-      city: z.string(),
+      name: z.string().optional(),
+      code: z.string().optional(),
+      address: z.string().optional(),
+      city: z.string().optional(),
       state: z.string().optional(),
-      country: z.string(),
-      zipCode: z.string(),
-      contactNumber: z.array(z.string()),
+      country: z.string().optional(),
+      zipCode: z.string().optional(),
+      contactNumber: z.string().optional(),
       email: z.string().email().optional(),
-      managers: z.array(z.string()).optional(),
-      services: z.array(z.string()).optional(),
       openingSchedule: z
         .object({
           days: z.array(z.string()).optional(), // You can also add `.min(1)` if you want at least one day
           openTime: z.string().optional(), // Consider stricter time validation with regex if needed
           closeTime: z.string().optional(),
-          status: z.enum(["open", "closed"]).optional().default("open"),
         })
         .optional(),
-      branchOpenedAt: z.string().date().optional(),
     })
-    .partial(),
 });
 
 export const branchValidations = {
