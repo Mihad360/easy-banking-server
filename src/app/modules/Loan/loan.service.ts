@@ -388,7 +388,7 @@ const getEachLoans = async (id: string) => {
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The loan is not exist");
   }
-  const result = await LoanModel.findById(id);
+  const result = await LoanModel.findById(id).populate('branch account')
   return result;
 };
 

@@ -92,7 +92,7 @@ const getMyBranch = async (user: TJwtUser) => {
 };
 
 const getEachBranch = async (id: string) => {
-  const result = await BranchModel.findById(id);
+  const result = await BranchModel.findById(id).populate("managers");
   return result;
 };
 
@@ -125,8 +125,7 @@ const updateBranchManagers = async (
   data: { managers: string[] },
 ) => {
   const { managers } = data;
-
-  const managerObjectIds = managers.map((id) => new Types.ObjectId(id));
+  const managerObjectIds = managers?.map((id) => new Types.ObjectId(id));
 
   if (!managerObjectIds.length) {
     throw new AppError(HttpStatus.NOT_FOUND, "The manager is empty");
