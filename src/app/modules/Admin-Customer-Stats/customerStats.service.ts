@@ -257,8 +257,32 @@ const getCustomerStats = async (user: TJwtUser) => {
               $project: {
                 _id: 0,
                 loanAmount: "$loans.loanAmount",
+                repaymentScheduleLength: {
+                  $size: "$loans.repaymentSchedule",
+                },
+                paidCount: {
+                  $size: {
+                    $filter: {
+                      input: "$loans.repaymentSchedule",
+                      as: "payment",
+                      cond: { $eq: ["$$payment.paid", true] },
+                    },
+                  },
+                },
                 paid: {
-                  $subtract: ["$loans.loanAmount", "$loans.remainingBalance"],
+                  $sum: {
+                    $map: {
+                      input: {
+                        $filter: {
+                          input: "$loans.repaymentSchedule",
+                          as: "payment",
+                          cond: { $eq: ["$$payment.paid", true] },
+                        },
+                      },
+                      as: "paidItem",
+                      in: "$$paidItem.amountDue",
+                    },
+                  },
                 },
                 remaining: "$loans.remainingBalance",
                 status: 1,
