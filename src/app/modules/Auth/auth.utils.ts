@@ -1,19 +1,12 @@
-import jwt, { SignOptions, JwtPayload } from "jsonwebtoken";
-import { Types } from "mongoose";
+import jwt from "jsonwebtoken";
+import { JwtPayload } from "./auth.service";
 
 export const createToken = (
-  jwtPayload: {
-    email: string;
-    user: Types.ObjectId;
-    role: string;
-  },
+  jwtPayload: JwtPayload,
   secretToken: string,
-  expiry: string | number, // Allow both string (e.g., "1h") or number (e.g., 3600)
+  expiry: string, // Allow both string (e.g., "1h") or number (e.g., 3600)
 ) => {
-  const options: SignOptions = {
-    expiresIn: expiry, // Cast to match expected type
-  };
-  return jwt.sign(jwtPayload, secretToken, options);
+  return jwt.sign(jwtPayload, secretToken, { expiresIn: expiry });
 };
 
 export const verifyToken = (token: string, secret: string) => {

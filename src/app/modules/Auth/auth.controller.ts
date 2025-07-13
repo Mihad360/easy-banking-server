@@ -8,16 +8,18 @@ const loginUser = catchAsync(async (req, res) => {
   const { accessToken, refreshToken } = result;
 
   // res.cookie("accessToken", accessToken, {
-  //   secure: config.node_env === "production", // true in production
-  //   httpOnly: true, // Set to false for Next.js to access
-  //   sameSite: config.node_env === "production" ? "none" : "lax",
-  //   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  //   httpOnly: true,
+  //   secure: true,
+  //   sameSite: "none",
+  //   path: "/",
+  //   // maxAge: 15,
   // });
   // res.cookie("refreshToken", refreshToken, {
-  //   secure: config.node_env === "production", // true in production
-  //   httpOnly: true, // Set to false for Next.js to access
-  //   sameSite: config.node_env === "production" ? "none" : "lax",
-  //   maxAge: 1000 * 60 * 60 * 24 * 365, // 7 days
+  //   httpOnly: true,
+  //   secure: true,
+  //   sameSite: "none",
+  //   path: "/",
+  //   // maxAge: 35,
   // });
 
   sendResponse(res, {
@@ -32,13 +34,25 @@ const loginUser = catchAsync(async (req, res) => {
 });
 
 const refreshToken = catchAsync(async (req, res) => {
-  const { refreshToken } = req.cookies;
+  const { refreshToken } = req.body;
   const result = await authServices.refreshToken(refreshToken);
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "Refresh Token created succesfully",
+    data: result,
+  });
+});
+
+const getNewAccessToken = catchAsync(async (req, res) => {
+  const token = req.body;
+  const result = await authServices.getNewAccessToken(token);
+
+  sendResponse(res, {
+    statusCode: HttpStatus.OK,
+    success: true,
+    message: "AccessToken Token sent succesfully",
     data: result,
   });
 });
@@ -71,4 +85,5 @@ export const authControllers = {
   refreshToken,
   forgetPassword,
   resetPassword,
+  getNewAccessToken,
 };

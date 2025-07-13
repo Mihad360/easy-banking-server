@@ -76,20 +76,16 @@ const loginUser = async (payload: TLoginUser) => {
 const refreshToken = async (token: string) => {
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
   // console.log(decoded)
-  let user;
-  if (decoded?.role === "admin") {
-    user = await User.findOne({ adminId: decoded.user, email: decoded.email });
-  } else if (decoded?.role === "manager") {
-    user = await User.findOne({
-      managerId: decoded.user,
-      email: decoded.email,
-    });
-  } else if (decoded?.role === "customer") {
-    user = await User.findOne({
-      customerId: decoded.user,
-      email: decoded.email,
-    });
-  }
+  // let user;
+  const user = await User.findOne({
+    email: decoded.email,
+  });
+
+  // if (!user) {
+  //   user = await User.findOne({
+  //     phoneNumber: decoded.phoneNumber,
+  //   });
+  // }
 
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
@@ -200,9 +196,14 @@ const resetPassword = async (
   return result;
 };
 
+const getNewAccessToken = async (token: string) => {
+  return token;
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
   forgetPassword,
   resetPassword,
+  getNewAccessToken,
 };

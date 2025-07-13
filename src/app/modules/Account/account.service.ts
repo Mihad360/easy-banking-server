@@ -54,7 +54,7 @@ const createAccount = async (user: TJwtUser, payload: TBankAccount) => {
 
 const getAccounts = async (query: Record<string, unknown>) => {
   const accountQuery = new QueryBuilder(
-    AccountModel.find().populate("user branch"),
+    AccountModel.find().sort({ createdAt: 1 }).populate("user branch"),
     query,
   )
     .search(searchAccount)

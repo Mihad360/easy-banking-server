@@ -369,7 +369,7 @@ const payLoan = async (
 
 const getLoans = async (query: Record<string, unknown>) => {
   const loanQuery = new QueryBuilder(
-    LoanModel.find().populate("user account branch"),
+    LoanModel.find().sort({ createdAt: 1 }).populate("user account branch"),
     query,
   )
     .search(searchLoans)
@@ -388,7 +388,7 @@ const getEachLoans = async (id: string) => {
   if (!isLoanExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The loan is not exist");
   }
-  const result = await LoanModel.findById(id).populate('branch account')
+  const result = await LoanModel.findById(id).populate("branch account");
   return result;
 };
 
