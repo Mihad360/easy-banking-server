@@ -4,7 +4,7 @@ import config from "../config";
 import { handleCheckoutSessionCompleted } from "./stripeWebhook.service";
 
 const stripe = new Stripe(config.stripe_secret_key as string, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2025-06-30.basil",
 });
 
 const webhook = config.stripe_webhook_key as string;

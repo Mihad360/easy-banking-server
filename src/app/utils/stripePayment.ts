@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import config from "../config";
 const stripe = new Stripe(config.stripe_secret_key as string, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: "2025-06-30.basil",
 });
 
 export const createPayment = async (
@@ -19,7 +19,7 @@ export const createPayment = async (
             currency: "bdt",
             unit_amount: amount * 100,
             product_data: {
-              name: "Your Product Name",
+              name: "Your Amount",
             },
           },
           quantity: 1,
