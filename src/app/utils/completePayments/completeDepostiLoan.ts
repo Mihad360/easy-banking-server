@@ -2,7 +2,6 @@ import HttpStatus from "http-status";
 import { LoanModel } from "../../modules/Loan/loan.model";
 import AppError from "../../erros/AppError";
 import mongoose, { Types } from "mongoose";
-import { AccountModel } from "../../modules/Account/account.model";
 import { BranchModel } from "../../modules/Branches/branch.model";
 import { TransactionModel } from "../../modules/Transactions/transaction.model";
 import { generateTransactionId } from "../../modules/Transactions/transaction.utils";
@@ -23,29 +22,16 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
     throw new AppError(HttpStatus.NOT_FOUND, "The Loan request is not found");
   }
   const paidBalance = Number(metadata.paidBalance);
-  const newUserBalance = Number(metadata.newUserBalance);
+  // const newUserBalance = Number(metadata.newUserBalance);
   const newReserveBalance = Number(metadata.newReserveBalance);
   const newUsedBalance = Number(metadata.newUsedBalance);
   const monthsToPay = Number(metadata.monthsToPay);
-  const newRemainingBalance =
-    Number(isLoanExist.remainingBalance) - paidBalance;
-// console.log(newReserveBalance)
+  const newRemainingBalance = Number(metadata.newRemainingBalance);
+  // console.log(metadata);
+  // console.log(newRemainingBalance);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const updateUserAccountBalance = await AccountModel.findByIdAndUpdate(
-      isLoanExist.account,
-      {
-        balance: newUserBalance && newUserBalance,
-      },
-      { session, new: true },
-    );
-    if (!updateUserAccountBalance) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        "The user balance update failed",
-      );
-    }
     const updateBranchBalance = await BranchModel.findByIdAndUpdate(
       isLoanExist.branch,
       {
@@ -61,21 +47,6 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
       );
     }
 
-    const unPaids = isLoanExist.repaymentSchedule?.filter(
-      (loan) => loan.paid === false,
-    );
-    if (!unPaids) {
-      throw new AppError(
-        HttpStatus.NOT_FOUND,
-        "Loan is already submitted or not found",
-      );
-    }
-    if (unPaids.length < monthsToPay) {
-      throw new AppError(
-        HttpStatus.BAD_REQUEST,
-        "Not enough unpaid months to cover payment",
-      );
-    }
     const unpaidLoans = isLoanExist.repaymentSchedule;
     if (!unpaidLoans) {
       throw new AppError(
@@ -127,7 +98,6 @@ export const completeDepostiLoan = async (metadata: Stripe.Metadata) => {
 
     await session.commitTransaction();
     await session.endSession();
-    return updatedPay;
     return updatedPay;
   } catch (error) {
     await session.abortTransaction();

@@ -115,22 +115,29 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
           .endOf("month")
           .toDate();
     payload.endDate = endDate;
-    const termInYears = Number(isLoanExist.term);
+    // const termInYears = Number(isLoanExist.term);
+    // const principal = isLoanExist.loanAmount;
+    // const rate = isLoanExist.interestRate as number;
+    // let totalPayable = 0;
+    // let remaining = principal;
+    // const monthlyPrincipal = principal / termInYears;
+
+    // for (let i = 0; i < termInYears; i++) {
+    //   const interest = remaining * rate;
+    //   const amountDue = monthlyPrincipal + interest;
+    //   const roundedDue = Math.ceil(amountDue);
+    //   totalPayable += roundedDue;
+    //   remaining -= monthlyPrincipal;
+    // }
+    // payload.remainingBalance = Math.round(totalPayable);
     const principal = isLoanExist.loanAmount;
-    const rate = isLoanExist.interestRate as number;
-    let totalPayable = 0;
-    let remaining = principal;
-    const monthlyPrincipal = principal / termInYears;
+    const rate = isLoanExist.interestRate as number; // e.g., 0.05 for 5% flat interest
 
-    for (let i = 0; i < termInYears; i++) {
-      const interest = remaining * rate;
-      const amountDue = monthlyPrincipal + interest;
-      const roundedDue = Math.ceil(amountDue);
-      totalPayable += roundedDue;
-      remaining -= monthlyPrincipal;
-    }
-    payload.remainingBalance = Math.round(totalPayable);
+    const totalInterest = principal * rate;
+    const totalPayable = Math.round(principal + totalInterest);
 
+    payload.remainingBalance = totalPayable;
+    console.log(payload);
     if (payload.status !== "approved") {
       await LoanModel.findByIdAndUpdate(
         id,
@@ -193,25 +200,40 @@ const updateRequestedLoan = async (id: string, payload: Partial<TLoan>) => {
       const loanAmount = Number(updateLoan?.loanAmount);
       const term = Number(updateLoan?.term);
       const interestRate = Number(updateLoan?.interestRate);
-      let remainingPrincipal = loanAmount;
+      // let remainingPrincipal = loanAmount;
+
+      const totalInt = loanAmount * interestRate;
+      const totalPay = loanAmount + totalInt;
+      const monthlyDue = Math.ceil(totalPay / term); // Divide equally per month
       const rePaymentDetails = [];
       for (let i = 0; i < term; i++) {
-        const interestThisMonth = remainingPrincipal * interestRate;
-        const principalThisMonth = loanAmount / term;
-        const totalDue = principalThisMonth + interestThisMonth;
-
         rePaymentDetails.push({
           dueDate: dayjs(updateLoan?.startDate)
             .add(i + 1, "month")
             .hour(24)
             .toDate(),
-          amountDue: Math.ceil(totalDue),
+          amountDue: monthlyDue,
           paid: false,
           paidDate: null,
         });
-
-        remainingPrincipal -= principalThisMonth;
       }
+      // for (let i = 0; i < term; i++) {
+      //   const interestThisMonth = remainingPrincipal * interestRate;
+      //   const principalThisMonth = loanAmount / term;
+      //   const totalDue = principalThisMonth + interestThisMonth;
+
+      //   rePaymentDetails.push({
+      //     dueDate: dayjs(updateLoan?.startDate)
+      //       .add(i + 1, "month")
+      //       .hour(24)
+      //       .toDate(),
+      //     amountDue: Math.ceil(totalDue),
+      //     paid: false,
+      //     paidDate: null,
+      //   });
+
+      //   remainingPrincipal -= principalThisMonth;
+      // }
 
       const updateRepaymentDetails = await LoanModel.findByIdAndUpdate(
         updateLoan._id,
@@ -326,7 +348,7 @@ const payLoan = async (
       rePaymentDetails
         .slice(0, payload.monthsToPay)
         .reduce((sum, month) => sum + month.amountDue, 0);
-
+    // console.log(paidBalance);
     if (!paidBalance) {
       throw new AppError(
         HttpStatus.NOT_FOUND,
@@ -337,22 +359,24 @@ const payLoan = async (
     const monthlyRenew =
       (Number(isLoanExist.loanAmount) / Number(isLoanExist.term)) *
       payload.monthsToPay;
-    const newUserBalance = Number(isAccountExist.balance) - monthlyRenew;
+    // const newUserBalance = Number(isAccountExist.balance) - monthlyRenew;
     const newReserveBalance =
       Number(isBranchExist.reserevedBalance) + paidBalance;
     const newUsedBalance = Number(isBranchExist.usedBalance) - monthlyRenew;
+    const newRemainingBalance =
+      Number(isLoanExist.remainingBalance) - paidBalance;
     // console.log(newReserveBalance);
     const metaData = {
       loan: isLoanExist._id.toString(),
       paidBalance: paidBalance.toString(),
-      newUserBalance: newUserBalance.toString(),
+      newRemainingBalance: newRemainingBalance.toString(),
       newReserveBalance: newReserveBalance.toString(),
       newUsedBalance: newUsedBalance.toString(),
       monthsToPay: payload.monthsToPay.toString(),
       transactionType: payload.transactionType || "deposit-loan",
       role: isUserExist?.role,
     };
-    // console.log(metaData.newReserveBalance);
+    // console.log(metaData.newRemainingBalance);
     const url = await createPayment(paidBalance, isUserExist.email, metaData);
     console.log(url);
 
@@ -401,7 +425,7 @@ const myLoan = async (userId: string) => {
 
   const loans = await LoanModel.findOne({
     user: id,
-    status: { $in: ["pending", "active"] },
+    status: { $ne: "paid" },
   }).populate("branch user account");
 
   if (!loans) {
