@@ -482,7 +482,10 @@ const getEachTransactions = async (id: string) => {
   return result;
 };
 
-const getPersonalTransactions = async (user: TJwtUser) => {
+const getPersonalTransactions = async (
+  user: TJwtUser,
+  query: Record<string, unknown>,
+) => {
   if (!user || !user.email) {
     throw new AppError(HttpStatus.NOT_FOUND, "You are unAuthorized");
   }
@@ -497,12 +500,24 @@ const getPersonalTransactions = async (user: TJwtUser) => {
   if (!isAccountExist) {
     throw new AppError(HttpStatus.NOT_FOUND, "The Account is not found");
   }
-  const result = await TransactionModel.find({
-    user: isAccountExist.user,
-  }).sort({
-    createdAt: -1,
-  });
-  return result;
+  const transactionQuery = new QueryBuilder(
+    TransactionModel.find({
+      user: isAccountExist.user,
+    }).sort({
+      createdAt: -1,
+    }),
+    query,
+  )
+    .search(searchTransaction)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await transactionQuery.countTotal();
+  const result = await transactionQuery.modelQuery;
+
+  return { meta, result };
 };
 
 export const downloadTransaction = async (id: string, user: TJwtUser) => {

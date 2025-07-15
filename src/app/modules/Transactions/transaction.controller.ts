@@ -67,13 +67,17 @@ const getEachTransactions = catchAsync(async (req, res) => {
 
 const getPersonalTransactions = catchAsync(async (req, res) => {
   const user = req.user as TJwtUser;
-  const result = await transactionServices.getPersonalTransactions(user);
+  const result = await transactionServices.getPersonalTransactions(
+    user,
+    req.query,
+  );
 
   sendResponse(res, {
     statusCode: HttpStatus.OK,
     success: true,
     message: "Transfer retrieved succesfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

@@ -12,14 +12,12 @@ const loginUser = catchAsync(async (req, res) => {
   //   secure: true,
   //   sameSite: "none",
   //   path: "/",
-  //   // maxAge: 15,
   // });
   // res.cookie("refreshToken", refreshToken, {
   //   httpOnly: true,
   //   secure: true,
   //   sameSite: "none",
   //   path: "/",
-  //   // maxAge: 35,
   // });
 
   sendResponse(res, {

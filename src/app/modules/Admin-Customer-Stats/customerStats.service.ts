@@ -245,7 +245,7 @@ const getCustomerStats = async (user: TJwtUser) => {
                     $match: {
                       $expr: { $eq: ["$accountNumber", "$$accountNum"] },
                       user: userId,
-                      status: "active",
+                      status: { $ne: "paid" },
                     },
                   },
                 ],
