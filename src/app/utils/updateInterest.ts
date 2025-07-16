@@ -10,15 +10,16 @@ export const applyMonthlyInterests = async () => {
     status: "active",
     accountType: "savings",
   });
+
   const now = new Date();
   for (const account of accounts) {
     const lastApplied = account.lastInterestDate;
-    const monthPassed = dayjs(now).diff(dayjs(lastApplied), "year");
-    if (monthPassed >= 1) {
-      const interestRate = 0.08;
+    const yearPassed = dayjs(now).diff(dayjs(lastApplied), "year");
+    if (yearPassed >= 1) {
+      const interestRate = 0.06;
       const balance = account.balance as number;
       const n = 1;
-      const t = monthPassed;
+      const t = yearPassed;
 
       // Compound interest formula: A = P * (1 + r/n)^(nt)
       const A = balance * Math.pow(1 + interestRate / n, n * t);
@@ -36,7 +37,7 @@ export const applyMonthlyInterests = async () => {
               lastInterestDate: now,
             },
           },
-          { session },
+          { session, new: true },
         );
 
         await BranchModel.findByIdAndUpdate(
@@ -44,7 +45,7 @@ export const applyMonthlyInterests = async () => {
           {
             $inc: {
               reserevedBalance: -interest,
-              usedBalance: interest,
+              // usedBalance: interest,
             },
           },
           { session, new: true },
@@ -60,7 +61,7 @@ export const applyMonthlyInterests = async () => {
               status: "completed",
               createdAt: now,
               amount: interest,
-              description: `✅ Interest of ${interest} BDT added to account ${account.accountNumber}`,
+              description: `✅ ${yearPassed} Years Interest of ${interest} BDT added to account ${account.accountNumber}`,
               user: account.user,
             },
           ],
@@ -69,7 +70,7 @@ export const applyMonthlyInterests = async () => {
 
         await session.commitTransaction();
         console.log(
-          `✅ Interest of ${interest} BDT added to account ${account.accountNumber}`,
+          `✅ ${yearPassed} Years Interest of ${interest} BDT added to account ${account.accountNumber}`,
         );
         return result;
       } catch (err) {

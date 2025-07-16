@@ -29,6 +29,16 @@ async function main() {
       }
     });
 
+    // cron.schedule("* * * * *", async () => {
+    //   console.log("🎯 Running test interest job every minute...");
+    //   try {
+    //     await applyMonthlyInterests();
+    //     console.log("✅ Yearly compound interest applied.");
+    //   } catch (error) {
+    //     console.log("Interest update failed", error);
+    //   }
+    // });
+
     server = app.listen(config.port, () => {
       console.log(`app listening on port ${config.port}`);
     });

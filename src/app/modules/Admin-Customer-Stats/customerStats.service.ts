@@ -245,7 +245,7 @@ const getCustomerStats = async (user: TJwtUser) => {
                     $match: {
                       $expr: { $eq: ["$accountNumber", "$$accountNum"] },
                       user: userId,
-                      status: { $ne: "paid" },
+                      status: { $nin: ["paid", "rejected"] },
                     },
                   },
                 ],
@@ -285,7 +285,7 @@ const getCustomerStats = async (user: TJwtUser) => {
                   },
                 },
                 remaining: "$loans.remainingBalance",
-                status: 1,
+                status: "$loans.status",
                 nextPaymentDate: {
                   $arrayElemAt: ["$loans.repaymentSchedule.dueDate", 0],
                 },
