@@ -75,17 +75,9 @@ const loginUser = async (payload: TLoginUser) => {
 
 const refreshToken = async (token: string) => {
   const decoded = verifyToken(token, config.jwt_refresh_secret as string);
-  // console.log(decoded)
-  // let user;
   const user = await User.findOne({
     email: decoded.email,
   });
-
-  // if (!user) {
-  //   user = await User.findOne({
-  //     phoneNumber: decoded.phoneNumber,
-  //   });
-  // }
 
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, "The user is not found");
@@ -101,8 +93,9 @@ const refreshToken = async (token: string) => {
 
   const jwtPayload: JwtPayload = {
     user: userId,
-    email: user.email,
-    role: user.role,
+    name: `${user?.name?.firstName} ${user?.name?.lastName}`,
+    email: user?.email,
+    role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,
     phoneNumber: user?.phoneNumber,
     isDeleted: user?.isDeleted,
@@ -140,6 +133,7 @@ const forgetPassword = async (email: string) => {
 
   const jwtPayload: JwtPayload = {
     user: userId,
+    name: `${user?.name?.firstName} ${user?.name?.lastName}`,
     email: user?.email,
     role: user?.role,
     profilePhotoUrl: user?.profilePhotoUrl,
@@ -152,9 +146,14 @@ const forgetPassword = async (email: string) => {
     config.jwt_access_secret as string,
     "10m",
   );
-  const resetUiLink = `${config.reset_pass_ui_link}?email=${user?.email}&token=${resetToken}`;
+  const resetUiLink = `${config.client_url}/reset-password?email=${user?.email}&token=${resetToken}`;
+  const text = "Click on the link for reset your old password!!";
   const userEmail = user?.email;
-  sendEmail(userEmail, "Forget link", resetUiLink);
+  sendEmail(
+    userEmail,
+    "Password reset link",
+    `<h3>${text}</h3> <br/> ${resetUiLink}`,
+  );
 };
 
 const resetPassword = async (

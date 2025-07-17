@@ -12,7 +12,7 @@ router.post(
 );
 router.post("/refresh-token", authControllers.refreshToken);
 router.post("/forget-password", authControllers.forgetPassword);
-router.get("/reset-password", authControllers.resetPassword);
+router.post("/reset-password", authControllers.resetPassword);
 router.post("/get-new-token", authControllers.getNewAccessToken);
 
 export const authRoutes = router;
